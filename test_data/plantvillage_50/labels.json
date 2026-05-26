@@ -1,0 +1,902 @@
+[
+  {
+    "image_id": "pv_tomato_late_blight_001",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_001.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_002",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_002.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_003",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_003.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_004",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_004.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_005",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_005.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_006",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_007",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_007.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_008",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_008.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_009",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_009.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_late_blight_010",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_late_blight_010.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "토마토 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_001",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_001.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_002",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_002.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_003",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_003.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_004",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_004.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_005",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_005.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_006",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_007",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_007.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_008",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_008.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_009",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_009.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_early_blight_010",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_early_blight_010.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "토마토 겹무늬병 (Early blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_001",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_001.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_002",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_002.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_003",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_003.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_004",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_004.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_005",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_005.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_006",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_007",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_007.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_008",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_008.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_009",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_009.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_potato_late_blight_010",
+    "image_path": "test_data/plantvillage_50/images/pv_potato_late_blight_010.jpg",
+    "ground_truth": {
+      "plant_name_korean": "감자",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "감자 잎마름병 (Late blight)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_001",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_001.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_002",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_002.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_003",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_003.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_004",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_004.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_005",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_005.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_006",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_007",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_007.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_008",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_008.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_009",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_009.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_apple_apple_scab_010",
+    "image_path": "test_data/plantvillage_50/images/pv_apple_apple_scab_010.jpg",
+    "ground_truth": {
+      "plant_name_korean": "사과",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_001",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_001.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_002",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_002.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_003",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_003.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_004",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_004.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_005",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_005.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_006",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_007",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_007.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_008",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_008.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_009",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_009.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  },
+  {
+    "image_id": "pv_tomato_healthy_010",
+    "image_path": "test_data/plantvillage_50/images/pv_tomato_healthy_010.jpg",
+    "ground_truth": {
+      "plant_name_korean": "토마토",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "정상 상태"
+    },
+    "source": {
+      "site": "PlantVillage",
+      "url": "https://data.mendeley.com/datasets/tywbtsjrjv/1",
+      "photographer": "PlantVillage Dataset",
+      "license": "CC0"
+    }
+  }
+]
