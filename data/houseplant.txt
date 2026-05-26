@@ -1,0 +1,216 @@
+issue_type: Sudden Leaf Drop
+
+symptoms:
+* Sudden dropping of leaves
+* Losing a few leaves in the spring
+* Losing many leaves in the fall
+
+cause:
+* Abrupt changes in growing environment
+* Seasonal changes in light levels
+* Under-fertilizing or under-watering
+* Spider mite infestation
+
+solution:
+* Allow plants to adapt slowly to new conditions
+* Maintain proper watering and fertilization schedules
+* Inspect for and control spider mites
+
+
+issue_type: Slow Loss of Lower Leaves
+
+symptoms:
+* Gradual dropping of the lowest leaves
+* Loss of oldest leaves at the base of the plant
+
+cause:
+* Low level of soil fertility
+* Nutrient translocation from old leaves to new growth points
+
+solution:
+* Repot the plant if necessary
+* Start a regular fertilizer program
+
+
+issue_type: Marginal or Tip Leaf Burn
+
+symptoms:
+* Burning of leaf margins or tips
+* Production of smaller leaves
+* Discolored or damaged leaf edges
+
+cause:
+* Over-fertilization
+* Under-watering
+* High fluoride levels in water or potting soil
+* Salt buildup in soil from poor quality water
+
+solution:
+* Repot the plant with fresh potting soil
+* Use scissors to reshape and trim burned tips
+* Improve water quality if using high-salt or hard water
+* Adjust watering and fertilization frequency
+
+
+issue_type: Leaves Small and Off-Color
+
+symptoms:
+* New leaves appearing smaller than normal
+* Leaves showing pale or unusual coloration
+* Visible signs of poor plant vigor
+
+cause:
+* Lack of essential nutrients (poor nutrition)
+* Root death caused by over-watering
+* Inconsistent feeding schedule
+
+solution:
+* Begin a regular monthly liquid fertilizer program
+* Reduce fertilization frequency during low-light winter days
+* Adjust watering habits to prevent root damage
+
+
+issue_type: Plants Don’t Grow
+
+symptoms:
+* Lack of new growth
+* Plant remaining stagnant in the same state
+* Failure to begin growth after relocation
+
+cause:
+* Insufficient light levels
+* Need for adjustment period to a new environment
+* Light levels lower than the minimum required for photosynthesis
+
+solution:
+* Move the plant to a brighter location
+* Place the plant closer to a window
+* Ensure light is bright enough to read a newspaper
+* Allow sufficient time for the plant to adapt to its environment
+
+
+issue_type: Plants Don’t Flower
+
+symptoms:
+* Absence of blooms or flowering
+* Failure to produce flowers during the expected season
+* Normal plant functions maintained without flower production
+
+cause:
+* Insufficient light accumulation to store energy (photo-accumulators)
+* Lack of specific environmental signals or seasonal triggers
+* Inadequate day length or light duration
+* Failure to meet specific plant-specific blooming conditions
+
+solution:
+* Move plants to brighter conditions to increase energy storage
+* Provide sufficient time for photo-accumulators to build energy
+* Research and provide specific environmental triggers for seasonal bloomers
+* Ensure the plant's unique blooming requirements are met based on its species
+
+
+issue_type: Tips of Fig Tree Dying
+
+symptoms:
+* Death of youngest twigs
+* Visible blight at the tips of branches
+
+cause:
+* Infection by Phomes tip blight pathogen
+* High humidity conditions
+
+solution:
+* Prune out affected branches several inches below the infection zone
+* Disinfect pruning shears in a 10% bleach solution between cuts
+
+
+issue_type: Leaves Mottled on the Upper Surface
+
+symptoms:
+* Yellow/green-mottled appearance on leaf surfaces
+* Tiny dust-sized insects crawling on leaves
+* Visible webbing in severe cases
+
+cause:
+* Infestation by two-spotted spider mites
+* Mites scraping mouthparts across the leaf surface
+* Warm and dry environmental conditions
+* Use of ineffective insecticides that worsen populations
+
+solution:
+* Spray with insecticidal soap twice a week for two to three weeks
+* Use ultrafine horticultural oil
+* Mist the plant with warm, soapy water
+* Relocate to cool, moist, or high-humidity areas to hamper mites
+
+
+issue_type: Leaves Distorted With the Edges Curled Down 
+
+symptoms:
+* New leaves curled at the edges and twisted
+* Extremely distorted growing terminals
+* Visible deformity in the plant's growing point
+
+cause:
+* Infestation by Cyclamen mites or broad mites
+* Mites feeding directly in the growing point of the plant
+
+solution:
+* Destroy infested plants to prevent further spread
+* Isolate susceptible species like African violets and English ivy
+
+
+issue_type: Plants Have White Globs on the Stems
+
+symptoms:
+* White, meal-like globs at the juncture of petiole and stem
+* Small white insects about the size of a match head
+* Immature insects crawling slowly on the plant
+* Presence of immobile white insects at maturity
+
+cause:
+* Infestation by mealybugs
+* Insects sucking juices from the plant stems
+
+solution:
+* Physically kill insects using an alcohol-soaked cotton swab
+* Apply a fine grade of horticultural oil with thorough coverage
+* Use systemic insecticides like Orthene or Bayer Advanced during active growth
+* Avoid use on ferns as they are not susceptible to these pests
+
+
+issue_type: Floor Is Sticky
+
+symptoms:
+* Sticky goo (honeydew) on the floor, table, or leaves
+* Presence of brown, turtle-shaped shells about 1/16 inch long
+* Small bumps blending in with woody stems
+
+cause:
+* Infestation by brown hemispherical scale insects
+* Secretion of "honeydew" (insect feces) while feeding
+* Insects piercing and sucking juices from the plant
+
+solution:
+* Apply lightweight horticultural oil
+* Use systemic insecticides such as Orthene or Bayer Advanced
+* Inspect woody stems closely for hidden insects
+
+
+issue_type: Small Gnats Buzzing Around Plant
+
+symptoms:
+* Small, black, gnat-like insects buzzing around the soil
+* Presence of adult fungus gnats or shore flies
+* Larvae found in the potting soil
+
+cause:
+* Larvae feeding on organic debris and decaying matter in soil
+* Moist potting soil providing a habitat for fungus gnats
+* Natural life cycle of the adult gnat form
+
+solution:
+* Drench the soil with an insecticide such as malathion if they become a nuisance
+* Scout and quarantine new plants before bringing them home
+* Read and follow insecticide label recommendations carefully
+* Spray plants outdoors and allow foliage to dry completely before bringing them back inside

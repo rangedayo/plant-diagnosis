@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+langgraph
+langchain-openai
+chromadb
+httpx
+pydantic
+python-dotenv
+Pillow
+pdfplumber
+python-multipart
+npm
+ragas
+datasets
