@@ -1,0 +1,140 @@
+{
+  "collected_at": "2026-05-27T02:30:45+09:00",
+  "source_site": "iNaturalist",
+  "search_params": {
+    "license_filter": [
+      "cc0",
+      "cc-by"
+    ],
+    "quality_grade": "research",
+    "per_taxon": 5,
+    "min_short_side": 400,
+    "variant_order": [
+      "medium",
+      "large",
+      "original"
+    ]
+  },
+  "items": [
+    {
+      "candidate_id": "inat_monstera_deliciosa_001",
+      "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_001.jpg",
+      "source": {
+        "site": "iNaturalist",
+        "url": "https://www.inaturalist.org/observations/258208026",
+        "photographer": "trevvan",
+        "license": "CC BY 4.0"
+      },
+      "hints": {
+        "scientific_name": "Monstera deliciosa",
+        "common_name_guess": "몬스테라",
+        "observation_location": "Santiago Comaltepec, Oax., Mexico",
+        "image_dimensions": [
+          771,
+          1024
+        ],
+        "resolved_size": [
+          771,
+          1024
+        ],
+        "resolved_variant": "large"
+      }
+    },
+    {
+      "candidate_id": "inat_monstera_deliciosa_002",
+      "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_002.jpg",
+      "source": {
+        "site": "iNaturalist",
+        "url": "https://www.inaturalist.org/observations/302616731",
+        "photographer": "zebedeugalinha",
+        "license": "CC BY 4.0"
+      },
+      "hints": {
+        "scientific_name": "Monstera deliciosa",
+        "common_name_guess": "몬스테라",
+        "observation_location": "3000-009 Coimbra (Sé Nova), Portugal",
+        "image_dimensions": [
+          768,
+          1024
+        ],
+        "resolved_size": [
+          768,
+          1024
+        ],
+        "resolved_variant": "large"
+      }
+    },
+    {
+      "candidate_id": "inat_monstera_deliciosa_003",
+      "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_003.jpg",
+      "source": {
+        "site": "iNaturalist",
+        "url": "https://www.inaturalist.org/observations/338977502",
+        "photographer": "zebedeugalinha",
+        "license": "CC BY 4.0"
+      },
+      "hints": {
+        "scientific_name": "Monstera deliciosa",
+        "common_name_guess": "몬스테라",
+        "observation_location": "Coimbra, Portugal",
+        "image_dimensions": [
+          1024,
+          768
+        ],
+        "resolved_size": [
+          1024,
+          768
+        ],
+        "resolved_variant": "large"
+      }
+    },
+    {
+      "candidate_id": "inat_monstera_deliciosa_004",
+      "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_004.jpg",
+      "source": {
+        "site": "iNaturalist",
+        "url": "https://www.inaturalist.org/observations/292720740",
+        "photographer": "pjd1",
+        "license": "CC0"
+      },
+      "hints": {
+        "scientific_name": "Monstera deliciosa",
+        "common_name_guess": "몬스테라",
+        "observation_location": "Northland, Tutukaka Coast, Motel Road near intersection with Tutukaka Block Road (leading to Whangaumu)",
+        "image_dimensions": [
+          1024,
+          538
+        ],
+        "resolved_size": [
+          1024,
+          538
+        ],
+        "resolved_variant": "large"
+      }
+    },
+    {
+      "candidate_id": "inat_monstera_deliciosa_005",
+      "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_005.jpg",
+      "source": {
+        "site": "iNaturalist",
+        "url": "https://www.inaturalist.org/observations/255827514",
+        "photographer": "zebedeugalinha",
+        "license": "CC BY 4.0"
+      },
+      "hints": {
+        "scientific_name": "Monstera deliciosa",
+        "common_name_guess": "몬스테라",
+        "observation_location": "Coimbra, Portugal",
+        "image_dimensions": [
+          1024,
+          768
+        ],
+        "resolved_size": [
+          1024,
+          768
+        ],
+        "resolved_variant": "large"
+      }
+    }
+  ]
+}

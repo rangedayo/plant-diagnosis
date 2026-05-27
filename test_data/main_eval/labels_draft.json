@@ -1,4 +1,4 @@
-﻿[
+[
   {
     "image_id": "self_dracaena_001",
     "image_path": "test_data/main_eval/images/self_dracaena_001.jpg",
@@ -12,7 +12,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -28,7 +28,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -44,7 +44,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -60,7 +60,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -76,7 +76,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -92,7 +92,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -108,7 +108,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -124,7 +124,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -140,7 +140,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -156,7 +156,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -172,7 +172,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   },
   {
@@ -188,7 +188,7 @@
       "site": "self",
       "url": null,
       "photographer": "본인",
-      "license": "self"
+      "license": "self_owned"
     }
   }
 ]
