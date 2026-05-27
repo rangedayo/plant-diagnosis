@@ -55,8 +55,6 @@ def validate_label(label: dict) -> None:
     if missing:
         raise ValueError(f"{label['image_id']}: ground_truth 누락 필드 {missing}")
 
-    if gt["is_healthy"] and gt["symptoms"]:
-        raise ValueError(f"{label['image_id']}: healthy인데 symptoms 있음")
     if not gt["is_healthy"] and not gt["symptoms"]:
         raise ValueError(f"{label['image_id']}: unhealthy인데 symptoms 없음")
 

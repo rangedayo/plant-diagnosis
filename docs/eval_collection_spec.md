@@ -502,8 +502,9 @@ def validate_label(label: dict) -> None:
     if missing:
         raise ValueError(f"{label['image_id']}: ground_truth 누락 필드 {missing}")
 
-    if gt["is_healthy"] and gt["symptoms"]:
-        raise ValueError(f"{label['image_id']}: healthy인데 symptoms 있음")
+    # 주: is_healthy=true + symptoms=[...] 조합은 허용한다.
+    # 종 특성상 잎끝 마름 등 경증 증상이 있어도 전반적으로 건강한 케이스
+    # (예: 드라세나)를 라벨링할 수 있어야 하므로 검증하지 않는다.
     if not gt["is_healthy"] and not gt["symptoms"]:
         raise ValueError(f"{label['image_id']}: unhealthy인데 symptoms 없음")
 
