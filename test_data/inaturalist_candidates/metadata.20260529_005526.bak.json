@@ -4,9 +4,9 @@
       "image_id": "inat_aglaonema_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_aglaonema_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/336452580",
-        "photographer": "agnestrekker",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -15,9 +15,9 @@
       "image_id": "inat_aglaonema_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_aglaonema_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/334080287",
-        "photographer": "agnestrekker",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -26,9 +26,9 @@
       "image_id": "inat_aglaonema_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_aglaonema_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/142744609",
-        "photographer": "leaf0605",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -37,9 +37,9 @@
       "image_id": "inat_chlorophytum_comosum_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_chlorophytum_comosum_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/265448797",
-        "photographer": "hugosaulino",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -48,9 +48,9 @@
       "image_id": "inat_chlorophytum_comosum_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_chlorophytum_comosum_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/342641413",
-        "photographer": "rockfox",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -59,9 +59,9 @@
       "image_id": "inat_chlorophytum_comosum_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_chlorophytum_comosum_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/319516448",
-        "photographer": "kaipatiki_naturewatch",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -70,9 +70,9 @@
       "image_id": "inat_epipremnum_aureum_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/330870559",
-        "photographer": "jilldevito",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -81,9 +81,9 @@
       "image_id": "inat_epipremnum_aureum_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/260054975",
-        "photographer": "bobwardell",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -92,9 +92,9 @@
       "image_id": "inat_epipremnum_aureum_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/250082053",
-        "photographer": "crescent_chaos",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -103,9 +103,9 @@
       "image_id": "inat_ficus_elastica_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_ficus_elastica_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/244805941",
-        "photographer": "alex43916",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -114,9 +114,9 @@
       "image_id": "inat_ficus_elastica_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_ficus_elastica_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/136882822",
-        "photographer": "rich_fuller",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -125,9 +125,9 @@
       "image_id": "inat_ficus_elastica_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_ficus_elastica_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/20857806",
-        "photographer": "nottawasaga",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -136,9 +136,9 @@
       "image_id": "inat_monstera_deliciosa_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/352426184",
-        "photographer": "rockfox",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -147,9 +147,9 @@
       "image_id": "inat_monstera_deliciosa_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/293645221",
-        "photographer": "bobwardell",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -158,9 +158,9 @@
       "image_id": "inat_monstera_deliciosa_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_monstera_deliciosa_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/199731041",
-        "photographer": "alex43916",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -169,9 +169,9 @@
       "image_id": "inat_sansevieria_trifasciata_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_sansevieria_trifasciata_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/339618165",
-        "photographer": "arneholgersson",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -180,9 +180,9 @@
       "image_id": "inat_sansevieria_trifasciata_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_sansevieria_trifasciata_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/351175835",
-        "photographer": "pedrotterres",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -191,9 +191,9 @@
       "image_id": "inat_sansevieria_trifasciata_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_sansevieria_trifasciata_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/152795155",
-        "photographer": "benkeen",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -202,9 +202,9 @@
       "image_id": "inat_spathiphyllum_001",
       "image_path": "test_data/inaturalist_candidates/images/inat_spathiphyllum_001.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/257346405",
-        "photographer": "ametsak",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -213,9 +213,9 @@
       "image_id": "inat_spathiphyllum_002",
       "image_path": "test_data/inaturalist_candidates/images/inat_spathiphyllum_002.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/222492486",
-        "photographer": "wuillan",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
@@ -224,9 +224,9 @@
       "image_id": "inat_spathiphyllum_003",
       "image_path": "test_data/inaturalist_candidates/images/inat_spathiphyllum_003.jpg",
       "source": {
-        "site": "inaturalist",
-        "url": "https://www.inaturalist.org/observations/226964223",
-        "photographer": "bitsandbugs",
+        "site": "iNaturalist",
+        "url": null,
+        "photographer": null,
         "license": "CC0",
         "collection_method": "manual_curation"
       }
