@@ -75,6 +75,7 @@ $RECYCLE.BIN/
 # ---------- Logs / temp ----------
 *.log
 *.bak
+*.bak.json
 logs/
 tmp/
 temp/
