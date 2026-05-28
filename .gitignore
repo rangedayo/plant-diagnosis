@@ -86,6 +86,7 @@ temp/
 
 # ---------- Project-specific ----------
 Plant.id_api_v3.txt
+data/
 
 # ---------- Eval dataset images (수집 산출물; metadata/labels.json만 추적) ----------
 test_data/inaturalist_candidates/images/

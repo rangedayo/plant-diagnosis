@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<service><chemicalPrvnbeMth></chemicalPrvnbeMth><cropName>가지</cropName><sickNameChn>褐色圓星病</sickNameChn><preventionMethod>- 건전 종자를 사용한다.&lt;br/&gt;
-- 균형시비를 하여 건전한 생육을 유도한다.&lt;br/&gt;
-- 과습하지 않도록 한다.&lt;br/&gt;
-- 병든 잎은 모아 태우거나 땅에 묻는다.</preventionMethod><virusImgList /><sickNameKor>갈색둥근무늬병</sickNameKor><developmentCondition>1차 전염원에 대하여 아직 정확한 연구결과는 없으나 병원균은 병든 잎의 잔재(殘滓)에서 분생포자나 균사의 형태로 겨울을 나는 것으로 생각된다.&lt;br/&gt;&#xD;
-1차 전염원에서 형성된 분생포자는 비산되어 전반되며, 8～9월 또는 초가을 비료가 부족하고, 비가 많은 해에 발생이 심하다.</developmentCondition><symptoms>주로 잎에 발생한다.&lt;br/&gt;병반은 처음 황갈색의 작은 반점으로 나타나고, 진전되면 5～6㎜의 큰 병반으로 확대되기도 한다.&lt;br/&gt;&#xD;
-병반 주위는 연한 갈색의 병무늬로 나타나고, 점차 진한 병무늬가 형성되며, 병반의 중앙은 회백색으로 변한다.&lt;br/&gt;&#xD;
-오래된 병반 중앙부에는 암회색의 분생포자가 형성되고, 심하면 그 중앙부의 조직이 파열되어 구멍이 뚫리기도 한다.&lt;br/&gt;&#xD;
-심하게 진전되면 잎 전체가 마르고 떨어진다.</symptoms><etc></etc><virusList><item><virusName>Cercospora solani-melongenae Chupp                                             </virusName><sfeNm>진균계의 불완전균에 속하며, 분생자경과 분생포자를 형성한다.&lt;br/&gt;분생자경은 다발로 형성되며, 황갈색이고, 곧거나 약나 굽은 모양이며, 1～3개의 격막을 가지고 있다.&lt;br/&gt;분생포자는 반투명의 올리브색으로 긴 곤봉상의 원통형 모양이고, 그 크기는 30～100×3.5～5.0㎛이다.</sfeNm></item></virusList><infectionRoute></infectionRoute><imageList /><sickNameEng>Cercospora leaf spot</sickNameEng><biologyPrvnbeMth></biologyPrvnbeMth></service>
