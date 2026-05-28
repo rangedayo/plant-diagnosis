@@ -3,7 +3,7 @@
     "image_id": "self_dracaena_001",
     "image_path": "test_data/main_eval/images/self_dracaena_001.jpg",
     "ground_truth": {
-      "plant_name_korean": "드라세나 트리컬러",
+      "plant_name_korean": "드라세나 송 오브 인디아",
       "is_healthy": true,
       "symptoms": ["leaf_edge_dry", "leaf_browning"],
       "diagnosis": "잎 끝과 아래쪽 잎에 갈색 마름이 있으나 드라세나 종 특성상 정상 범위. 새 잎은 건강하게 자라는 중."
@@ -19,7 +19,7 @@
     "image_id": "self_dracaena_002",
     "image_path": "test_data/main_eval/images/self_dracaena_002.jpg",
     "ground_truth": {
-      "plant_name_korean": "드라세나 트리컬러",
+      "plant_name_korean": "드라세나 송 오브 인디아",
       "is_healthy": true,
       "symptoms": ["leaf_edge_dry", "leaf_browning"],
       "diagnosis": "아래쪽 잎 끝에 뚜렷한 갈색 마름이 보이나 드라세나 종 특성상 정상 범위. 상단 잎은 건강."
@@ -35,7 +35,7 @@
     "image_id": "self_dracaena_003",
     "image_path": "test_data/main_eval/images/self_dracaena_003.jpg",
     "ground_truth": {
-      "plant_name_korean": "드라세나 트리컬러",
+      "plant_name_korean": "드라세나 송 오브 인디아",
       "is_healthy": true,
       "symptoms": ["leaf_edge_dry"],
       "diagnosis": "윗부분 잎은 건강하고 잎끝에 미세한 갈색 마름만 있음. 드라세나 정상 범위."
@@ -51,7 +51,7 @@
     "image_id": "self_dracaena_004",
     "image_path": "test_data/main_eval/images/self_dracaena_004.jpg",
     "ground_truth": {
-      "plant_name_korean": "드라세나 트리컬러",
+      "plant_name_korean": "드라세나 송 오브 인디아",
       "is_healthy": true,
       "symptoms": ["leaf_edge_dry", "leaf_browning"],
       "diagnosis": "여러 잎의 끝과 모서리에 갈색 마름이 분명히 보임. 인공햇빛 환경에서 촬영. 드라세나 종 특성상 정상 범위로 식물 가게 진단."
@@ -67,10 +67,10 @@
     "image_id": "self_dracaena_006",
     "image_path": "test_data/main_eval/images/self_dracaena_006.jpg",
     "ground_truth": {
-      "plant_name_korean": "드라세나 트리컬러",
+      "plant_name_korean": "드라세나 송 오브 인디아",
       "is_healthy": true,
       "symptoms": ["leaf_edge_dry", "leaf_browning"],
-      "diagnosis": "드라세나 트리컬러 전체 모습. 아래쪽 잎에 갈색 마름이 보이나 드라세나 종 특성상 정상 범위이며, 상단 잎은 건강하게 자라는 중."
+      "diagnosis": "드라세나 송 오브 인디아 전체 모습. 아래쪽 잎에 갈색 마름이 보이나 드라세나 종 특성상 정상 범위이며, 상단 잎은 건강하게 자라는 중."
     },
     "source": {
       "site": "self",

@@ -28,12 +28,17 @@ PLANT_NAME_KO_MAP: dict[str, str] = {
     "Monstera deliciosa": "몬스테라",
     "Epipremnum aureum": "스킨답서스",
     "Sansevieria trifasciata": "산세베리아",
+    "Dracaena trifasciata": "산세베리아",  # 산세베리아 현재 학명(=Sansevieria trifasciata)
     "Ficus elastica": "고무나무",
     "Spathiphyllum": "스파티필름",
+    "Spathiphyllum wallisii": "스파티필름",
     "Zamioculcas zamiifolia": "금전수",
     "Chlorophytum comosum": "접란",
     "Pilea peperomioides": "필레아",
+    "Aglaonema modestum": "아글라오네마",
+    "Aglaonema commutatum": "아글라오네마",
     "Dracaena fragrans": "행운목",
+    "Dracaena reflexa": "드라세나 송 오브 인디아",
     "Dracaena": "드라세나",
 }
 
