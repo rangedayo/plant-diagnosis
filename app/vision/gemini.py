@@ -97,7 +97,7 @@ class GeminiProvider:
         *,
         system_prompt: str,
         api_key: str | None = None,
-        model: str = "gemini-2.5-flash",
+        model: str = "gemini-2.5-pro",
         temperature: float | None = None,
     ) -> None:
         resolved_key = api_key or model_utils.get_gemini_api_key()

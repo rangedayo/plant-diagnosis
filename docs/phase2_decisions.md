@@ -71,6 +71,33 @@ plant_korean / status / is_diseased / action_keywords 일치율 모두 baseline 
 
 **근거**: PlantVillage(CC-BY 계열)와 한국 책 인용(fair_use_quote)의 사용 한계가 다름. 라이선스 정리 안 된 데이터를 벡터 DB에 적재하면 응답 라이선스 추적 불가 + 책 출판사 클레임 위험. 적재 전에 못박아야 함.
 
+## 11. Vision 모델: gemini-2.5-flash → gemini-2.5-pro 변경
+
+Phase 2 작성 시점(2026-05-26)엔 gemini-2.5-flash로 시작 후 gemini-3.5-flash 비교 검토로 적혔으나,
+[1-2] 구현 시점에 라인업 재조사 후 gemini-2.5-pro로 변경 결정.
+
+**근거**:
+- Vision multimodal 작업에 Pro 라인이 reasoning에서 우위 (artificialanalysis.ai 기준 71.6 vs Flash 라인).
+- v8 baseline의 남은 정직한 오답 6장 중 5장이 Dracaena 속 종 혼동(fragrans/reflexa/trifasciata/braunii).
+  reasoning 강한 모델이 종 구분에서 효과 기대.
+- 가성비 best ($1.25/1M input), 평가셋 33장 1회 측정 비용 ~$0.15로 부담 없음.
+- gemini-3.5-flash(2026-05-19 GA)는 coding/agent 특화로 vision 강점 미검증 → 채택 보류.
+- gemini-3.1-pro($2/$12)는 frontier급이지만 33장 단순 진단에 오버스펙.
+- 정량 비교는 [1-5] graph 와이어링 후 33장 baseline 측정 시점에 진행.
+
+## 12. google-genai SDK 실증 결과 ([1-2] 구현 중 발견)
+
+[1-1.5] 사전 조사로 알 수 없던 SDK 내부 동작 3건. 추정 → 실증 전환된 사항.
+
+**근거 (재이용 시 시간 절약을 위한 기록)**:
+- `types.Part.from_text()`는 keyword-only — 위치 인자 `from_text(prompt)`는 TypeError.
+  반드시 `types.Part.from_text(text=prompt)`로 호출.
+- APIError 실제 속성: `.code`, `.message`, `.status`, `.details`(=response_json), `.response`(httpx Response 또는 None).
+  사전 조사에서 가정한 `e.response_json`은 존재하지 않음 → 실제 `e.details`.
+  Retry-After 추출 경로: (1) `e.response.headers["Retry-After"]` 우선 → (2) `e.details` 내 retryDelay/Retry-After 재귀 탐색 → (3) None일 시 호출부 기본 60.0초 폴백.
+- `ClientError`/`ServerError` 생성자 시그니처: `__init__(code: int, response_json: Any, response=None)`.
+  단위 테스트에서 `ClientError(429, {"error": {...}})` 형태로 직접 raise 시 `.code/.status/.message` 정상 세팅됨.
+
 ---
 
 ## 진행 흐름 게이트 (한눈에)
