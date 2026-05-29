@@ -672,22 +672,25 @@ def build_diagnosis_graph(
         if DEBUG:
             _rd = state.get("rag_docs") or []
             print("[DEBUG] final rag_context doc_count:", len(_rd))
-        desc = state.get("description") or ""
-        pn = state.get("plant_name")
-        conf = state.get("confidence")
-        ihp = state.get("is_healthy_prob")
-        tc = state.get("top_candidates")
-        if not isinstance(tc, list):
-            tc = []
+        # [1-7] analyze 6필드 직접 사용 (decision #1 옵션 A). Plant.id 팩트 섹션 폐기.
+        visual_description = (
+            state.get("visual_description") or state.get("description") or ""
+        )
+        plant_name = state.get("plant_name")
+        plant_name_korean = state.get("plant_name_korean")
+        plant_confidence = state.get("plant_confidence")
+        alt = state.get("alt_candidates") or []
+        symptoms = state.get("observed_symptoms") or []
+        alt_str = ", ".join(alt) if alt else "없음"
+        symptoms_str = ", ".join(symptoms) if symptoms else "관찰된 이상 없음"
         context_summary = (
-            f"묘사:\n{desc}\n\n"
-            f"[Plant.id 팩트]\n"
-            f"- 식물명(분류 1위): {pn}\n"
-            f"- 분류 신뢰도: {conf}\n"
-            f"- 건강일 추정 확률 is_healthy (0~1): "
-            f"{model_utils.format_is_healthy_for_prompt(ihp)}\n"
-            f"- 분류 상위 후보(최대 3): {model_utils.format_top_candidates_for_prompt(tc)}\n"
-            f"- 질병/비질병 힌트(1위): {state.get('disease_name')}\n"
+            f"묘사:\n{visual_description}\n\n"
+            f"[관찰 정보]\n"
+            f"- 식물명(학명 1위): {plant_name}\n"
+            f"- 식물명(통명): {plant_name_korean}\n"
+            f"- 식별 신뢰도: {plant_confidence}\n"
+            f"- 대안 후보: {alt_str}\n"
+            f"- 관찰된 증상: {symptoms_str}\n"
         )
         rag_chunks = "\n\n".join(state.get("rag_docs") or [])
         structured = await model_utils.generate_structured_diagnosis_with_gpt(

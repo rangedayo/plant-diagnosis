@@ -552,14 +552,15 @@ def default_structured_fallback(*, rag_failed: bool = False) -> dict[str, Any]:
             "status": "병해 의심",
         }
     return {
-        "summary": "묘사와 Plant.id 정보를 바탕으로 요약했습니다.",
+        "summary": "관찰 정보를 바탕으로 요약했습니다.",
         "current_state": "이미지 묘사를 바탕으로 상태를 정리했습니다.",
         "cause": "정보가 제한적일 수 있어 원인은 여러 가지일 수 있습니다.",
         "action_plan": [
             "환경(빛·물·통풍·습도)을 점검하세요.",
             "지속적으로 관찰하세요.",
         ],
-        "status": "건강",
+        # [1-7] decision #5: JSON 파싱 완전 실패 시에도 점검 행동 유도 ("건강" 디폴트 폐기).
+        "status": "병해 의심",
     }
 
 
@@ -595,7 +596,8 @@ def normalize_structured_result(
         plan.append(_pad[len(plan) % 2])
     status = str(data.get("status", "")).strip()
     if status not in ALLOWED_STRUCT_STATUS:
-        status = "건강"
+        # [1-7] decision #5: 불확실 시 사용자 점검 행동을 유도하는 "병해 의심"으로 (보수화 메커니즘 3 대응).
+        status = "병해 의심"
     if not summary:
         summary = "상태를 요약했습니다."
     if not current_state:
