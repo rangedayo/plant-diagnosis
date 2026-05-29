@@ -13,6 +13,7 @@ from app.vision.errors import (
     VisionProviderError,
     VisionRetryableError,
 )
+from app.vision.gemini import GeminiProvider
 from app.vision.mock import MockVisionProvider
 
 __all__ = [
@@ -24,4 +25,5 @@ __all__ = [
     "VisionPermanentError",
     "RetryHint",
     "MockVisionProvider",
+    "GeminiProvider",
 ]

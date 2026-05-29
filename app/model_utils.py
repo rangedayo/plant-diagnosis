@@ -140,6 +140,10 @@ def get_rda_api_key() -> Optional[str]:
     return os.getenv("RDA_API_KEY")
 
 
+def get_gemini_api_key() -> Optional[str]:
+    return os.getenv("GEMINI_API_KEY")
+
+
 def decode_base64_image(image_base64: str) -> bytes:
     """Base64 문자열을 바이트로 디코딩 (블로킹 — 호출부에서 run_in_executor 권장)."""
     return base64.b64decode(image_base64, validate=True)

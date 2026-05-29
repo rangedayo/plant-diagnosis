@@ -12,5 +12,6 @@ python-multipart
 npm
 ragas
 datasets
+google-genai
 pytest
 pytest-asyncio
