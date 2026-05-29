@@ -1,5 +1,5 @@
 """
-LangGraph: identify → describe → keyword → retrieve → generate
+LangGraph: analyze → keyword → retrieve → generate ([1-5] Gemini 경로)
 RAG: SVC05 기반 Chroma, cosine 유사도 필터 후 생성
 """
 
@@ -17,6 +17,8 @@ from langchain_openai import OpenAIEmbeddings
 from langgraph.graph import END, StateGraph
 
 from app import model_utils
+from app.nodes.analyze import make_analyze_node
+from app.vision.base import VisionProvider
 
 logger = logging.getLogger("plant_api")
 
@@ -43,6 +45,13 @@ class DiagnosisState(TypedDict, total=False):
     image_bytes: bytes
     plant_filter_mode: str  # "strict" | "relaxed"
     plant_name: str | None
+    # [1-5] analyze 6필드 (decision #1). plant_name은 기존 키와 공유.
+    plant_name_korean: str | None
+    plant_confidence: str | None  # 'low' | 'med' | 'high'
+    alt_candidates: list[str]
+    visual_description: str
+    observed_symptoms: list[str]
+    # 기존 Plant.id 전용 키 — [1-5]에서는 빈 값 브리지, [1-9]에서 제거.
     disease_name: str | None
     confidence: float | None
     is_healthy_prob: float | None
@@ -355,39 +364,34 @@ def _apply_plant_filter_after_similarity(
 _compiled_graph = None
 
 
-def build_diagnosis_graph(client: httpx.AsyncClient):
-    async def identify_node(state: DiagnosisState) -> dict:
-        if model_utils.get_plant_id_api_key():
-            r = await model_utils.identify_plant_disease_api(client, state["image_bytes"])
-            tc = r.get("top_candidates")
-            if not isinstance(tc, list):
-                tc = []
-            out = {
-                "plant_name": r.get("plant_name"),
-                "disease_name": r.get("disease_name"),
-                "confidence": r.get("confidence"),
-                "is_healthy_prob": r.get("is_healthy_prob"),
-                "top_candidates": tc,
-            }
-            if DEBUG:
-                print("[DEBUG] plant_id:", out.get("plant_name"), out.get("disease_name"))
-            return out
-        out = {
-            "plant_name": None,
+def build_diagnosis_graph(
+    client: httpx.AsyncClient,
+    vision_provider: VisionProvider,
+):
+    # [1-5] analyze 경로. make_analyze_node는 6필드 dict만 반환(analyze.py, [1-4]).
+    # 여기서 브리지: description=visual_description + Plant.id 전용 키는 빈 값.
+    _analyze = make_analyze_node(vision_provider)
+
+    async def analyze_node(state: DiagnosisState) -> dict:
+        out = await _analyze(state)
+        bridged = {
+            **out,
+            # decision #1 옵션 A: keyword/generate가 읽는 description에 관찰 묘사 매핑.
+            "description": out["visual_description"],
+            # Plant.id 전용 키는 analyze가 생성 못함 → 빈 값 흘려보내기([1-9]서 제거).
             "disease_name": None,
             "confidence": None,
             "is_healthy_prob": None,
             "top_candidates": [],
         }
         if DEBUG:
-            print("[DEBUG] plant_id:", out.get("plant_name"), out.get("disease_name"))
-        return out
-
-    async def describe_node(state: DiagnosisState) -> dict:
-        text = await model_utils.describe_image_with_gpt(state["image_bytes"])
-        if DEBUG:
-            print("[DEBUG] description:", text)
-        return {"description": text}
+            print(
+                "[DEBUG] analyze:",
+                bridged.get("plant_name"),
+                bridged.get("plant_name_korean"),
+                bridged.get("plant_confidence"),
+            )
+        return bridged
 
     async def keyword_node(state: DiagnosisState) -> dict:
         desc = state.get("description") or ""
@@ -696,23 +700,24 @@ def build_diagnosis_graph(client: httpx.AsyncClient):
         return {"structured_result": structured}
 
     g = StateGraph(DiagnosisState)
-    g.add_node("identify", identify_node)
-    g.add_node("describe", describe_node)
+    g.add_node("analyze", analyze_node)
     g.add_node("keyword", keyword_node)
     g.add_node("retrieve", retrieve_node)
     g.add_node("generate", generate_node)
-    g.set_entry_point("identify")
-    g.add_edge("identify", "describe")
-    g.add_edge("describe", "keyword")
+    g.set_entry_point("analyze")
+    g.add_edge("analyze", "keyword")
     g.add_edge("keyword", "retrieve")
     g.add_edge("retrieve", "generate")
     g.add_edge("generate", END)
     return g.compile()
 
 
-def init_graph(client: httpx.AsyncClient) -> None:
+def init_graph(
+    client: httpx.AsyncClient,
+    vision_provider: VisionProvider,
+) -> None:
     global _compiled_graph
-    _compiled_graph = build_diagnosis_graph(client)
+    _compiled_graph = build_diagnosis_graph(client, vision_provider)
 
 
 def get_compiled_graph():

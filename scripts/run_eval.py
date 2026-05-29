@@ -22,6 +22,7 @@ from __future__ import annotations
 import asyncio
 import datetime
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -33,11 +34,15 @@ from dotenv import load_dotenv
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
+from app import prompts  # noqa: E402
 from app.graph import build_diagnosis_graph  # noqa: E402
+from app.vision.gemini import GeminiProvider  # noqa: E402
 from test_data.labeling_vocab import PLANT_NAME_KO_MAP  # noqa: E402
 
 LABELS_PATH = _ROOT / "test_data" / "main_eval" / "labels.json"
-OUTPUT_PATH = _ROOT / "eval" / "baseline.json"
+# 기본은 baseline.json. RUN_EVAL_OUT로 출력 파일명을 바꿔 baseline 덮어쓰기 방지
+# (예: [1-5] 회귀 측정은 RUN_EVAL_OUT=after_phase1_wiring.json).
+OUTPUT_PATH = _ROOT / "eval" / os.environ.get("RUN_EVAL_OUT", "baseline.json")
 
 STRUCT_REQUIRED_KEYS = ("summary", "current_state", "cause", "action_plan", "status")
 HEALTHY_STATUS = "건강"
@@ -57,6 +62,11 @@ def _initial_state(image_bytes: bytes) -> dict[str, Any]:
         "image_bytes": image_bytes,
         "plant_filter_mode": "strict",
         "plant_name": None,
+        "plant_name_korean": None,
+        "plant_confidence": None,
+        "alt_candidates": [],
+        "visual_description": "",
+        "observed_symptoms": [],
         "disease_name": None,
         "confidence": None,
         "is_healthy_prob": None,
@@ -111,8 +121,9 @@ async def async_main() -> None:
 
     per_case: list[dict[str, Any]] = []
 
+    vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
     async with httpx.AsyncClient() as client:
-        graph = build_diagnosis_graph(client)
+        graph = build_diagnosis_graph(client, vision_provider)
 
         for i, row in enumerate(labels, start=1):
             image_id = row.get("image_id", "")

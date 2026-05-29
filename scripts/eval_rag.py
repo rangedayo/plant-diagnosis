@@ -22,9 +22,11 @@ from ragas.metrics import answer_relevancy, faithfulness
 _ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_ROOT))
 
+from app import prompts  # noqa: E402
 from app.graph import build_diagnosis_graph  # noqa: E402
+from app.vision.gemini import GeminiProvider  # noqa: E402
 
-NODE_NAMES = ("identify", "describe", "keyword", "retrieve", "generate")
+NODE_NAMES = ("analyze", "keyword", "retrieve", "generate")
 
 
 def _ensure_sample_image(path: Path) -> None:
@@ -57,6 +59,11 @@ def _initial_state(image_bytes: bytes) -> dict:
         "image_bytes": image_bytes,
         "plant_filter_mode": "strict",
         "plant_name": None,
+        "plant_name_korean": None,
+        "plant_confidence": None,
+        "alt_candidates": [],
+        "visual_description": "",
+        "observed_symptoms": [],
         "disease_name": None,
         "confidence": None,
         "is_healthy_prob": None,
@@ -148,8 +155,9 @@ async def async_main() -> None:
     ragas_contexts: list[list[str]] = []
     ragas_ground_truths: list[str] = []
 
+    vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
     async with httpx.AsyncClient() as client:
-        graph = build_diagnosis_graph(client)
+        graph = build_diagnosis_graph(client, vision_provider)
 
         for i, row in enumerate(cases):
             rel = row.get("image_path", "")

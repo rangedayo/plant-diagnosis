@@ -22,8 +22,9 @@ from fastapi.responses import JSONResponse
 from PIL import Image, UnidentifiedImageError
 from pydantic import ValidationError
 
-from app import model_utils
+from app import model_utils, prompts
 from app.graph import get_compiled_graph, init_graph
+from app.vision.gemini import GeminiProvider
 from app.schemas import (
     DiagnosisDebug,
     DiagnosisResponse,
@@ -82,9 +83,11 @@ http_client: httpx.AsyncClient | None = None
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     global http_client
-    logger.info("앱 시작: httpx AsyncClient · LangGraph 초기화")
+    logger.info("앱 시작: httpx AsyncClient · Gemini VisionProvider · LangGraph 초기화")
     http_client = httpx.AsyncClient()
-    init_graph(http_client)
+    # [1-5] analyze 경로: GeminiProvider를 lifespan에서 1회 생성해 그래프에 주입 (decision #7 옵션 A).
+    vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
+    init_graph(http_client, vision_provider)
     yield
     if http_client is not None:
         await http_client.aclose()
@@ -184,6 +187,11 @@ async def diagnose(
                 "image_bytes": image_bytes,
                 "plant_filter_mode": "strict",
                 "plant_name": None,
+                "plant_name_korean": None,
+                "plant_confidence": None,
+                "alt_candidates": [],
+                "visual_description": "",
+                "observed_symptoms": [],
                 "disease_name": None,
                 "confidence": None,
                 "is_healthy_prob": None,
