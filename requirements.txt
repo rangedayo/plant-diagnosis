@@ -12,3 +12,5 @@ python-multipart
 npm
 ragas
 datasets
+pytest
+pytest-asyncio
