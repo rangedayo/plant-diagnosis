@@ -1,14 +1,10 @@
-export type Candidate = {
-  name: string;
-  probability: number;
-};
-
-export type PlantIdResult = {
+export type AnalysisResult = {
   plant_name: string | null;
-  disease_name: string | null;
-  confidence: number | null;
-  is_healthy_prob: number | null;
-  top_candidates: Candidate[];
+  plant_name_korean: string | null;
+  plant_confidence: "low" | "med" | "high" | null;
+  alt_candidates: string[];
+  visual_description: string;
+  observed_symptoms: string[];
 };
 
 export type StructuredResult = {
@@ -21,6 +17,6 @@ export type StructuredResult = {
 
 export type DiagnosisResponse = {
   message: string;
-  plant_id: PlantIdResult;
+  analysis: AnalysisResult | null;
   structured_result: StructuredResult;
 };

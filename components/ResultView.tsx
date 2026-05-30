@@ -6,15 +6,9 @@ type ResultViewProps = {
   onReset: () => void;
 };
 
-function percent(value: number | null): string {
-  if (value === null || Number.isNaN(value)) {
-    return "-";
-  }
-  return `${(value * 100).toFixed(1)}%`;
-}
-
 export default function ResultView({ result, imageUrl, onReset }: ResultViewProps) {
-  const plantName = result.plant_id.plant_name ?? "식물 이름 미확인";
+  const plantName =
+    result.analysis?.plant_name_korean ?? result.analysis?.plant_name ?? "식물 이름 미확인";
   const state = result.structured_result.current_state || "상태 정보 없음";
   const summary = result.structured_result.summary || "요약 정보 없음";
   const cause = result.structured_result.cause || "원인 정보 없음";
@@ -52,10 +46,6 @@ export default function ResultView({ result, imageUrl, onReset }: ResultViewProp
             <li key={item}>{item}</li>
           ))}
         </ul>
-        <div className="meta">
-          <span>신뢰도: {percent(result.plant_id.confidence)}</span>
-          <span>건강 확률: {percent(result.plant_id.is_healthy_prob)}</span>
-        </div>
       </article>
 
       <div className="button-row">

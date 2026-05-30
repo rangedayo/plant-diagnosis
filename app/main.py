@@ -16,21 +16,18 @@ from typing import AsyncGenerator
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from PIL import Image, UnidentifiedImageError
-from pydantic import ValidationError
 
 from app import model_utils, prompts
 from app.graph import get_compiled_graph, init_graph
 from app.vision.gemini import GeminiProvider
 from app.schemas import (
-    DiagnosisDebug,
+    AnalysisResult,
     DiagnosisResponse,
     HealthResponse,
-    PlantCandidateItem,
-    PlantIdentificationResult,
 )
 
 load_dotenv()
@@ -130,9 +127,8 @@ async def health_check() -> HealthResponse:
 @app.post("/diagnose", response_model=DiagnosisResponse)
 async def diagnose(
     file: UploadFile = File(...),
-    return_debug: bool = Query(False, description="True면 keywords, sick_keys 디버그 포함"),
 ) -> DiagnosisResponse:
-    """이미지 업로드 후 LangGraph 실행 (identify→describe→keyword→retrieve→generate)."""
+    """이미지 업로드 후 LangGraph 실행 (analyze→keyword→retrieve→generate)."""
     if http_client is None:
         raise HTTPException(status_code=503, detail="HTTP 클라이언트가 준비되지 않았습니다.")
 
@@ -185,21 +181,15 @@ async def diagnose(
         out = await graph.ainvoke(
             {
                 "image_bytes": image_bytes,
-                "plant_filter_mode": "strict",
                 "plant_name": None,
                 "plant_name_korean": None,
                 "plant_confidence": None,
                 "alt_candidates": [],
                 "visual_description": "",
                 "observed_symptoms": [],
-                "disease_name": None,
-                "confidence": None,
-                "is_healthy_prob": None,
-                "top_candidates": [],
                 "description": "",
                 "keywords": [],
                 "rag_query": "",
-                "fallback_plant_name": None,
                 "rag_docs": [],
                 "sick_keys": [],
                 "rag_doc_sick_pairs": [],
@@ -216,27 +206,14 @@ async def diagnose(
         logger.exception("LangGraph 실행 실패")
         raise HTTPException(status_code=502, detail=str(e)) from e
 
-    _tc = out.get("top_candidates") or []
-    _cand: list[PlantCandidateItem] = []
-    for item in _tc:
-        if isinstance(item, dict):
-            try:
-                _cand.append(PlantCandidateItem.model_validate(item))
-            except ValidationError:
-                continue
-    pid = PlantIdentificationResult(
+    analysis = AnalysisResult(
         plant_name=out.get("plant_name"),
-        disease_name=out.get("disease_name"),
-        confidence=out.get("confidence"),
-        is_healthy_prob=out.get("is_healthy_prob"),
-        top_candidates=_cand,
+        plant_name_korean=out.get("plant_name_korean"),
+        plant_confidence=out.get("plant_confidence"),
+        alt_candidates=list(out.get("alt_candidates") or []),
+        visual_description=str(out.get("visual_description") or ""),
+        observed_symptoms=list(out.get("observed_symptoms") or []),
     )
-    dbg: DiagnosisDebug | None = None
-    if return_debug:
-        dbg = DiagnosisDebug(
-            keywords=list(out.get("keywords") or []),
-            sick_keys=list(out.get("sick_keys") or []),
-        )
 
     sr = out.get("structured_result")
 
@@ -245,9 +222,8 @@ async def diagnose(
 
     return DiagnosisResponse(
         message="diagnosis complete",
-        plant_id=pid,
+        analysis=analysis,
         structured_result=sr,
-        debug=dbg,
     )
 
 

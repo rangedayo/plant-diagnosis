@@ -2,53 +2,43 @@
 식물 진단 API 입출력 Pydantic 스키마
 """
 
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
 
-class PlantCandidateItem(BaseModel):
-    """Plant.id 분류 상위 후보 한 항목"""
+class AnalysisResult(BaseModel):
+    """analyze 단계 관찰 결과 6필드 (generate 진단과 평행, [1-9] plant_id 대체)."""
 
-    name: Optional[str] = Field(default=None, description="후보 학명")
-    probability: Optional[float] = Field(default=None, description="확률 (0~1)")
-
-
-class PlantIdentificationResult(BaseModel):
-    """Plant.id 1차 식별 결과 요약"""
-
-    plant_name: Optional[str] = Field(default=None, description="식물명(1위)")
-    disease_name: Optional[str] = Field(default=None, description="병해/질병명")
-    confidence: Optional[float] = Field(
-        default=None, description="1위 분류 신뢰도 (0~1)"
+    plant_name: Optional[str] = Field(
+        default=None, description="식물 학명(영문, analyze 1위)"
     )
-    is_healthy_prob: Optional[float] = Field(
-        default=None,
-        description="Plant.id is_healthy: 이미지에 건강한 식물일 추정 확률 (0~1)",
+    plant_name_korean: Optional[str] = Field(
+        default=None, description="식물 한국어 통명"
     )
-    top_candidates: list[PlantCandidateItem] = Field(
-        default_factory=list,
-        description="분류 상위 후보(최대 3개): name, probability",
+    plant_confidence: Optional[Literal["low", "med", "high"]] = Field(
+        default=None, description="식별 신뢰도 (low / med / high)"
     )
-
-
-class DiagnosisDebug(BaseModel):
-    """LangGraph 중간 결과 디버그"""
-
-    keywords: list[str] = Field(default_factory=list)
-    sick_keys: list[str] = Field(default_factory=list)
+    alt_candidates: list[str] = Field(
+        default_factory=list, description="대안 학명 후보(영문 학명)"
+    )
+    visual_description: str = Field(
+        default="", description="한국어 시각 묘사(잎·줄기·색상·형태)"
+    )
+    observed_symptoms: list[str] = Field(
+        default_factory=list, description="관찰된 증상 키워드(한국어)"
+    )
 
 
 class DiagnosisResponse(BaseModel):
     """LangGraph 진단 완료 응답"""
 
     message: str = Field(default="diagnosis complete")
-    plant_id: Optional[PlantIdentificationResult] = None
+    analysis: Optional[AnalysisResult] = None
     structured_result: dict[str, Any] = Field(
         default_factory=dict,
         description="summary, current_state, cause, action_plan, status",
     )
-    debug: Optional[DiagnosisDebug] = None
 
 
 class HealthResponse(BaseModel):
