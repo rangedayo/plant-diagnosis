@@ -12,6 +12,7 @@ graph 와이어링은 [1-5] 작업이라 여기서는 graph.py/main.py를 건드
 
 from __future__ import annotations
 
+import os
 from typing import Any
 
 from google import genai
@@ -97,13 +98,31 @@ class GeminiProvider:
         *,
         system_prompt: str,
         api_key: str | None = None,
+        project: str | None = None,
+        location: str | None = None,
         model: str = "gemini-2.5-pro",
         temperature: float | None = None,
     ) -> None:
-        resolved_key = api_key or model_utils.get_gemini_api_key()
-        if not resolved_key:
-            raise RuntimeError("GEMINI_API_KEY가 설정되지 않았습니다.")
-        self._client = genai.Client(api_key=resolved_key)
+        # 인증 모드 자동 분기 (옵션 A, [1-2.5]):
+        #   GOOGLE_CLOUD_PROJECT 있으면 Vertex(ADC), 없으면 GEMINI_API_KEY로 AI Studio.
+        project = project or os.getenv("GOOGLE_CLOUD_PROJECT")
+        location = location or os.getenv("GOOGLE_CLOUD_LOCATION") or "asia-northeast1"
+        if project:
+            self._client = genai.Client(
+                vertexai=True, project=project, location=location
+            )
+            self._auth_mode = "vertex"
+            self._project = project
+            self._location = location
+        else:
+            resolved_key = api_key or model_utils.get_gemini_api_key()
+            if not resolved_key:
+                raise RuntimeError(
+                    "GOOGLE_CLOUD_PROJECT(Vertex 모드) 또는 "
+                    "GEMINI_API_KEY(AI Studio 모드) 중 하나 필요."
+                )
+            self._client = genai.Client(api_key=resolved_key)
+            self._auth_mode = "ai_studio"
         self._model = model
         self._system_prompt = system_prompt
         self._temperature = temperature

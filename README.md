@@ -85,10 +85,30 @@ pip install -r requirements.txt
 
 | 변수 | 용도 |
 |---|---|
-| `GEMINI_API_KEY` | analyze_node — Gemini 2.5 Pro로 식별·묘사·증상 관찰 통합 |
+| `GOOGLE_CLOUD_PROJECT` | analyze_node — Vertex AI 모드(권장). 설정 시 Gemini를 Vertex ADC로 호출 |
+| `GOOGLE_CLOUD_LOCATION` | Vertex region. 미설정 시 `asia-northeast1`(도쿄) 기본 |
+| `GEMINI_API_KEY` | analyze_node — Google AI Studio 모드(fallback). Vertex 미설정 시에만 사용 |
 | `OPENAI_API_KEY` | generate(GPT-4o-mini)·keyword 영문 번역·텍스트 임베딩(Chroma) |
 | `RDA_API_KEY` | `scripts/build_rag_db.py`로 NCPMS 데이터 수집 시에만 |
 | `PLANT_ID_API_KEY` | (legacy) `/health` 응답 호환용. [1-10]에서 제거 |
+
+### Gemini 인증 — Vertex AI (권장) vs Google AI Studio (fallback)
+
+두 모드 중 하나를 골라 환경변수에 박습니다. **Vertex 모드가 GCP 크레딧을 사용**하며,
+`GeminiProvider`가 `GOOGLE_CLOUD_PROJECT` 유무로 자동 분기합니다.
+
+**Vertex 모드 (권장)** — `.env`에 다음:
+
+```
+GOOGLE_CLOUD_PROJECT=<your-project>
+GOOGLE_CLOUD_LOCATION=asia-northeast1
+```
+
+사전 인증: `gcloud auth application-default login`을 1회 실행합니다(로컬 ADC 캐시 저장).
+서울(`asia-northeast3`)은 Gemini 2.5 Pro 미지원이라 도쿄(`asia-northeast1`)를 씁니다.
+
+**AI Studio 모드 (fallback)** — `.env`에 `GEMINI_API_KEY=...`를 박습니다.
+Vertex 환경변수가 비어 있을 때만 사용됩니다.
 
 ## RAG 벡터 DB 구축 (선택)
 

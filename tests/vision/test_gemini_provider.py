@@ -139,8 +139,8 @@ _INTEGRATION_IMAGE = (
 
 @pytest.mark.integration
 @pytest.mark.skipif(
-    not os.getenv("GEMINI_API_KEY"),
-    reason="GEMINI_API_KEY 미설정 — 통합 테스트 생략",
+    not (os.getenv("GOOGLE_CLOUD_PROJECT") or os.getenv("GEMINI_API_KEY")),
+    reason="GOOGLE_CLOUD_PROJECT(Vertex) 또는 GEMINI_API_KEY(AI Studio) 중 하나 필요",
 )
 @pytest.mark.asyncio
 async def test_integration_real_gemini_call() -> None:
@@ -188,3 +188,30 @@ async def test_integration_real_gemini_call() -> None:
             out.observed_symptoms,
         )
     )
+
+
+@pytest.mark.integration
+@pytest.mark.skipif(
+    not os.getenv("GOOGLE_CLOUD_PROJECT"),
+    reason="GOOGLE_CLOUD_PROJECT 미설정 — Vertex 모드 테스트 스킵",
+)
+@pytest.mark.asyncio
+async def test_vertex_mode_authenticates_and_analyzes() -> None:
+    """Vertex 모드로 self_haengun_001.jpg 1회 호출. ADC 자동 인증 + SDK Vertex 모드 실증."""
+    from app.vision.gemini import GeminiProvider
+
+    assert _INTEGRATION_IMAGE.exists(), f"통합 테스트 이미지 없음: {_INTEGRATION_IMAGE}"
+
+    provider = GeminiProvider(
+        system_prompt="이 이미지를 한국어로 분석해서 6필드 JSON으로 반환하라.",
+    )
+    assert provider._auth_mode == "vertex"
+
+    image_bytes = _INTEGRATION_IMAGE.read_bytes()
+    out = await provider.analyze(
+        VisionInput(image_bytes=image_bytes, mime_type="image/jpeg")
+    )
+
+    assert isinstance(out, AnalyzeResult)
+    assert out.plant_name  # 6필드 채워졌는지
+    assert isinstance(out.observed_symptoms, list)
