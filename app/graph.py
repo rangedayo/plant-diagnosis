@@ -36,7 +36,6 @@ UC_IPM_SOLUTION_SIM_PENALTY = 0.85
 NCPMS_SIM_WEIGHT = 0.8
 PLANT_NAME_MATCH_BOOST = 0.1
 GENERIC_DOC_PENALTY = 0.9
-FALLBACK_WORD_MATCH_BONUS = 0.05
 # [1-6] keyword_node가 RAG 쿼리에 쓰는 observed_symptoms 명사구 최대 개수.
 RAG_SYMPTOM_KEYWORD_MAX = 5
 
@@ -217,43 +216,12 @@ def _merge_rag_triples(
     return merged_docs, merged_metas, merged_raw, merged_merge_sims
 
 
-def _build_rag_query(state: DiagnosisState) -> str:
-    """keyword_node에서 조립한 rag_query만 사용 (설명문 폴백 없음)."""
-    return (state.get("rag_query") or "").strip()
-
-
 def _doc_first_token_as_crop(doc: str) -> str:
     """SVC05 문단은 보통 작물명(cropName)이 첫 토큰."""
     t = (doc or "").strip()
     if not t:
         return ""
     return t.split()[0]
-
-
-def _final_plant_name(state: DiagnosisState) -> str | None:
-    """strict: plant_name만 (없으면 None). relaxed: 없을 때 fallback 허용."""
-    p = state.get("plant_name")
-    if p is not None and str(p).strip():
-        return str(p).strip()
-    mode = (state.get("plant_filter_mode") or "strict").lower()
-    if mode == "strict":
-        return None
-    f = state.get("fallback_plant_name")
-    if f is not None and str(f).strip():
-        return str(f).strip()
-    return None
-
-
-def _fallback_hint_words(fallback: str | None) -> list[str]:
-    if not (fallback or "").strip():
-        return []
-    return [w for w in str(fallback).split() if len(w.strip()) >= 2]
-
-
-def _fallback_match_count(doc: str, words: list[str]) -> int:
-    if not words or not doc:
-        return 0
-    return sum(1 for w in words if w in doc)
 
 
 def _doc_plant_for_ranking(doc: str, meta: dict[str, Any]) -> str:
@@ -275,9 +243,8 @@ def _final_rank_score(
     meta: dict[str, Any],
     *,
     identified_plant: str | None,
-    fallback_words: list[str],
 ) -> tuple[float, dict[str, Any]]:
-    """merge 단계 가중 유사도 + generic·식물명·fallback 매칭(문서 제거 없음)."""
+    """merge 단계 가중 유사도 + generic·식물명 매칭(문서 제거 없음)."""
     score = float(merge_sim)
     dp = _doc_plant_for_ranking(doc, meta)
     detail: dict[str, Any] = {
@@ -291,12 +258,6 @@ def _final_rank_score(
     if ident and dp == ident:
         score += PLANT_NAME_MATCH_BOOST
         detail["plant_match_boost"] = PLANT_NAME_MATCH_BOOST
-    mc = _fallback_match_count(doc, fallback_words)
-    if mc:
-        bonus = mc * FALLBACK_WORD_MATCH_BONUS
-        score += bonus
-        detail["fallback_match_count"] = mc
-        detail["fallback_bonus"] = bonus
     detail["final_rank_score"] = score
     return score, detail
 
@@ -308,7 +269,6 @@ def _apply_plant_filter_after_similarity(
     merge_sims: list[float],
     *,
     state: DiagnosisState,
-    final_plant_name: str | None,
 ) -> tuple[list[str], list[dict[str, Any]], list[float], bool]:
     """
     유사도 필터 통과 후: 문서 제거 없이 가중 랭킹만 적용.
@@ -317,10 +277,6 @@ def _apply_plant_filter_after_similarity(
     if not docs:
         return docs, metas, raw_sims, False
 
-    fb_raw = state.get("fallback_plant_name")
-    fallback_words = _fallback_hint_words(
-        str(fb_raw).strip() if fb_raw is not None else ""
-    )
     identified = state.get("plant_name")
     ident_s = str(identified).strip() if identified is not None else ""
 
@@ -334,7 +290,6 @@ def _apply_plant_filter_after_similarity(
             doc,
             meta,
             identified_plant=ident_s or None,
-            fallback_words=fallback_words,
         )
         scored.append((fs, doc, meta, raw, ms, det))
 
@@ -354,12 +309,6 @@ def _apply_plant_filter_after_similarity(
             ident_s or None,
             det,
         )
-    if fallback_words:
-        logger.info(
-            "retrieve: fallback_words=%r (매칭 수 기반 보너스, 문서 유지)",
-            fallback_words,
-        )
-    _ = final_plant_name  # 로그·API 호환용
     return rd, rm, rr, False
 
 
@@ -421,9 +370,6 @@ def build_diagnosis_graph(
             "rag_query": query_ko,
             "keywords": keywords_ko,
             "keywords_en": keywords_en,
-            # [1-9]서 키 자체 제거 예정. 현재는 retrieve의 fallback 참조를
-            # 항상 None으로 흘려 보내기 위해 명시.
-            "fallback_plant_name": None,
         }
         if DEBUG:
             print("[DEBUG] observed_symptoms:", state.get("observed_symptoms"))
@@ -432,11 +378,11 @@ def build_diagnosis_graph(
         return out
 
     async def retrieve_node(state: DiagnosisState) -> dict:
-        query_ko = (_build_rag_query(state) or "").strip()
+        query_ko = (state.get("rag_query") or "").strip()
         query_en = " ".join(state.get("keywords_en") or []).strip()
         pn = state.get("plant_name")
         dn = state.get("disease_name")
-        fn = _final_plant_name(state)
+        fn = str(pn).strip() if pn is not None and str(pn).strip() else None
         if DEBUG:
             print("[DEBUG] query_ko:", query_ko)
         print("[DEBUG] query_en:", query_en)
@@ -446,10 +392,9 @@ def build_diagnosis_graph(
                 flush=True,
             )
         logger.info(
-            "retrieve: plant_name=%r disease_name=%r fallback_plant_name=%r final_plant_name=%r query_ko=%r query_en=%r",
+            "retrieve: plant_name=%r disease_name=%r final_plant_name=%r query_ko=%r query_en=%r",
             pn,
             dn,
-            state.get("fallback_plant_name"),
             fn,
             query_ko,
             query_en,
@@ -618,7 +563,6 @@ def build_diagnosis_graph(
                 filtered_raw,
                 filtered_merge,
                 state=state,
-                final_plant_name=fn,
             )
         )
         logger.info(
