@@ -88,6 +88,9 @@ temp/
 Plant.id_api_v3.txt
 data/
 
+# 워킹트리 임시 검증 스크립트 (정식 회귀 도구는 scripts/run_eval.py)
+_validate_*.py
+
 # ---------- Eval dataset images (수집 산출물; metadata/labels.json만 추적) ----------
 test_data/inaturalist_candidates/images/
 test_data/wikimedia_candidates/images/
