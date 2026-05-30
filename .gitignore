@@ -98,3 +98,8 @@ test_data/plantvillage_50/images/
 test_data/self_captured/images/
 test_data/main_eval/images/
 test_data/plantvillage_source/
+
+# 평가셋 이미지는 로컬만 (토큰·용량·라이선스 — labels.json의 image_path 참조로 충분)
+test_data/**/*.jpg
+test_data/**/*.jpeg
+test_data/**/*.png
