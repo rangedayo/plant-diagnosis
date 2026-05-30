@@ -37,6 +37,8 @@ NCPMS_SIM_WEIGHT = 0.8
 PLANT_NAME_MATCH_BOOST = 0.1
 GENERIC_DOC_PENALTY = 0.9
 FALLBACK_WORD_MATCH_BONUS = 0.05
+# [1-6] keyword_node가 RAG 쿼리에 쓰는 observed_symptoms 명사구 최대 개수.
+RAG_SYMPTOM_KEYWORD_MAX = 5
 
 HEALTHY_KEYWORDS = ["건강", "이상 없음", "문제 없음", "정상", "깨끗", "갈변 없음"]
 
@@ -394,34 +396,37 @@ def build_diagnosis_graph(
         return bridged
 
     async def keyword_node(state: DiagnosisState) -> dict:
-        desc = state.get("description") or ""
-        pn = state.get("plant_name")
-        fb: str | None = None
-        if pn is None or not str(pn).strip():
-            raw = await model_utils.estimate_fallback_plant_with_gpt(desc)
-            fb = raw.strip() or None
-        rq = await model_utils.build_rag_search_query_with_gpt(
-            desc,
-            pn,
-            state.get("disease_name"),
-            state.get("confidence"),
-            fallback_plant_name=fb,
-            is_healthy_prob=state.get("is_healthy_prob"),
-            top_candidates=state.get("top_candidates"),
-            plant_filter_mode=state.get("plant_filter_mode") or "strict",
+        # [1-6] decision #2: keyword_node는 영문 번역 전용으로 축소.
+        # analyze가 만든 observed_symptoms(한국어 명사구)를 RAG 키워드로 그대로
+        # 채택하고 영문 번역 1콜만 수행한다. build_rag_search_query_with_gpt /
+        # estimate_fallback_plant_with_gpt 호출은 제거(중복 LLM 분석 제거).
+        symptoms = [
+            s.strip()
+            for s in (state.get("observed_symptoms") or [])
+            if s and str(s).strip()
+        ]
+        keywords_ko = list(dict.fromkeys(symptoms))[:RAG_SYMPTOM_KEYWORD_MAX]
+        keywords_en = (
+            await model_utils.generate_english_keywords(keywords_ko)
+            if keywords_ko
+            else []
         )
-        keywords = rq.split() if rq else []
-        keywords_ko = list(dict.fromkeys(keywords))
-        keywords_en = await model_utils.generate_english_keywords(keywords_ko)
-        query_ko = " ".join(keywords_ko)
+        plant_name = (state.get("plant_name") or "").strip()
+        parts: list[str] = []
+        if plant_name:
+            parts.append(plant_name)
+        parts.extend(keywords_ko)
+        query_ko = " ".join(parts)
         out = {
             "rag_query": query_ko,
             "keywords": keywords_ko,
             "keywords_en": keywords_en,
-            "fallback_plant_name": fb,
+            # [1-9]서 키 자체 제거 예정. 현재는 retrieve의 fallback 참조를
+            # 항상 None으로 흘려 보내기 위해 명시.
+            "fallback_plant_name": None,
         }
         if DEBUG:
-            print("[DEBUG] description:", state.get("description"))
+            print("[DEBUG] observed_symptoms:", state.get("observed_symptoms"))
             print("[DEBUG] keywords:", out.get("keywords"))
             print("[DEBUG] keywords_en:", out.get("keywords_en"))
         return out

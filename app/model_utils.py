@@ -5,7 +5,6 @@ Plant.id · OpenAI 유틸 — CPU·비동기만 사용 (GPU/Torch 미사용)
 
 from __future__ import annotations
 
-import asyncio
 import base64
 import io
 import json
@@ -156,15 +155,6 @@ def image_bytes_to_rgb_size(image_bytes: bytes) -> tuple[Image.Image, tuple[int,
         return rgb.copy(), rgb.size
 
 
-def _image_bytes_to_jpeg_base64_sync(image_bytes: bytes) -> str:
-    """PIL로 RGB JPEG 정규화 후 base64 ASCII 문자열 (블로킹)."""
-    with Image.open(io.BytesIO(image_bytes)) as im:
-        rgb = im.convert("RGB")
-        buf = io.BytesIO()
-        rgb.save(buf, format="JPEG", quality=88)
-    return base64.b64encode(buf.getvalue()).decode("ascii")
-
-
 def _parse_identification_json(body: dict[str, Any]) -> dict[str, Any]:
     """
     v3: result.classification.suggestions[0].name, .probability
@@ -280,85 +270,6 @@ async def identify_plant_disease_api(
     return parse_identification_response(body)
 
 
-async def describe_image_with_gpt(image_bytes: bytes) -> str:
-    """
-    gpt-4o-mini 비전 — prompts.DESCRIBE_IMAGE_SYSTEM / USER 사용.
-    """
-    api_key = get_openai_api_key()
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
-
-    loop = asyncio.get_running_loop()
-    b64 = await loop.run_in_executor(
-        None,
-        _image_bytes_to_jpeg_base64_sync,
-        image_bytes,
-    )
-
-    oai = AsyncOpenAI(api_key=api_key)
-    resp = await oai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": prompts.DESCRIBE_IMAGE_SYSTEM},
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompts.DESCRIBE_IMAGE_USER_TEMPLATE},
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{b64}",
-                        },
-                    },
-                ],
-            },
-        ],
-        max_tokens=512,
-    )
-    text = resp.choices[0].message.content
-    return (text or "").strip()
-
-
-async def extract_keywords_with_gpt(
-    description: str,
-    plant_name: str | None,
-    disease_name: str | None,
-    confidence: float | None,
-    *,
-    is_healthy_prob: float | None = None,
-    top_candidates: list[dict[str, Any]] | None = None,
-) -> list[str]:
-    """KEYWORD_SYSTEM / KEYWORD_USER_TEMPLATE — 쉼표 구분 키워드 리스트."""
-    api_key = get_openai_api_key()
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
-
-    user = prompts.KEYWORD_USER_TEMPLATE.format(
-        description=description,
-        plant_name=plant_name or "",
-        disease_name=disease_name or "",
-        confidence=confidence if confidence is not None else "",
-        is_healthy_prob=format_is_healthy_for_prompt(is_healthy_prob),
-        top_candidates=format_top_candidates_for_prompt(top_candidates),
-    )
-    oai = AsyncOpenAI(api_key=api_key)
-    resp = await oai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": prompts.KEYWORD_SYSTEM},
-            {"role": "user", "content": user},
-        ],
-        max_tokens=256,
-    )
-    text = (resp.choices[0].message.content or "").strip()
-    parts: list[str] = []
-    for p in text.replace("，", ",").split(","):
-        s = p.strip()
-        if s:
-            parts.append(s)
-    return parts
-
-
 async def generate_english_keywords(keywords_ko: list[str]) -> list[str]:
     """
     한국어 키워드 리스트와 동일한 길이의 영어 검색 키워드 생성 (main_rag 등 영어 코퍼스용).
@@ -397,138 +308,6 @@ async def generate_english_keywords(keywords_ko: list[str]) -> list[str]:
     elif len(parts) > n:
         parts = parts[:n]
     return parts
-
-
-RAG_QUERY_MAX_WORDS = 14
-RAG_SYMPTOM_KEYWORD_MAX = 5
-
-
-def _symptom_token_allowed(t: str) -> bool:
-    s = t.strip()
-    if not s:
-        return False
-    if s in ("건강", "정상", "깨끗"):
-        return False
-    banned_phrases = ("이상 없음", "문제 없음", "갈변 없음")
-    if any(p in s for p in banned_phrases):
-        return False
-    if s.endswith("없음") or " 없음" in s:
-        return False
-    if "없다" in s or "아님" in s:
-        return False
-    if "건강" in s or "깨끗" in s:
-        return False
-    return True
-
-
-def _parse_symptom_keywords_from_llm(text: str) -> list[str]:
-    out: list[str] = []
-    for p in text.replace("，", ",").split(","):
-        s = p.strip()
-        if s and _symptom_token_allowed(s):
-            out.append(s)
-    out = out[:RAG_SYMPTOM_KEYWORD_MAX]
-    if len(out) < 3 and text:
-        logger.warning(
-            "symptom_keywords: LLM 출력이 3개 미만(%d개) — 검색 품질 저하 가능",
-            len(out),
-        )
-    return out
-
-
-def _sanitize_fallback_plant_line(text: str) -> str:
-    line = (text or "").split("\n", 1)[0].strip()
-    words = line.split()
-    return " ".join(words[:10])
-
-
-async def estimate_fallback_plant_with_gpt(description: str) -> str:
-    """Plant.id 실패 시 묘사 기반 넓은 범주 식물 유형(검색 범위용). 빈 문자열 가능."""
-    if not (description or "").strip():
-        return ""
-    api_key = get_openai_api_key()
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
-    user = prompts.FALLBACK_PLANT_USER_TEMPLATE.format(description=description)
-    oai = AsyncOpenAI(api_key=api_key)
-    resp = await oai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": prompts.FALLBACK_PLANT_SYSTEM},
-            {"role": "user", "content": user},
-        ],
-        max_tokens=120,
-    )
-    raw = (resp.choices[0].message.content or "").strip()
-    line = _sanitize_fallback_plant_line(raw)
-    if line:
-        wc = len(line.split())
-        if wc < 2:
-            logger.warning(
-                "fallback_plant: 단어 수 부족(%d) — 랭킹 힌트 약함",
-                wc,
-            )
-    return line
-
-
-async def build_rag_search_query_with_gpt(
-    description: str,
-    plant_name: str | None,
-    disease_name: str | None,
-    confidence: float | None,
-    fallback_plant_name: str | None = None,
-    *,
-    is_healthy_prob: float | None = None,
-    top_candidates: list[dict[str, Any]] | None = None,
-    plant_filter_mode: str = "strict",
-) -> str:
-    """
-    RAG 검색어: [plant 또는 relaxed일 때만 fallback_plant] + [disease_name?] + [증상 키워드], 최대 6단어.
-    strict + plant_name 없음: 식물명 없이 증상·질병 키워드만 (fallback을 식물 대체로 사용하지 않음).
-    """
-    _ = confidence  # 시그니처 유지 (프롬프트 확장용)
-    api_key = get_openai_api_key()
-    if not api_key:
-        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
-
-    symptom_tokens: list[str] = []
-    if (description or "").strip():
-        user = prompts.RAG_QUERY_SYMPTOM_USER_TEMPLATE.format(
-            description=description,
-            is_healthy_prob=format_is_healthy_for_prompt(is_healthy_prob),
-            top_candidates=format_top_candidates_for_prompt(top_candidates),
-        )
-        oai = AsyncOpenAI(api_key=api_key)
-        resp = await oai.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": prompts.RAG_QUERY_SYMPTOM_SYSTEM},
-                {"role": "user", "content": user},
-            ],
-            max_tokens=256,
-        )
-        raw = (resp.choices[0].message.content or "").strip()
-        symptom_tokens = _parse_symptom_keywords_from_llm(raw)
-
-    mode = (plant_filter_mode or "strict").lower()
-    effective_plant = ""
-    if plant_name and str(plant_name).strip():
-        effective_plant = str(plant_name).strip()
-    elif mode != "strict" and fallback_plant_name and str(fallback_plant_name).strip():
-        effective_plant = str(fallback_plant_name).strip()
-
-    parts: list[str] = []
-    if effective_plant:
-        parts.append(effective_plant)
-    if disease_name and str(disease_name).strip():
-        parts.append(str(disease_name).strip())
-    parts.extend(symptom_tokens)
-
-    core = " ".join(parts).strip()
-    words = core.split()
-    if len(words) > RAG_QUERY_MAX_WORDS:
-        words = words[:RAG_QUERY_MAX_WORDS]
-    return " ".join(words)
 
 
 REQUIRED_RAG_FAILED_PHRASE = "제공된 정보만으로는 정확한 진단이 어렵습니다"
