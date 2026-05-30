@@ -88,6 +88,9 @@ temp/
 Plant.id_api_v3.txt
 data/
 
+# NCPMS OpenAPI 매뉴얼 (로컬 참고 자료 — 코드/런타임 비의존)
+npms_api_manual/
+
 # 워킹트리 임시 검증 스크립트 (정식 회귀 도구는 scripts/run_eval.py)
 _validate_*.py
 
