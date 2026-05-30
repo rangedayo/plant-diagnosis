@@ -14,7 +14,6 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
 
-import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.openapi.docs import get_swagger_ui_html
@@ -74,27 +73,21 @@ def register_error_handlers(app: FastAPI) -> None:
 
 
 image_executor = ThreadPoolExecutor(max_workers=4)
-http_client: httpx.AsyncClient | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    global http_client
-    logger.info("앱 시작: httpx AsyncClient · Gemini VisionProvider · LangGraph 초기화")
-    http_client = httpx.AsyncClient()
+    logger.info("앱 시작: Gemini VisionProvider · LangGraph 초기화")
     # [1-5] analyze 경로: GeminiProvider를 lifespan에서 1회 생성해 그래프에 주입 (decision #7 옵션 A).
     vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
-    init_graph(http_client, vision_provider)
+    init_graph(vision_provider)
     yield
-    if http_client is not None:
-        await http_client.aclose()
-        http_client = None
     logger.info("앱 종료")
 
 
 app = FastAPI(
     title="Plant Diagnosis API",
-    description="Plant.id + LangGraph + NCPMS SVC05 RAG (유사도 필터)",
+    description="LangGraph + NCPMS SVC05 RAG (유사도 필터)",
     version="0.3.0",
     openapi_version="3.0.2",  # Swagger file upload UI 정상화를 위한 설정
     lifespan=lifespan,
@@ -119,7 +112,6 @@ async def custom_swagger_ui():
 async def health_check() -> HealthResponse:
     return HealthResponse(
         status="healthy",
-        plant_id_configured=bool(model_utils.get_plant_id_api_key()),
         openai_configured=bool(model_utils.get_openai_api_key()),
     )
 
@@ -129,9 +121,6 @@ async def diagnose(
     file: UploadFile = File(...),
 ) -> DiagnosisResponse:
     """이미지 업로드 후 LangGraph 실행 (analyze→keyword→retrieve→generate)."""
-    if http_client is None:
-        raise HTTPException(status_code=503, detail="HTTP 클라이언트가 준비되지 않았습니다.")
-
     filename = file.filename or ""
     ext = Path(filename).suffix.lower()
     if ext not in ALLOWED_UPLOAD_EXT:
@@ -187,7 +176,6 @@ async def diagnose(
                 "alt_candidates": [],
                 "visual_description": "",
                 "observed_symptoms": [],
-                "description": "",
                 "keywords": [],
                 "rag_query": "",
                 "rag_docs": [],
@@ -196,12 +184,6 @@ async def diagnose(
                 "structured_result": {},
             }
         )
-    except httpx.HTTPStatusError as e:
-        logger.warning("Plant.id HTTP 오류: %s", e)
-        raise HTTPException(
-            status_code=502,
-            detail=f"Plant.id API 오류: {e.response.status_code}",
-        ) from e
     except Exception as e:
         logger.exception("LangGraph 실행 실패")
         raise HTTPException(status_code=502, detail=str(e)) from e

@@ -45,5 +45,4 @@ class HealthResponse(BaseModel):
     """헬스체크 응답"""
 
     status: str
-    plant_id_configured: bool
     openai_configured: bool

@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any, TypedDict
 
 import chromadb
-import httpx
 from langchain_openai import OpenAIEmbeddings
 from langgraph.graph import END, StateGraph
 
@@ -51,8 +50,6 @@ class DiagnosisState(TypedDict, total=False):
     alt_candidates: list[str]
     visual_description: str
     observed_symptoms: list[str]
-    # keyword/generate가 읽는 관찰 묘사 (analyze 브리지가 visual_description 매핑).
-    description: str
     keywords: list[str]
     keywords_en: list[str]
     rag_query: str
@@ -310,28 +307,21 @@ _compiled_graph = None
 
 
 def build_diagnosis_graph(
-    client: httpx.AsyncClient,
     vision_provider: VisionProvider,
 ):
     # [1-5] analyze 경로. make_analyze_node는 6필드 dict만 반환(analyze.py, [1-4]).
-    # 여기서 브리지: description=visual_description + Plant.id 전용 키는 빈 값.
     _analyze = make_analyze_node(vision_provider)
 
     async def analyze_node(state: DiagnosisState) -> dict:
         out = await _analyze(state)
-        bridged = {
-            **out,
-            # decision #1 옵션 A: keyword/generate가 읽는 description에 관찰 묘사 매핑.
-            "description": out["visual_description"],
-        }
         if DEBUG:
             print(
                 "[DEBUG] analyze:",
-                bridged.get("plant_name"),
-                bridged.get("plant_name_korean"),
-                bridged.get("plant_confidence"),
+                out.get("plant_name"),
+                out.get("plant_name_korean"),
+                out.get("plant_confidence"),
             )
-        return bridged
+        return out
 
     async def keyword_node(state: DiagnosisState) -> dict:
         # [1-6] decision #2: keyword_node는 영문 번역 전용으로 축소.
@@ -370,7 +360,6 @@ def build_diagnosis_graph(
         query_ko = (state.get("rag_query") or "").strip()
         query_en = " ".join(state.get("keywords_en") or []).strip()
         pn = state.get("plant_name")
-        dn = state.get("disease_name")
         fn = str(pn).strip() if pn is not None and str(pn).strip() else None
         if DEBUG:
             print("[DEBUG] query_ko:", query_ko)
@@ -381,9 +370,8 @@ def build_diagnosis_graph(
                 flush=True,
             )
         logger.info(
-            "retrieve: plant_name=%r disease_name=%r final_plant_name=%r query_ko=%r query_en=%r",
+            "retrieve: plant_name=%r final_plant_name=%r query_ko=%r query_en=%r",
             pn,
-            dn,
             fn,
             query_ko,
             query_en,
@@ -404,7 +392,7 @@ def build_diagnosis_graph(
             return ret
 
         is_healthy_hint_in_query = any(k in query_ko for k in HEALTHY_KEYWORDS)
-        if is_healthy_hint_in_query and state.get("disease_name") is None:
+        if is_healthy_hint_in_query:
             logger.info(
                 "retrieve: 건강 관련 표현이 검색어에 포함됨 (참고용, RAG는 계속 수행)"
             )
@@ -611,9 +599,7 @@ def build_diagnosis_graph(
             _rd = state.get("rag_docs") or []
             print("[DEBUG] final rag_context doc_count:", len(_rd))
         # [1-7] analyze 6필드 직접 사용 (decision #1 옵션 A). Plant.id 팩트 섹션 폐기.
-        visual_description = (
-            state.get("visual_description") or state.get("description") or ""
-        )
+        visual_description = state.get("visual_description") or ""
         plant_name = state.get("plant_name")
         plant_name_korean = state.get("plant_name_korean")
         plant_confidence = state.get("plant_confidence")
@@ -654,11 +640,10 @@ def build_diagnosis_graph(
 
 
 def init_graph(
-    client: httpx.AsyncClient,
     vision_provider: VisionProvider,
 ) -> None:
     global _compiled_graph
-    _compiled_graph = build_diagnosis_graph(client, vision_provider)
+    _compiled_graph = build_diagnosis_graph(vision_provider)
 
 
 def get_compiled_graph():

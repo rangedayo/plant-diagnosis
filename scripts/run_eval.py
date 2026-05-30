@@ -8,7 +8,7 @@ baseline 측정 스크립트 — test_data/main_eval/labels.json (33장) 기준.
   4. 보조 지표: JSON 파싱 성공률, 케이스별 latency
 
 진단 호출은 HTTP(/diagnose)가 아니라 app.graph.build_diagnosis_graph 를 직접 구동.
-(scripts/eval_rag.py 의 _initial_state / app/main.py:183-199 초기 state 패턴을 그대로 따름)
+(scripts/eval_rag.py 의 _initial_state / app/main.py 초기 state 패턴을 그대로 따름)
 
 app/ 코드는 수정하지 않는다. 결과는 eval/baseline.json (BOM 없는 UTF-8).
 
@@ -28,7 +28,6 @@ import time
 from pathlib import Path
 from typing import Any
 
-import httpx
 from dotenv import load_dotenv
 
 _ROOT = Path(__file__).resolve().parent.parent
@@ -57,7 +56,7 @@ def _load_labels(path: Path) -> list[dict[str, Any]]:
 
 
 def _initial_state(image_bytes: bytes) -> dict[str, Any]:
-    """app/main.py:183-199 / eval_rag._initial_state 와 동일한 초기 state."""
+    """app/main.py / eval_rag._initial_state 와 동일한 초기 state."""
     return {
         "image_bytes": image_bytes,
         "plant_name": None,
@@ -66,7 +65,6 @@ def _initial_state(image_bytes: bytes) -> dict[str, Any]:
         "alt_candidates": [],
         "visual_description": "",
         "observed_symptoms": [],
-        "description": "",
         "keywords": [],
         "rag_query": "",
         "rag_docs": [],
@@ -116,95 +114,94 @@ async def async_main() -> None:
     per_case: list[dict[str, Any]] = []
 
     vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
-    async with httpx.AsyncClient() as client:
-        graph = build_diagnosis_graph(client, vision_provider)
+    graph = build_diagnosis_graph(vision_provider)
 
-        for i, row in enumerate(labels, start=1):
-            image_id = row.get("image_id", "")
-            gt = row.get("ground_truth", {}) or {}
-            gt_plant = gt.get("plant_name_korean")
-            gt_is_healthy = bool(gt.get("is_healthy"))
-            rel = row.get("image_path", "")
-            img_path = _ROOT / rel
+    for i, row in enumerate(labels, start=1):
+        image_id = row.get("image_id", "")
+        gt = row.get("ground_truth", {}) or {}
+        gt_plant = gt.get("plant_name_korean")
+        gt_is_healthy = bool(gt.get("is_healthy"))
+        rel = row.get("image_path", "")
+        img_path = _ROOT / rel
 
-            if not img_path.is_file():
-                print(f"[{i}/{total}] {image_id}: [skip] 이미지 없음 {rel}")
-                per_case.append(
-                    {
-                        "image_id": image_id,
-                        "gt_plant": gt_plant,
-                        "pred_plant_scientific": None,
-                        "pred_plant_ko": None,
-                        "plant_match": None,
-                        "gt_is_healthy": gt_is_healthy,
-                        "pred_status": None,
-                        "pred_is_healthy": None,
-                        "healthy_match": None,
-                        "latency_sec": None,
-                        "json_ok": False,
-                        "error": "image_not_found",
-                    }
-                )
-                continue
-
-            image_bytes = img_path.read_bytes()
-            try:
-                out, latency = await _run_one_case(graph, image_bytes)
-            except Exception as e:  # noqa: BLE001 — baseline은 케이스 실패를 기록만
-                print(f"[{i}/{total}] {image_id}: [error] {type(e).__name__}: {e}")
-                per_case.append(
-                    {
-                        "image_id": image_id,
-                        "gt_plant": gt_plant,
-                        "pred_plant_scientific": None,
-                        "pred_plant_ko": None,
-                        "plant_match": None,
-                        "gt_is_healthy": gt_is_healthy,
-                        "pred_status": None,
-                        "pred_is_healthy": None,
-                        "healthy_match": None,
-                        "latency_sec": None,
-                        "json_ok": False,
-                        "error": f"{type(e).__name__}: {e}",
-                    }
-                )
-                continue
-
-            pred_sci = out.get("plant_name")
-            pred_ko = _scientific_to_korean(pred_sci)
-            sr = out.get("structured_result")
-            json_ok = _struct_json_ok(sr)
-            pred_status = sr.get("status") if isinstance(sr, dict) else None
-            pred_is_healthy = _status_to_is_healthy(pred_status)
-
-            # 식물명: 변환 불가(unmappable) / 일치(correct) / 불일치(wrong)
-            if pred_ko is None:
-                plant_match: bool | None = None  # unmappable
-            else:
-                plant_match = pred_ko == gt_plant
-
-            healthy_match = pred_is_healthy == gt_is_healthy
-
+        if not img_path.is_file():
+            print(f"[{i}/{total}] {image_id}: [skip] 이미지 없음 {rel}")
             per_case.append(
                 {
                     "image_id": image_id,
                     "gt_plant": gt_plant,
-                    "pred_plant_scientific": pred_sci,
-                    "pred_plant_ko": pred_ko,
-                    "plant_match": plant_match,
+                    "pred_plant_scientific": None,
+                    "pred_plant_ko": None,
+                    "plant_match": None,
                     "gt_is_healthy": gt_is_healthy,
-                    "pred_status": pred_status,
-                    "pred_is_healthy": pred_is_healthy,
-                    "healthy_match": healthy_match,
-                    "latency_sec": round(latency, 3),
-                    "json_ok": json_ok,
+                    "pred_status": None,
+                    "pred_is_healthy": None,
+                    "healthy_match": None,
+                    "latency_sec": None,
+                    "json_ok": False,
+                    "error": "image_not_found",
                 }
             )
-            print(
-                f"[{i}/{total}] {image_id}: plant={pred_sci!r}->{pred_ko!r} "
-                f"(gt={gt_plant!r}) status={pred_status!r} "
-                f"gt_healthy={gt_is_healthy} json_ok={json_ok} {latency:.1f}s"
+            continue
+
+        image_bytes = img_path.read_bytes()
+        try:
+            out, latency = await _run_one_case(graph, image_bytes)
+        except Exception as e:  # noqa: BLE001 — baseline은 케이스 실패를 기록만
+            print(f"[{i}/{total}] {image_id}: [error] {type(e).__name__}: {e}")
+            per_case.append(
+                {
+                    "image_id": image_id,
+                    "gt_plant": gt_plant,
+                    "pred_plant_scientific": None,
+                    "pred_plant_ko": None,
+                    "plant_match": None,
+                    "gt_is_healthy": gt_is_healthy,
+                    "pred_status": None,
+                    "pred_is_healthy": None,
+                    "healthy_match": None,
+                    "latency_sec": None,
+                    "json_ok": False,
+                    "error": f"{type(e).__name__}: {e}",
+                }
             )
+            continue
+
+        pred_sci = out.get("plant_name")
+        pred_ko = _scientific_to_korean(pred_sci)
+        sr = out.get("structured_result")
+        json_ok = _struct_json_ok(sr)
+        pred_status = sr.get("status") if isinstance(sr, dict) else None
+        pred_is_healthy = _status_to_is_healthy(pred_status)
+
+        # 식물명: 변환 불가(unmappable) / 일치(correct) / 불일치(wrong)
+        if pred_ko is None:
+            plant_match: bool | None = None  # unmappable
+        else:
+            plant_match = pred_ko == gt_plant
+
+        healthy_match = pred_is_healthy == gt_is_healthy
+
+        per_case.append(
+            {
+                "image_id": image_id,
+                "gt_plant": gt_plant,
+                "pred_plant_scientific": pred_sci,
+                "pred_plant_ko": pred_ko,
+                "plant_match": plant_match,
+                "gt_is_healthy": gt_is_healthy,
+                "pred_status": pred_status,
+                "pred_is_healthy": pred_is_healthy,
+                "healthy_match": healthy_match,
+                "latency_sec": round(latency, 3),
+                "json_ok": json_ok,
+            }
+        )
+        print(
+            f"[{i}/{total}] {image_id}: plant={pred_sci!r}->{pred_ko!r} "
+            f"(gt={gt_plant!r}) status={pred_status!r} "
+            f"gt_healthy={gt_is_healthy} json_ok={json_ok} {latency:.1f}s"
+        )
 
     _aggregate_and_report(total, per_case)
 

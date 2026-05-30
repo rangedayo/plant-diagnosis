@@ -65,7 +65,6 @@ v8 baseline 기준 누적: 식물명 90% → 89.3% / recall 60% → 100% / laten
 - [Gemini](https://aistudio.google.com/) API 키
 - [OpenAI](https://platform.openai.com/) API 키
 - RAG DB 구축·갱신 시: 농촌진흥청 NCPMS **RDA_API_KEY** (공공데이터포털 등에서 발급)
-- (현재) [Plant.id](https://plant.id/) API 키 — `/health` 엔드포인트 호환용. [1-10]에서 완전 제거 예정
 
 ## 설치
 
@@ -90,7 +89,6 @@ pip install -r requirements.txt
 | `GEMINI_API_KEY` | analyze_node — Google AI Studio 모드(fallback). Vertex 미설정 시에만 사용 |
 | `OPENAI_API_KEY` | generate(GPT-4o-mini)·keyword 영문 번역·텍스트 임베딩(Chroma) |
 | `RDA_API_KEY` | `scripts/build_rag_db.py`로 NCPMS 데이터 수집 시에만 |
-| `PLANT_ID_API_KEY` | (legacy) `/health` 응답 호환용. [1-10]에서 제거 |
 
 ### Gemini 인증 — Vertex AI (권장) vs Google AI Studio (fallback)
 

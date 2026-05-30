@@ -10,12 +10,12 @@ export default function ResultView({ result, imageUrl, onReset }: ResultViewProp
   const plantName =
     result.analysis?.plant_name_korean ?? result.analysis?.plant_name ?? "식물 이름 미확인";
   const state = result.structured_result.current_state || "상태 정보 없음";
-  const summary = result.structured_result.summary || "요약 정보 없음";
+  const summary = result.structured_result.summary || "진단 정보가 없어요.";
   const cause = result.structured_result.cause || "원인 정보 없음";
   const actionPlan =
     result.structured_result.action_plan?.length > 0
       ? result.structured_result.action_plan
-      : ["추가 진단이 필요합니다. 다른 각도의 사진으로 다시 시도해 주세요."];
+      : ["환경 점검 후 다시 촬영해 주세요."];
   const statusBadge = result.structured_result.status || "진단 완료";
 
   return (
@@ -105,15 +105,6 @@ export default function ResultView({ result, imageUrl, onReset }: ResultViewProp
           padding-left: 20px;
           color: #2d4630;
           line-height: 1.7;
-        }
-        .meta {
-          margin-top: 12px;
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.86rem;
-          color: #4e7f50;
-          gap: 8px;
-          flex-wrap: wrap;
         }
         .button-row {
           display: grid;

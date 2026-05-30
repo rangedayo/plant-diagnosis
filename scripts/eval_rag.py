@@ -12,7 +12,6 @@ import time
 from pathlib import Path
 from typing import Any
 
-import httpx
 from datasets import Dataset
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
@@ -63,7 +62,6 @@ def _initial_state(image_bytes: bytes) -> dict:
         "alt_candidates": [],
         "visual_description": "",
         "observed_symptoms": [],
-        "description": "",
         "keywords": [],
         "rag_query": "",
         "rag_docs": [],
@@ -82,7 +80,7 @@ def _merged_to_ragas_row(merged: dict[str, Any], expected_disease: str) -> dict[
     rag_docs = merged.get("rag_docs") or []
     if not isinstance(rag_docs, list):
         rag_docs = []
-    desc = (merged.get("description") or "").strip()
+    desc = (merged.get("visual_description") or "").strip()
     rq = (merged.get("rag_query") or "").strip()
     question = desc or rq
     return {
@@ -150,37 +148,36 @@ async def async_main() -> None:
     ragas_ground_truths: list[str] = []
 
     vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
-    async with httpx.AsyncClient() as client:
-        graph = build_diagnosis_graph(client, vision_provider)
+    graph = build_diagnosis_graph(vision_provider)
 
-        for i, row in enumerate(cases):
-            rel = row.get("image_path", "")
-            expected = row.get("expected_disease", "")
-            img_path = _ROOT / rel
-            if not img_path.is_file():
-                print(f"[skip] missing image: {rel}")
-                continue
-            raw = img_path.read_bytes()
-            image_bytes = _image_to_bytes_via_base64(raw)
+    for i, row in enumerate(cases):
+        rel = row.get("image_path", "")
+        expected = row.get("expected_disease", "")
+        img_path = _ROOT / rel
+        if not img_path.is_file():
+            print(f"[skip] missing image: {rel}")
+            continue
+        raw = img_path.read_bytes()
+        image_bytes = _image_to_bytes_via_base64(raw)
 
-            try:
-                h, c, node_sec, rag_row = await _run_one_case(
-                    graph, image_bytes, expected
-                )
-            except Exception as e:
-                print(f"[error] case {i} {rel}: {e}")
-                continue
+        try:
+            h, c, node_sec, rag_row = await _run_one_case(
+                graph, image_bytes, expected
+            )
+        except Exception as e:
+            print(f"[error] case {i} {rel}: {e}")
+            continue
 
-            hits.append(h)
-            answers.append(c)
-            for n in NODE_NAMES:
-                latency_sum[n] += node_sec.get(n, 0.0)
-            n_ok += 1
-            if rag_row:
-                ragas_questions.append(rag_row["question"])
-                ragas_answers.append(rag_row["answer"])
-                ragas_contexts.append(list(rag_row["contexts"]))
-                ragas_ground_truths.append(rag_row["ground_truth"])
+        hits.append(h)
+        answers.append(c)
+        for n in NODE_NAMES:
+            latency_sum[n] += node_sec.get(n, 0.0)
+        n_ok += 1
+        if rag_row:
+            ragas_questions.append(rag_row["question"])
+            ragas_answers.append(rag_row["answer"])
+            ragas_contexts.append(list(rag_row["contexts"]))
+            ragas_ground_truths.append(rag_row["ground_truth"])
 
     if not hits:
         print("[RESULT] no successful runs")
