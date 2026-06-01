@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "phase": "after_phase_b4b (generate에 RAG problem_type 가중 다수결 + cosmetic 건강 회복 가이드)",
+    "measured_at": "2026-06-02T03:05:00+09:00",
+    "source_runs": [
+      "after_phase_b4b_run1.json",
+      "after_phase_b4b_run2.json"
+    ],
+    "baseline_compare": "eval/after_phase_b3_e2e.json (average_2runs) + eval/after_phase_b4a.json",
+    "changed_files": [
+      "app/graph.py (retrieve_node 메타 노출 + _weighted_problem_type_majority/_tag_doc_with_problem_type + generate context_summary 분포)",
+      "app/prompts.py (STRUCTURED_DIAGNOSIS_JSON_SYSTEM: cosmetic 예외/RAG 우세타입 매핑/plant_confidence 강화)"
+    ],
+    "regression_gate_5pp": {
+      "max_abs_delta_pp": 1.51,
+      "pass": true,
+      "note": "plant_korean -1.45pp, accuracy -1.51pp, precision -0.50pp 모두 5pp 이내"
+    },
+    "primary_gate_fp": {
+      "target": "FP 17 -> 12 이하",
+      "result_avg": 17.5,
+      "pass": false,
+      "note": "FP 불변(17/18, 평균 17.5 = B-4a 17.5와 동일). 기전 순효과 0."
+    },
+    "recall_gate": {
+      "target": ">= 0.60",
+      "result": 1.0,
+      "pass": true
+    },
+    "verdict": "PRIMARY GATE FAIL (FP). recall·회귀 PASS. spec §게이트: FP>12 → revert 금지, 잔존 FP 분석 후 [B-4c]/단계 B' 결정 자리로.",
+    "root_cause": "FP 케이스의 top_3 가중 다수결이 'tie' 지배(run1 12/17, run2 11/18). cosmetic 증상 쿼리는 top_3 카드가 abiotic/frame/nutrient/env/general로 근소 분산 → 5% tie 임계로 majority=tie. 'tie/general/frame → 보수 판단' 가이드를 generate가 여전히 '병해 의심'으로 해석. '병해 금지' 룰은 명확한 abiotic/env/nutrient 우세에서만 발동하는데 그 케이스가 희소(run당 1건)."
+  },
+  "average_2runs": {
+    "plant_korean_accuracy": 0.8688,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.2223,
+      "accuracy": 0.4697,
+      "tp": 5.0,
+      "fp": 17.5,
+      "tn": 10.5,
+      "fn": 0.0
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 19.688
+  },
+  "run1": {
+    "plant_korean_accuracy": 0.871,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.2273,
+      "accuracy": 0.4848,
+      "tp": 5,
+      "fp": 17,
+      "tn": 11,
+      "fn": 0
+    },
+    "status_distribution": {
+      "병해 의심": 21,
+      "건강": 11,
+      "영양 부족": 1
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 19.698
+  },
+  "run2": {
+    "plant_korean_accuracy": 0.8667,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.2174,
+      "accuracy": 0.4545,
+      "tp": 5,
+      "fp": 18,
+      "tn": 10,
+      "fn": 0
+    },
+    "status_distribution": {
+      "병해 의심": 23,
+      "건강": 10
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 19.678
+  },
+  "vs_after_phase_b3": {
+    "plant_korean_accuracy": { "b3": 0.8833, "b4b": 0.8688, "delta_pp": -1.45 },
+    "precision": { "b3": 0.2273, "b4b": 0.2223, "delta_pp": -0.5 },
+    "recall": { "b3": 1.0, "b4b": 1.0, "delta_pp": 0.0 },
+    "accuracy": { "b3": 0.4848, "b4b": 0.4697, "delta_pp": -1.51 },
+    "fp": { "b3": 17, "b4b": 17.5, "delta": 0.5 },
+    "json_parse_success_rate": { "b3": 1.0, "b4b": 1.0, "delta_pp": 0.0 },
+    "latency_sec_mean": { "b3": 20.917, "b4b": 19.688, "delta_s": -1.229 }
+  },
+  "vs_after_phase_b4a": {
+    "note": "B-4a는 측정 전용(generate 무변경). B-4b는 동일 메트릭 → 기전(problem_type 노출+cosmetic 가이드)의 순효과가 0임을 직접 입증.",
+    "plant_korean_accuracy": { "b4a": 0.8817, "b4b": 0.8688, "delta_pp": -1.29 },
+    "precision": { "b4a": 0.2223, "b4b": 0.2223, "delta_pp": 0.0 },
+    "accuracy": { "b4a": 0.4697, "b4b": 0.4697, "delta_pp": 0.0 },
+    "fp": { "b4a": 17.5, "b4b": 17.5, "delta": 0.0 }
+  },
+  "fp_residual_analysis": {
+    "fp_count_avg": 17.5,
+    "fp_status_distribution_run1": { "병해 의심": 16, "영양 부족": 1 },
+    "fp_status_distribution_run2": { "병해 의심": 18 },
+    "fp_top3_majority_run1": { "tie": 12, "disease": 2, "abiotic": 1, "general": 2 },
+    "fp_top3_majority_run2": { "tie": 11, "disease": 4, "abiotic": 1, "general": 1, "pest": 1 },
+    "observed_symptoms_empty_run1": 0,
+    "observed_symptoms_empty_run2": 0,
+    "interpretation": [
+      "tie 지배(run1 12, run2 11): 가중 다수결이 cosmetic 쿼리에서 명확한 우세 타입을 못 만든다. top_3가 abiotic/frame/nutrient/env로 sim 근소차 분산.",
+      "disease 우세 FP(run1 2, run2 4): RAG가 실제로 disease 카드를 top에 올림 → 프롬프트상 '병해 의심 정당'. retrieval 신호 자체가 disease 쪽으로 기운 케이스.",
+      "abiotic 명확 우세 FP(run당 1): '병해 금지' 룰이 발동해야 할 케이스인데 1건뿐 → 회복 여지 자체가 작다.",
+      "공통: observed_symptoms empty=0 (analyze 무변경 → [B-4a]와 동일). 증상은 실재, 대부분 잎끝/가장자리 갈변(cosmetic abiotic).",
+      "[B-4c] 신호: (a) tie 임계(5%) 완화 또는 top_1 problem_type 기반으로 전환, (b) 'tie + cosmetic 증상 → 건강' 명시 룰 추가, (c) analyze 측 cosmetic abiotic 임계([1-3] v5), (d) disease 우세 FP는 retrieval/코퍼스 단(단계 B') 문제."
+    ]
+  },
+  "fp_analysis_run1": {
+    "fp_count": 17,
+    "fp_status_distribution": { "병해 의심": 16, "영양 부족": 1 },
+    "fp_observed_symptoms_buckets": { "empty": 0, "non_empty": 17 },
+    "fp_top3_problem_type_majority": { "tie": 12, "disease": 2, "abiotic": 1, "general": 2 }
+  },
+  "fp_analysis_run2": {
+    "fp_count": 18,
+    "fp_status_distribution": { "병해 의심": 18 },
+    "fp_observed_symptoms_buckets": { "empty": 0, "non_empty": 18 },
+    "fp_top3_problem_type_majority": { "tie": 11, "disease": 4, "abiotic": 1, "general": 1, "pest": 1 }
+  }
+}

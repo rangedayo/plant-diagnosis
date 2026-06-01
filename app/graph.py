@@ -59,6 +59,10 @@ class DiagnosisState(TypedDict, total=False):
     rag_failed: bool  # True = 벡터 DB/API/예외 등 시스템 실패만
     rag_no_docs: bool  # True = 검색은 했으나 통과 문서 0건 (또는 검색 미수행)
     rag_weak_evidence: bool
+    # [B-4b] generate가 RAG problem_type 분포를 활용하도록 메타 노출
+    rag_metas: list[dict[str, Any]]  # 필터 통과 문서의 메타(problem_type 포함)
+    rag_sims: list[float]  # 필터 통과 문서의 raw cosine (rag_metas와 정렬 일치)
+    top_3_problem_type_weighted: dict[str, Any]  # top_3 sim 가중 다수결
     structured_result: dict[str, Any]
 
 
@@ -289,6 +293,61 @@ def _apply_plant_filter_after_similarity(
             det,
         )
     return rd, rm, rr, False
+
+
+def _weighted_problem_type_majority(
+    metas: list[dict[str, Any]], sims: list[float]
+) -> dict[str, Any]:
+    """top_N의 problem_type을 raw cosine으로 가중합 다수결.
+
+    main_rag 문서는 problem_type 메타가 없어(빈 문자열) 가중에서 제외된다
+    (eval_retrieval 일관성). 1위·2위 가중합 차이가 전체의 5% 미만이면 'tie'.
+
+    Returns:
+        {
+            "majority": "abiotic"|"disease"|"nutrient"|"env"|"pest"
+                        |"general"|"frame"|"tie",
+            "distribution": {"abiotic": 0.42, ...},  # 가중합 정규화
+            "top_problem_type": "abiotic"|"" (top_1 카드의 problem_type),
+        }
+    """
+    weights: dict[str, float] = {}
+    for meta, sim in zip(metas or [], sims or []):
+        pt = str((meta or {}).get("problem_type") or "").strip()
+        if not pt:
+            continue
+        weights[pt] = weights.get(pt, 0.0) + max(float(sim), 0.0)
+
+    if not weights:
+        return {"majority": "tie", "distribution": {}, "top_problem_type": ""}
+
+    total = sum(weights.values()) or 1.0
+    distribution = {k: round(v / total, 4) for k, v in weights.items()}
+
+    sorted_weights = sorted(weights.items(), key=lambda x: -x[1])
+    if len(sorted_weights) == 1:
+        majority = sorted_weights[0][0]
+    elif sorted_weights[0][1] - sorted_weights[1][1] < 0.05 * total:
+        majority = "tie"
+    else:
+        majority = sorted_weights[0][0]
+
+    top_pt = str((metas[0] or {}).get("problem_type") or "") if metas else ""
+    return {
+        "majority": majority,
+        "distribution": distribution,
+        "top_problem_type": top_pt,
+    }
+
+
+def _tag_doc_with_problem_type(doc: str, meta: dict[str, Any] | None) -> str:
+    """카드 본문 앞에 [problem_type] prefix를 박아 generate에 타입 노출 (결정 1C)."""
+    pt = str((meta or {}).get("problem_type") or "").strip()
+    if not pt:
+        return doc
+    if doc.startswith(f"[{pt}]"):
+        return doc  # 중복 방지
+    return f"[{pt}] {doc}"
 
 
 _compiled_graph = None
@@ -571,8 +630,24 @@ def build_diagnosis_graph(
             rag_no_docs,
             rag_weak,
         )
+        # [B-4b] problem_type 가중 다수결 (top_3, raw cosine 가중) + 카드 prefix
+        top_3_pt_weighted = _weighted_problem_type_majority(
+            filtered_metas[:3], filtered_sims[:3]
+        )
+        docs_tagged = [
+            _tag_doc_with_problem_type(doc, meta)
+            for doc, meta in zip_longest(filtered_docs, filtered_metas, fillvalue=None)
+            if doc is not None
+        ]
+        logger.info(
+            "retrieve: top_3 problem_type 가중 다수결=%s",
+            top_3_pt_weighted,
+        )
         ret = {
-            "rag_docs": filtered_docs,
+            "rag_docs": docs_tagged,
+            "rag_metas": list(filtered_metas or []),
+            "rag_sims": list(filtered_sims or []),
+            "top_3_problem_type_weighted": top_3_pt_weighted,
             "sick_keys": clean_keys,
             "rag_doc_sick_pairs": pairs,
             "rag_failed": rag_failed,
@@ -596,6 +671,18 @@ def build_diagnosis_graph(
         symptoms = state.get("observed_symptoms") or []
         alt_str = ", ".join(alt) if alt else "없음"
         symptoms_str = ", ".join(symptoms) if symptoms else "관찰된 이상 없음"
+        # [B-4b] RAG problem_type 가중 다수결 분포를 generate에 노출 (결정 1C)
+        top_3_pt = state.get("top_3_problem_type_weighted") or {}
+        majority = str(top_3_pt.get("majority") or "tie")
+        dist = top_3_pt.get("distribution") or {}
+        top_pt = str(top_3_pt.get("top_problem_type") or "")
+        dist_str = (
+            ", ".join(
+                f"{k} {v:.2f}"
+                for k, v in sorted(dist.items(), key=lambda x: -x[1])
+            )
+            or "없음"
+        )
         context_summary = (
             f"묘사:\n{visual_description}\n\n"
             f"[관찰 정보]\n"
@@ -603,7 +690,11 @@ def build_diagnosis_graph(
             f"- 식물명(통명): {plant_name_korean}\n"
             f"- 식별 신뢰도: {plant_confidence}\n"
             f"- 대안 후보: {alt_str}\n"
-            f"- 관찰된 증상: {symptoms_str}\n"
+            f"- 관찰된 증상: {symptoms_str}\n\n"
+            f"[검색된 자료의 타입 분포 (top_3 sim 가중)]\n"
+            f"- 우세 타입: {majority}\n"
+            f"- 1위 카드 타입: {top_pt}\n"
+            f"- 분포: {dist_str}\n"
         )
         rag_chunks = "\n\n".join(state.get("rag_docs") or [])
         structured = await model_utils.generate_structured_diagnosis_with_gpt(
