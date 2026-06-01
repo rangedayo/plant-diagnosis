@@ -23,16 +23,16 @@ logger = logging.getLogger("plant_api")
 
 DEBUG = True
 
-# multi-RAG: main_rag 중심(70%), ncpms 보조(30%) — 합 10 기준 (main 6~7, ncpms 3)
-MAIN_TOP_K = 7
-NCPMS_TOP_K = 3
+# multi-RAG ([B-2]): b_dataset 메인(top_k=7) + main_rag 보조(top_k=3) — 합 10 기준
+MAIN_TOP_K = 3              # 비중 재조정: main 보조
+B_DATASET_TOP_K = 7         # 비중 재조정: b_dataset 메인
 # 검색 후 필터: cosine similarity(임베딩) 기준
 RAG_MIN_COSINE_SIMILARITY = 0.65
 # 필터 통과 문서만 있을 때, 최고 유사도가 이 값 미만이면 '약한 근거' 안내 (raw cosine)
 RAG_WEAK_MAX_SIMILARITY = 0.72
 # 랭킹 가중치
 UC_IPM_SOLUTION_SIM_PENALTY = 0.85
-NCPMS_SIM_WEIGHT = 0.8
+B_DATASET_SIM_WEIGHT = 1.0  # 페널티 제거 (가설 직격). 상수 유지로 명명 일관성 + 향후 조정 여지
 PLANT_NAME_MATCH_BOOST = 0.1
 GENERIC_DOC_PENALTY = 0.9
 # [1-6] keyword_node가 RAG 쿼리에 쓰는 observed_symptoms 명사구 최대 개수.
@@ -132,12 +132,12 @@ def _merge_similarity_for_ranking(
     *,
     rag_source: str,
 ) -> float:
-    """merge·정렬용: NCPMS 가중·UC_IPM solution 구간 페널티."""
+    """merge·정렬용: b_dataset 가중·UC_IPM solution 구간 페널티."""
     s = float(raw_cosine)
-    if rag_source == "ncpms":
-        s *= NCPMS_SIM_WEIGHT
+    if rag_source == "b_dataset":
+        s *= B_DATASET_SIM_WEIGHT
         logger.debug(
-            "rank: ncpms sim weight raw=%.4f -> %.4f",
+            "rank: b_dataset sim weight raw=%.4f -> %.4f",
             raw_cosine,
             s,
         )
@@ -153,37 +153,37 @@ def _merge_similarity_for_ranking(
 
 
 def _merge_rag_triples(
-    ncpms_triples: list[tuple[str, dict[str, Any], float]],
+    b_dataset_triples: list[tuple[str, dict[str, Any], float]],
     main_triples: list[tuple[str, dict[str, Any], float]],
     *,
-    ncpms_top_k: int,
+    b_dataset_top_k: int,
     main_top_k: int,
 ) -> tuple[list[str], list[dict[str, Any]], list[float], list[float]]:
     """
     소스별 raw cosine 정렬 → merge_sim(가중) 재정렬 후
-    ncpms 상위 ncpms_top_k + main 상위 main_top_k를 먼저 넣고 나머지 풀을 합친 뒤
+    b_dataset 상위 b_dataset_top_k + main 상위 main_top_k를 먼저 넣고 나머지 풀을 합친 뒤
     merge_sim 기준으로 정렬, 문서 기준 중복 제거.
     반환: docs, metas, raw_cosine 리스트, merge_sim 리스트(동일 순서).
     """
-    n_enriched: list[tuple[str, dict[str, Any], float, float]] = []
-    for doc, meta, raw in ncpms_triples:
-        rs = str(meta.get("_rag_source") or "ncpms")
+    b_enriched: list[tuple[str, dict[str, Any], float, float]] = []
+    for doc, meta, raw in b_dataset_triples:
+        rs = str(meta.get("_rag_source") or "b_dataset")
         ms = _merge_similarity_for_ranking(raw, meta, rag_source=rs)
-        n_enriched.append((doc, meta, raw, ms))
+        b_enriched.append((doc, meta, raw, ms))
     m_enriched: list[tuple[str, dict[str, Any], float, float]] = []
     for doc, meta, raw in main_triples:
         rs = str(meta.get("_rag_source") or "main")
         ms = _merge_similarity_for_ranking(raw, meta, rag_source=rs)
         m_enriched.append((doc, meta, raw, ms))
 
-    n_sorted = sorted(n_enriched, key=lambda t: -t[3])
+    b_sorted = sorted(b_enriched, key=lambda t: -t[3])
     m_sorted = sorted(m_enriched, key=lambda t: -t[3])
-    take_n = min(ncpms_top_k, len(n_sorted))
+    take_b = min(b_dataset_top_k, len(b_sorted))
     take_m = min(main_top_k, len(m_sorted))
-    ncpms_selected = n_sorted[:take_n]
+    b_selected = b_sorted[:take_b]
     main_selected = m_sorted[:take_m]
-    remaining_pool = n_sorted[take_n:] + m_sorted[take_m:]
-    pool = list(ncpms_selected) + list(main_selected) + list(remaining_pool)
+    remaining_pool = b_sorted[take_b:] + m_sorted[take_m:]
+    pool = list(b_selected) + list(main_selected) + list(remaining_pool)
     pool.sort(key=lambda t: -t[3])
     seen: set[str] = set()
     merged_docs: list[str] = []
@@ -199,33 +199,21 @@ def _merge_rag_triples(
         merged_raw.append(raw)
         merged_merge_sims.append(ms)
     logger.info(
-        "retrieve: merge_rag ncpms_top_k=%d main_top_k=%d merged=%d (가중 후 정렬)",
-        take_n,
+        "retrieve: merge_rag b_dataset_top_k=%d main_top_k=%d merged=%d (가중 후 정렬)",
+        take_b,
         take_m,
         len(merged_docs),
     )
     return merged_docs, merged_metas, merged_raw, merged_merge_sims
 
 
-def _doc_first_token_as_crop(doc: str) -> str:
-    """SVC05 문단은 보통 작물명(cropName)이 첫 토큰."""
-    t = (doc or "").strip()
-    if not t:
-        return ""
-    return t.split()[0]
-
-
 def _doc_plant_for_ranking(doc: str, meta: dict[str, Any]) -> str:
-    """main_rag는 메타 plant_name, NCPMS는 작물명(첫 토큰), 없으면 generic."""
+    """main_rag는 메타 plant_name, 그 외(b_dataset 등)는 plant_name 메타 없음 → generic."""
     m = meta or {}
     pn = (m.get("plant_name") or "").strip()
     if pn:
         return pn
-    if m.get("_rag_source") == "ncpms" or (m.get("sickKey") or "").strip():
-        return _doc_first_token_as_crop(doc) or "generic"
-    if m.get("source") in ("UC_IPM", "HOUSEPLANT"):
-        return "generic"
-    return _doc_first_token_as_crop(doc) or "generic"
+    return "generic"
 
 
 def _final_rank_score(
@@ -415,33 +403,34 @@ def build_diagnosis_graph(
             str | None,
             str | None,
         ]:
-            docs_ncpms, metas_ncpms, sims_ncpms, err_ncpms = _chroma_query_sync(
-                query_ko, db_path, NCPMS_TOP_K, "ncpms_rag"
-            )
+            # b_dataset·main 모두 영문 코퍼스 → 영문 쿼리 우선(query_ko 폴백)
             mq = (query_en or query_ko).strip()
+            docs_b, metas_b, sims_b, err_b = _chroma_query_sync(
+                mq, db_path, B_DATASET_TOP_K, "b_dataset_rag"
+            )
             docs_main, metas_main, sims_main, err_main = _chroma_query_sync(
                 mq, db_path, MAIN_TOP_K, "main_rag"
             )
             return (
-                docs_ncpms,
-                metas_ncpms,
-                sims_ncpms,
+                docs_b,
+                metas_b,
+                sims_b,
                 docs_main,
                 metas_main,
                 sims_main,
-                err_ncpms,
+                err_b,
                 err_main,
             )
 
         try:
             (
-                docs_ncpms,
-                metas_ncpms,
-                sims_ncpms,
+                docs_b,
+                metas_b,
+                sims_b,
                 docs_main,
                 metas_main,
                 sims_main,
-                err_ncpms,
+                err_b,
                 err_main,
             ) = await loop.run_in_executor(None, _run)
         except Exception:
@@ -455,11 +444,11 @@ def build_diagnosis_graph(
                 "rag_weak_evidence": False,
             }
 
-        if err_ncpms:
-            logger.warning("retrieve: ncpms_rag 시스템 오류: %s", err_ncpms)
+        if err_b:
+            logger.warning("retrieve: b_dataset_rag 시스템 오류: %s", err_b)
         if err_main:
             logger.warning("retrieve: main_rag 시스템 오류: %s", err_main)
-        rag_system_failed = bool(err_ncpms and err_main)
+        rag_system_failed = bool(err_b and err_main)
         if rag_system_failed:
             logger.error(
                 "retrieve: 두 컬렉션 모두 검색 실패 → rag_failed=True (시스템 오류)",
@@ -474,21 +463,21 @@ def build_diagnosis_graph(
             }
 
         if DEBUG:
-            print("[DEBUG] ncpms_docs:", len(docs_ncpms))
+            print("[DEBUG] b_docs:", len(docs_b))
             print("[DEBUG] main_docs:", len(docs_main))
 
-        t_ncpms = _tag_triples_rag_source(
-            _triples_from_chroma(docs_ncpms, metas_ncpms, sims_ncpms),
-            "ncpms",
+        t_b = _tag_triples_rag_source(
+            _triples_from_chroma(docs_b, metas_b, sims_b),
+            "b_dataset",
         )
         t_main = _tag_triples_rag_source(
             _triples_from_chroma(docs_main, metas_main, sims_main),
             "main",
         )
         docs, metas, raw_sims, merge_sims = _merge_rag_triples(
-            t_ncpms,
+            t_b,
             t_main,
-            ncpms_top_k=NCPMS_TOP_K,
+            b_dataset_top_k=B_DATASET_TOP_K,
             main_top_k=MAIN_TOP_K,
         )
 

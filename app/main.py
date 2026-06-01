@@ -87,7 +87,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(
     title="Plant Diagnosis API",
-    description="LangGraph + NCPMS SVC05 RAG (유사도 필터)",
+    description="LangGraph + b_dataset/main RAG (유사도 필터)",
     version="0.3.0",
     openapi_version="3.0.2",  # Swagger file upload UI 정상화를 위한 설정
     lifespan=lifespan,
