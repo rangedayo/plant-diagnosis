@@ -31,12 +31,19 @@ from typing import Any
 from dotenv import load_dotenv
 
 _ROOT = Path(__file__).resolve().parent.parent
+_SCRIPTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(_ROOT))
+sys.path.insert(0, str(_SCRIPTS))  # eval_retrieval 재사용 ([B-4a] 경우 2)
 
 from app import prompts  # noqa: E402
-from app.graph import build_diagnosis_graph  # noqa: E402
+from app.graph import _vector_db_path, build_diagnosis_graph  # noqa: E402
 from app.vision.gemini import GeminiProvider  # noqa: E402
 from test_data.labeling_vocab import PLANT_NAME_KO_MAP  # noqa: E402
+
+# [B-4a] FP 본질 진단 측정 — graph.py 무변경 원칙(경우 2):
+# state엔 rag_docs(텍스트)만 박히고 메타(card_id·problem_type)는 누락되므로
+# [B-3] eval_retrieval._retrieve_top_n 을 동일 쿼리로 재호출해 top_3 메타를 얻는다.
+from eval_retrieval import _retrieve_top_n  # noqa: E402
 
 LABELS_PATH = _ROOT / "test_data" / "main_eval" / "labels.json"
 # 기본은 baseline.json. RUN_EVAL_OUT로 출력 파일명을 바꿔 baseline 덮어쓰기 방지
@@ -93,6 +100,106 @@ def _struct_json_ok(structured_result: Any) -> bool:
     return all(k in structured_result for k in STRUCT_REQUIRED_KEYS)
 
 
+# ───────────────────────────── [B-4a] FP 진단 측정 ─────────────────────────────
+# read-only 추가. 본 라벨링 계산 무변경. graph.py 무변경(경우 2: 동일 쿼리 재검색).
+
+def _query_for_retrieval(out: dict[str, Any]) -> str:
+    """graph retrieve_node와 동일한 검색 쿼리 재구성: ``(query_en or query_ko)``.
+
+    graph.py:407 ``mq = (query_en or query_ko).strip()`` 거울.
+    query_en = keyword_node가 state에 박은 keywords_en, query_ko = rag_query.
+    """
+    query_en = " ".join(out.get("keywords_en") or []).strip()
+    query_ko = (out.get("rag_query") or "").strip()
+    return query_en or query_ko
+
+
+def _build_top_3_rag(out: dict[str, Any], db_path: str) -> list[dict[str, Any]]:
+    """RAG retrieve 상위 3개 카드 메타 (eval_retrieval._retrieve_top_n 재사용)."""
+    query = _query_for_retrieval(out)
+    if not query:
+        return []
+    top_10 = _retrieve_top_n(query, db_path)
+    return [
+        {
+            "card_id": item.get("card_id") or "",
+            "problem_type": item.get("problem_type") or "",
+            "source": item.get("source") or "",
+            "title": item.get("title") or "",
+            "sim": item.get("sim", 0.0),
+            # eval_retrieval은 b_dataset/main 구분을 source 키로 통합 (프롬프트 §2 허용)
+            "rag_source": item.get("source") or "",
+        }
+        for item in top_10[:3]
+    ]
+
+
+def _count_by_key(cases: list[dict[str, Any]], key: str) -> dict[str, int]:
+    """FP 케이스를 특정 키 값으로 집계 (None → "(none)")."""
+    out: dict[str, int] = {}
+    for c in cases:
+        v = c.get(key)
+        label = str(v) if v not in (None, "") else "(none)"
+        out[label] = out.get(label, 0) + 1
+    return out
+
+
+def _majority_problem_type(top_3_rag: list[dict[str, Any]] | None) -> str:
+    """top_3 카드의 problem_type 다수결. 동률→"tie", 비어있음→"(empty)"."""
+    types = [str(t.get("problem_type") or "") for t in (top_3_rag or [])]
+    types = [t for t in types if t]
+    if not types:
+        return "(empty)"
+    counts: dict[str, int] = {}
+    for t in types:
+        counts[t] = counts.get(t, 0) + 1
+    top = max(counts.values())
+    leaders = [t for t, n in counts.items() if n == top]
+    return "tie" if len(leaders) > 1 else leaders[0]
+
+
+def _count_top3_majority(fp_cases: list[dict[str, Any]]) -> dict[str, int]:
+    """각 FP 케이스의 top_3 problem_type 다수결 분포 집계."""
+    out: dict[str, int] = {}
+    for c in fp_cases:
+        maj = _majority_problem_type(c.get("top_3_rag"))
+        out[maj] = out.get(maj, 0) + 1
+    return out
+
+
+def _build_fp_analysis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """FP 17건 분포 분석 — [B-4a] 핵심 산출물. FP 정의는 본 e2e와 동일.
+
+    gt_is_healthy=True AND pred_is_healthy is False (None=skip/error 제외).
+    """
+    fp_cases = [
+        c
+        for c in per_case
+        if c.get("gt_is_healthy") and c.get("pred_is_healthy") is False
+    ]
+    return {
+        "fp_count": len(fp_cases),
+        "fp_status_distribution": _count_by_key(fp_cases, "pred_status"),
+        "fp_observed_symptoms_buckets": {
+            "empty": sum(1 for c in fp_cases if not c.get("observed_symptoms")),
+            "non_empty": sum(1 for c in fp_cases if c.get("observed_symptoms")),
+        },
+        "fp_top3_problem_type_majority": _count_top3_majority(fp_cases),
+        "fp_observed_symptoms_samples": [
+            {
+                "image_id": c["image_id"],
+                "gt_plant": c["gt_plant"],
+                "pred_status": c["pred_status"],
+                "observed_symptoms": c.get("observed_symptoms") or [],
+                "top_3_problem_types": [
+                    str(t.get("problem_type") or "") for t in (c.get("top_3_rag") or [])
+                ],
+            }
+            for c in fp_cases
+        ],
+    }
+
+
 async def _run_one_case(graph, image_bytes: bytes) -> tuple[dict[str, Any], float]:
     """그래프 1회 구동. (최종 state, latency_sec) 반환."""
     start = time.perf_counter()
@@ -115,6 +222,7 @@ async def async_main() -> None:
 
     vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
     graph = build_diagnosis_graph(vision_provider)
+    db_path = str(_vector_db_path())  # [B-4a] top_3_rag 재검색용
 
     for i, row in enumerate(labels, start=1):
         image_id = row.get("image_id", "")
@@ -139,6 +247,8 @@ async def async_main() -> None:
                     "healthy_match": None,
                     "latency_sec": None,
                     "json_ok": False,
+                    "observed_symptoms": [],
+                    "top_3_rag": [],
                     "error": "image_not_found",
                 }
             )
@@ -162,6 +272,8 @@ async def async_main() -> None:
                     "healthy_match": None,
                     "latency_sec": None,
                     "json_ok": False,
+                    "observed_symptoms": [],
+                    "top_3_rag": [],
                     "error": f"{type(e).__name__}: {e}",
                 }
             )
@@ -195,6 +307,9 @@ async def async_main() -> None:
                 "healthy_match": healthy_match,
                 "latency_sec": round(latency, 3),
                 "json_ok": json_ok,
+                # [B-4a] FP 진단 측정 신규 키 (read-only)
+                "observed_symptoms": list(out.get("observed_symptoms") or []),
+                "top_3_rag": _build_top_3_rag(out, db_path),
             }
         )
         print(
@@ -276,6 +391,7 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         "json_parse_success_rate": json_rate,
         "json_parse_failed_ids": json_fail_ids,
         "latency_sec": lat,
+        "fp_analysis": _build_fp_analysis(per_case),  # [B-4a] FP 17건 본질 진단
         "per_case": per_case,
     }
 
@@ -310,6 +426,13 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     if json_fail_ids:
         print(f"  JSON 실패 케이스: {json_fail_ids}")
     print(f"  latency(s): mean={lat['mean']} min={lat['min']} max={lat['max']}")
+
+    fpa = result["fp_analysis"]
+    print("\n[FP 분석] ([B-4a])")
+    print(f"  FP={fpa['fp_count']}")
+    print(f"  status 분포: {fpa['fp_status_distribution']}")
+    print(f"  observed_symptoms: {fpa['fp_observed_symptoms_buckets']}")
+    print(f"  top_3 problem_type 다수결: {fpa['fp_top3_problem_type_majority']}")
     print("\n저장:", OUTPUT_PATH)
 
 
