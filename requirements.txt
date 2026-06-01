@@ -8,6 +8,8 @@ pydantic
 python-dotenv
 Pillow
 pdfplumber
+pypdf
+beautifulsoup4
 python-multipart
 npm
 ragas
