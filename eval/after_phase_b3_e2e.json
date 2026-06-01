@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "phase": "after_phase_b3 (B-3 e2e 본 측정)",
+    "measured_at": "2026-06-01T23:57:42.816860+09:00",
+    "source_runs": [
+      "after_phase_b3_e2e_run1.json",
+      "after_phase_b3_e2e_run2.json"
+    ],
+    "baseline_compare": "eval/after_phase1.json (average_2runs)",
+    "regression_gate_5pp": {
+      "max_abs_delta_pp": 1.52,
+      "pass": true
+    },
+    "note": "b_dataset_rag 교체 후 33장 e2e 2회. FP ~17 불변 — generate 본질(메모리 fp-root-cause-generate-not-analyze) 확증. 변수 격리: graph.py·main_rag·NCPMS 미변경. 시스템 에러 0, json 1.0."
+  },
+  "average_2runs": {
+    "plant_korean_accuracy": 0.8833,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.2273,
+      "accuracy": 0.4848,
+      "tp": 5,
+      "fp": 17,
+      "tn": 11,
+      "fn": 0
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 20.917
+  },
+  "run1": {
+    "plant_korean_accuracy": 0.9,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.22727272727272727,
+      "accuracy": 0.48484848484848486,
+      "tp": 5,
+      "fp": 17,
+      "tn": 11,
+      "fn": 0
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 20.783
+  },
+  "run2": {
+    "plant_korean_accuracy": 0.8666666666666667,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.22727272727272727,
+      "accuracy": 0.48484848484848486,
+      "tp": 5,
+      "fp": 17,
+      "tn": 11,
+      "fn": 0
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 21.051
+  },
+  "vs_after_phase1": {
+    "plant_korean_accuracy": {
+      "phase1": 0.8858,
+      "b3": 0.8833,
+      "delta_pp": -0.25
+    },
+    "precision": {
+      "phase1": 0.2327,
+      "b3": 0.2273,
+      "delta_pp": -0.54
+    },
+    "recall": {
+      "phase1": 1.0,
+      "b3": 1.0,
+      "delta_pp": 0.0
+    },
+    "accuracy": {
+      "phase1": 0.5,
+      "b3": 0.4848,
+      "delta_pp": -1.52
+    },
+    "json_parse_success_rate": {
+      "phase1": 1.0,
+      "b3": 1.0,
+      "delta_pp": 0.0
+    },
+    "latency_sec_mean": {
+      "phase1": 19.051,
+      "b3": 20.917,
+      "delta_s": 1.866
+    }
+  }
+}

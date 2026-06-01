@@ -1,0 +1,987 @@
+{
+  "measured_at": "2026-06-02T00:06:43.239788+09:00",
+  "metrics": {
+    "hit_rate_at_10": 1.0,
+    "mrr": 0.9,
+    "cases_evaluated": 10,
+    "cases_excluded": 0
+  },
+  "per_case": [
+    {
+      "case_id": "ext_001",
+      "symptom_en": "Soil stays constantly wet and leaves are turning yellow",
+      "primary_problem_type": "abiotic",
+      "acceptable_card_ids": [
+        "mobot_indoor_002",
+        "mobot_herb_003",
+        "psu_ucanr_014",
+        "psu_ucanr_020",
+        "mobot_indoor_006",
+        "psu_ucanr_010"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "psu_ucanr_017",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8607,
+          "title": "Small leaves"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_ucanr_014",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.852,
+          "title": "Yellowing leaves"
+        },
+        {
+          "rank": 3,
+          "card_id": "psu_ucanr_019",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8447,
+          "title": "Wilting plant"
+        },
+        {
+          "rank": 4,
+          "card_id": "mobot_indoor_005",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8425,
+          "title": "Salt build-up"
+        },
+        {
+          "rank": 5,
+          "card_id": "psu_ucanr_016",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8417,
+          "title": "Brown leaf tips • Chemical"
+        },
+        {
+          "rank": 6,
+          "card_id": "mobot_indoor_002",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8415,
+          "title": "Overwatering"
+        },
+        {
+          "rank": 7,
+          "card_id": "mobot_indoor_021",
+          "source": "mobot_indoor",
+          "problem_type": "nutrient",
+          "sim": 0.8332,
+          "title": "Nitrogen deficiency"
+        },
+        {
+          "rank": 8,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.823,
+          "title": ""
+        },
+        {
+          "rank": 9,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8183,
+          "title": ""
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8172,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 0.5,
+      "first_acceptable_rank": 2,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_002",
+      "symptom_en": "Leaves wilting and turning brown, soil is bone dry",
+      "primary_problem_type": "abiotic",
+      "acceptable_card_ids": [
+        "mobot_indoor_001",
+        "psu_ucanr_017",
+        "psu_ucanr_019",
+        "mobot_indoor_002",
+        "mu_trinklein_012"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "psu_ucanr_019",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8695,
+          "title": "Wilting plant"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_ucanr_017",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8597,
+          "title": "Small leaves"
+        },
+        {
+          "rank": 3,
+          "card_id": "mobot_indoor_001",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8572,
+          "title": "Too dry"
+        },
+        {
+          "rank": 4,
+          "card_id": "psu_ucanr_016",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8558,
+          "title": "Brown leaf tips • Chemical"
+        },
+        {
+          "rank": 5,
+          "card_id": "mobot_indoor_002",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8484,
+          "title": "Overwatering"
+        },
+        {
+          "rank": 6,
+          "card_id": "psu_ucanr_014",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8461,
+          "title": "Yellowing leaves"
+        },
+        {
+          "rank": 7,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8459,
+          "title": ""
+        },
+        {
+          "rank": 8,
+          "card_id": "mobot_indoor_005",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8379,
+          "title": "Salt build-up"
+        },
+        {
+          "rank": 9,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8292,
+          "title": ""
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8286,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_003",
+      "symptom_en": "Leaf tips are turning brown and crispy",
+      "primary_problem_type": "abiotic",
+      "acceptable_card_ids": [
+        "psu_ucanr_016",
+        "mobot_indoor_005",
+        "mobot_herb_005",
+        "mu_trinklein_009",
+        "mu_trinklein_011",
+        "mu_trinklein_012"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "psu_ucanr_016",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8576,
+          "title": "Brown leaf tips • Chemical"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_ucanr_007",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.8459,
+          "title": "Anthracnose Collectrotrichum"
+        },
+        {
+          "rank": 3,
+          "card_id": "mobot_indoor_021",
+          "source": "mobot_indoor",
+          "problem_type": "nutrient",
+          "sim": 0.8414,
+          "title": "Nitrogen deficiency"
+        },
+        {
+          "rank": 4,
+          "card_id": "mobot_indoor_010",
+          "source": "mobot_indoor",
+          "problem_type": "pest",
+          "sim": 0.8398,
+          "title": "Scale"
+        },
+        {
+          "rank": 5,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8393,
+          "title": ""
+        },
+        {
+          "rank": 6,
+          "card_id": "mobot_indoor_004",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8383,
+          "title": "Too little light"
+        },
+        {
+          "rank": 7,
+          "card_id": "mu_trinklein_002",
+          "source": "mu_trinklein",
+          "problem_type": "frame",
+          "sim": 0.8354,
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…"
+        },
+        {
+          "rank": 8,
+          "card_id": "psu_ucanr_008",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.8325,
+          "title": "Leaf spots Fungi"
+        },
+        {
+          "rank": 9,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8255,
+          "title": ""
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8368,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_004",
+      "symptom_en": "Leaves are smaller and stems are stretched out, plant is far from window",
+      "primary_problem_type": "env",
+      "acceptable_card_ids": [
+        "mobot_indoor_004",
+        "psu_ucanr_011",
+        "psu_ucanr_017",
+        "psu_ucanr_018",
+        "mobot_herb_002"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "mobot_indoor_004",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8612,
+          "title": "Too little light"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_ucanr_012",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8403,
+          "title": "Few flowers • Poor"
+        },
+        {
+          "rank": 3,
+          "card_id": "psu_ucanr_011",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8389,
+          "title": "Spindly plants"
+        },
+        {
+          "rank": 4,
+          "card_id": "psu_ucanr_017",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8355,
+          "title": "Small leaves"
+        },
+        {
+          "rank": 5,
+          "card_id": "psu_ucanr_018",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8306,
+          "title": "Weak growth"
+        },
+        {
+          "rank": 6,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8296,
+          "title": ""
+        },
+        {
+          "rank": 7,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8284,
+          "title": ""
+        },
+        {
+          "rank": 8,
+          "card_id": "mobot_indoor_006",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.828,
+          "title": "Leaf and flower drop"
+        },
+        {
+          "rank": 9,
+          "card_id": "psu_ucanr_014",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8252,
+          "title": "Yellowing leaves"
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.811,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_005",
+      "symptom_en": "Older leaves turning yellow first, haven't fertilized in a long time",
+      "primary_problem_type": "nutrient",
+      "acceptable_card_ids": [
+        "mobot_indoor_021"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "mobot_indoor_021",
+          "source": "mobot_indoor",
+          "problem_type": "nutrient",
+          "sim": 0.8787,
+          "title": "Nitrogen deficiency"
+        },
+        {
+          "rank": 2,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8513,
+          "title": ""
+        },
+        {
+          "rank": 3,
+          "card_id": "mobot_indoor_005",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8455,
+          "title": "Salt build-up"
+        },
+        {
+          "rank": 4,
+          "card_id": "psu_ucanr_014",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8431,
+          "title": "Yellowing leaves"
+        },
+        {
+          "rank": 5,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8375,
+          "title": ""
+        },
+        {
+          "rank": 6,
+          "card_id": "psu_ucanr_016",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8361,
+          "title": "Brown leaf tips • Chemical"
+        },
+        {
+          "rank": 7,
+          "card_id": "mobot_indoor_020",
+          "source": "mobot_indoor",
+          "problem_type": "nutrient",
+          "sim": 0.8359,
+          "title": "Iron-deficiency"
+        },
+        {
+          "rank": 8,
+          "card_id": "mobot_indoor_004",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8348,
+          "title": "Too little light"
+        },
+        {
+          "rank": 9,
+          "card_id": "mu_trinklein_002",
+          "source": "mu_trinklein",
+          "problem_type": "frame",
+          "sim": 0.8303,
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…"
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8477,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_006",
+      "symptom_en": "Leaves turned dark and wilted after placing near window in winter",
+      "primary_problem_type": "env",
+      "acceptable_card_ids": [
+        "mobot_indoor_008",
+        "mobot_indoor_006",
+        "psu_ucanr_014",
+        "psu_ucanr_020",
+        "mobot_herb_005"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "mobot_indoor_004",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8509,
+          "title": "Too little light"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_ucanr_014",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8471,
+          "title": "Yellowing leaves"
+        },
+        {
+          "rank": 3,
+          "card_id": "mobot_herb_005",
+          "source": "mobot_herb",
+          "problem_type": "general",
+          "sim": 0.8434,
+          "title": "Dry air"
+        },
+        {
+          "rank": 4,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8349,
+          "title": ""
+        },
+        {
+          "rank": 5,
+          "card_id": "mobot_indoor_017",
+          "source": "mobot_indoor",
+          "problem_type": "disease",
+          "sim": 0.8333,
+          "title": "Grey mold"
+        },
+        {
+          "rank": 6,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8327,
+          "title": ""
+        },
+        {
+          "rank": 7,
+          "card_id": "mobot_indoor_005",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8304,
+          "title": "Salt build-up"
+        },
+        {
+          "rank": 8,
+          "card_id": "mobot_indoor_001",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8302,
+          "title": "Too dry"
+        },
+        {
+          "rank": 9,
+          "card_id": "mobot_indoor_021",
+          "source": "mobot_indoor",
+          "problem_type": "nutrient",
+          "sim": 0.8296,
+          "title": "Nitrogen deficiency"
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8308,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 0.5,
+      "first_acceptable_rank": 2,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_007",
+      "symptom_en": "Leaves are sticky and have black sooty residue",
+      "primary_problem_type": "pest",
+      "acceptable_card_ids": [
+        "psu_indoor_001",
+        "psu_indoor_003",
+        "mobot_indoor_010",
+        "mobot_indoor_011",
+        "mobot_herb_006",
+        "mobot_herb_007"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "mobot_indoor_010",
+          "source": "mobot_indoor",
+          "problem_type": "pest",
+          "sim": 0.8416,
+          "title": "Scale"
+        },
+        {
+          "rank": 2,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8353,
+          "title": ""
+        },
+        {
+          "rank": 3,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8348,
+          "title": ""
+        },
+        {
+          "rank": 4,
+          "card_id": "mobot_indoor_009",
+          "source": "mobot_indoor",
+          "problem_type": "pest",
+          "sim": 0.8296,
+          "title": "Spider mites"
+        },
+        {
+          "rank": 5,
+          "card_id": "psu_ucanr_017",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8284,
+          "title": "Small leaves"
+        },
+        {
+          "rank": 6,
+          "card_id": "mobot_indoor_013",
+          "source": "mobot_indoor",
+          "problem_type": "pest",
+          "sim": 0.8283,
+          "title": "Whiteflies"
+        },
+        {
+          "rank": 7,
+          "card_id": "mobot_herb_007",
+          "source": "mobot_herb",
+          "problem_type": "pest",
+          "sim": 0.8254,
+          "title": "Aphids"
+        },
+        {
+          "rank": 8,
+          "card_id": "psu_ucanr_016",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8236,
+          "title": "Brown leaf tips • Chemical"
+        },
+        {
+          "rank": 9,
+          "card_id": "psu_ucanr_008",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.8229,
+          "title": "Leaf spots Fungi"
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.857,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_008",
+      "symptom_en": "Gray fuzzy mold on leaves, environment is always humid",
+      "primary_problem_type": "disease",
+      "acceptable_card_ids": [
+        "mobot_indoor_017",
+        "psu_indoor_010",
+        "psu_ucanr_010"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "mobot_indoor_017",
+          "source": "mobot_indoor",
+          "problem_type": "disease",
+          "sim": 0.8829,
+          "title": "Grey mold"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_indoor_010",
+          "source": "psu_indoor",
+          "problem_type": "disease",
+          "sim": 0.8572,
+          "title": "Gray mold (Botrytis cinerea)"
+        },
+        {
+          "rank": 3,
+          "card_id": "mu_trinklein_002",
+          "source": "mu_trinklein",
+          "problem_type": "frame",
+          "sim": 0.8492,
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…"
+        },
+        {
+          "rank": 4,
+          "card_id": "psu_indoor_012",
+          "source": "psu_indoor",
+          "problem_type": "disease",
+          "sim": 0.847,
+          "title": "Powdery mildew"
+        },
+        {
+          "rank": 5,
+          "card_id": "psu_ucanr_009",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.8448,
+          "title": "Powdery mildew Fungus"
+        },
+        {
+          "rank": 6,
+          "card_id": "psu_ucanr_014",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8365,
+          "title": "Yellowing leaves"
+        },
+        {
+          "rank": 7,
+          "card_id": "psu_ucanr_008",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.8363,
+          "title": "Leaf spots Fungi"
+        },
+        {
+          "rank": 8,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8321,
+          "title": ""
+        },
+        {
+          "rank": 9,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8249,
+          "title": ""
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8433,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_009",
+      "symptom_en": "Round brown spots on leaves spreading gradually",
+      "primary_problem_type": "disease",
+      "acceptable_card_ids": [
+        "psu_ucanr_007",
+        "psu_ucanr_008",
+        "psu_indoor_011"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "psu_indoor_011",
+          "source": "psu_indoor",
+          "problem_type": "disease",
+          "sim": 0.8665,
+          "title": "Leaf spot fungus"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_indoor_010",
+          "source": "psu_indoor",
+          "problem_type": "disease",
+          "sim": 0.8595,
+          "title": "Gray mold (Botrytis cinerea)"
+        },
+        {
+          "rank": 3,
+          "card_id": "mobot_indoor_010",
+          "source": "mobot_indoor",
+          "problem_type": "pest",
+          "sim": 0.8541,
+          "title": "Scale"
+        },
+        {
+          "rank": 4,
+          "card_id": "psu_ucanr_008",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.854,
+          "title": "Leaf spots Fungi"
+        },
+        {
+          "rank": 5,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8517,
+          "title": ""
+        },
+        {
+          "rank": 6,
+          "card_id": "mu_trinklein_006",
+          "source": "mu_trinklein",
+          "problem_type": "general",
+          "sim": 0.8477,
+          "title": "The pattern of leaf damage also can…"
+        },
+        {
+          "rank": 7,
+          "card_id": "mu_trinklein_002",
+          "source": "mu_trinklein",
+          "problem_type": "frame",
+          "sim": 0.846,
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…"
+        },
+        {
+          "rank": 8,
+          "card_id": "mobot_indoor_009",
+          "source": "mobot_indoor",
+          "problem_type": "pest",
+          "sim": 0.842,
+          "title": "Spider mites"
+        },
+        {
+          "rank": 9,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8464,
+          "title": ""
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8463,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    },
+    {
+      "case_id": "ext_010",
+      "symptom_en": "Plant keeps wilting even after watering, musty smell from pot and stem base is dark and mushy",
+      "primary_problem_type": "abiotic",
+      "acceptable_card_ids": [
+        "mobot_indoor_002",
+        "mobot_indoor_018",
+        "psu_ucanr_010",
+        "mobot_herb_003",
+        "psu_indoor_013",
+        "mobot_indoor_006"
+      ],
+      "top_10": [
+        {
+          "rank": 1,
+          "card_id": "mobot_indoor_002",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8697,
+          "title": "Overwatering"
+        },
+        {
+          "rank": 2,
+          "card_id": "psu_indoor_013",
+          "source": "psu_indoor",
+          "problem_type": "disease",
+          "sim": 0.861,
+          "title": "Root rot"
+        },
+        {
+          "rank": 3,
+          "card_id": "mobot_indoor_001",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8583,
+          "title": "Too dry"
+        },
+        {
+          "rank": 4,
+          "card_id": "psu_ucanr_019",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8433,
+          "title": "Wilting plant"
+        },
+        {
+          "rank": 5,
+          "card_id": "psu_ucanr_010",
+          "source": "psu_ucanr",
+          "problem_type": "disease",
+          "sim": 0.8396,
+          "title": "Root and stem rots Botrytis,"
+        },
+        {
+          "rank": 6,
+          "card_id": "mobot_indoor_005",
+          "source": "mobot_indoor",
+          "problem_type": "env",
+          "sim": 0.8374,
+          "title": "Salt build-up"
+        },
+        {
+          "rank": 7,
+          "card_id": "psu_ucanr_018",
+          "source": "psu_ucanr",
+          "problem_type": "abiotic",
+          "sim": 0.8316,
+          "title": "Weak growth"
+        },
+        {
+          "rank": 8,
+          "card_id": "",
+          "source": "HOUSEPLANT",
+          "problem_type": "",
+          "sim": 0.8276,
+          "title": ""
+        },
+        {
+          "rank": 9,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8442,
+          "title": ""
+        },
+        {
+          "rank": 10,
+          "card_id": "",
+          "source": "UC_IPM",
+          "problem_type": "",
+          "sim": 0.8396,
+          "title": ""
+        }
+      ],
+      "hit_at_10": 1,
+      "reciprocal_rank": 1.0,
+      "first_acceptable_rank": 1,
+      "excluded_from_metrics": false
+    }
+  ]
+}
