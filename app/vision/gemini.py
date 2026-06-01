@@ -101,7 +101,7 @@ class GeminiProvider:
         project: str | None = None,
         location: str | None = None,
         model: str = "gemini-2.5-pro",
-        temperature: float | None = None,
+        temperature: float | None = model_utils.LLM_TEMPERATURE,
     ) -> None:
         # 인증 모드 자동 분기 (옵션 A, [1-2.5]):
         #   GOOGLE_CLOUD_PROJECT 있으면 Vertex(ADC), 없으면 GEMINI_API_KEY로 AI Studio.

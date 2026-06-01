@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "phase": "after_phase1 (1단계 마무리)",
+    "measured_at": "2026-05-31T07:03:38.827661+09:00",
+    "temperature_adopted": 0.0,
+    "temperature_scope": [
+      "vision_analyze (Gemini 2.5 Pro, GeminiProvider 기본값)",
+      "generate_structured_diagnosis_with_gpt (gpt-4o-mini)"
+    ],
+    "source_runs": [
+      "after_phase1_run1.json",
+      "after_phase1_run2.json"
+    ],
+    "determinism": {
+      "bit_identical": false,
+      "differing_cases": 7,
+      "total_cases": 33,
+      "differing_image_ids": [
+        "inat_chlorophytum_comosum_001",
+        "inat_chlorophytum_comosum_003",
+        "inat_monstera_deliciosa_001",
+        "self_dracaena_001",
+        "self_dracaena_003",
+        "self_dracaena_004",
+        "self_haengun_002"
+      ],
+      "note": "temperature=0.0에서도 비결정. analyze(Gemini)·generate(gpt-4o-mini) 모두 run-to-run noise 잔존 — 시스템 본질."
+    },
+    "vs_v8": {
+      "external_api_calls": {
+        "v8": "7회 (Plant.id + OpenAI×6)",
+        "after_phase1": "4회 (Gemini + OpenAI×3)",
+        "delta": "-43%"
+      }
+    }
+  },
+  "average_2runs": {
+    "plant_korean_accuracy": 0.8858,
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.2327,
+      "accuracy": 0.5
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 19.051
+  },
+  "run1": {
+    "plant_korean_accuracy": 0.896551724137931,
+    "plant_name_counts": {
+      "correct": 26,
+      "wrong": 3,
+      "unmappable": 4
+    },
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.23809523809523808,
+      "accuracy": 0.5151515151515151,
+      "tp": 5,
+      "fp": 16,
+      "tn": 12,
+      "fn": 0
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 19.046
+  },
+  "run2": {
+    "plant_korean_accuracy": 0.875,
+    "plant_name_counts": {
+      "correct": 28,
+      "wrong": 4,
+      "unmappable": 1
+    },
+    "is_healthy": {
+      "recall": 1.0,
+      "precision": 0.22727272727272727,
+      "accuracy": 0.48484848484848486,
+      "tp": 5,
+      "fp": 17,
+      "tn": 11,
+      "fn": 0
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 19.057
+  },
+  "v8_baseline": {
+    "plant_korean_accuracy": 0.9,
+    "is_healthy": {
+      "recall": 0.6,
+      "precision": 0.23076923076923078,
+      "accuracy": 0.6363636363636364
+    },
+    "json_parse_success_rate": 1.0,
+    "latency_sec_mean": 21.065,
+    "measured_at": "2026-05-29T03:06:51.957425+09:00"
+  }
+}

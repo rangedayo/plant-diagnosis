@@ -160,3 +160,61 @@ precision -2.5%p의 FP 2장(ficus_elastica·sansevieria 자연 변색)도 [1-3] 
 3. **진단 md → 작업 프롬프트 md → 측정 → 보고** 순서. 위험 단계는 진단 먼저(v7 원칙).
 4. **死 코드 정리는 자발적 청소가 아니라 결정의 결과** — 사용 안 되는 함수·상수는 발견 즉시 제거 (정직한 시스템).
 5. **추정 → 실증 전환 기록** — SDK 시그니처, 모델 행동 등은 추정으로 시작하되 측정 후 확정 사항을 `phase2_decisions.md`에 갱신.
+
+---
+
+# 1단계 마무리 — [1-7.5] ~ [1-10b]
+
+> 위 [1-1]~[1-6] 이후 진행분. 이 섹션이 1단계 최종 상태이며, 위쪽 "다음 단계"의 예측은 아래 실측으로 대체된다.
+> 1단계 완전 종료 → B 묶음(RAG 데이터셋 교체) 진입 준비.
+
+## 전체 흐름
+
+| 단계 | 결과 | 핵심 발견 |
+|---|---|---|
+| [1-1]~[1-4] | 신규 파일만 | 기존 코드 무변경 (Protocol·GeminiProvider·프롬프트·factory) |
+| [1-5] graph 와이어링 | ✅ 1차 게이트 | 부작용: recall 60→20% 보수화 (Plant.id 신호 소멸) |
+| [1-7] generate 재설계 | ✅ | recall 20→100%. v2 완화 실험 폐기로 "FP 근본=generate 가이드 아님" 입증 |
+| [1-6] keyword 축소 | ✅ | GPT 2~3콜→1콜, latency 32.4→25.5s (-21%) |
+| [1-3] v4 (analyze 강화) | ❌ revert | FP 주범 = generate이지 analyze over-report 아님 입증 (v4 측정 반증) |
+| [1-2.5] Vertex ADC | ✅ | latency 25.5→21.4s, 2회 측정 평균 원칙 정립 |
+| [1-7.5] generate status 경로 | ✅ | 영양 부족 FP -92%. 병해 의심 FP는 RAG 데이터셋 문제로 격리 |
+| [1-8] retrieve 정비 | ✅ | fallback 보너스가 [1-6] 이후 작동 0회임을 입증, 死 코드 제거 |
+| [1-9] state/schema 슬림화 | ✅ 2차 게이트 | Plant.id 응답 잔재 제거 + analysis sub-object |
+| [1-10a] RAG_FAILED 폐기 + Plant.id sweep | ✅ | 활성 LLM 경로(rag_failed) 폐기 = decision #3 실행, Plant.id 함수 14개·client/httpx 死 의존 제거 |
+| [1-10b] temperature 튜닝 + 최종 measurement | ✅ | temperature=0.0 채택(decision #6 실행), 1단계 완전 종료 |
+
+## v8 → after_phase1 직접 비교 (eval/after_phase1.json, 2회 평균)
+
+| 지표 | v8 (baseline) | after_phase1 | 변화 |
+|---|---|---|---|
+| plant_korean | 90.0% | 88.58% | -1.42%p (매핑 노이즈 범위) |
+| recall (아픈 식물 검출) | 60.0% | 100% | **+40%p** (FN 2→0, 아픈 식물 0장 놓침) |
+| precision | 23.08% | 23.27% | +0.19%p (사실상 동일) |
+| accuracy (is_healthy) | 63.64% | 50.0% | **-13.64%p** (recall 우선의 의도된 트레이드오프 — 아래) |
+| JSON 파싱 | 100% | 100% | 유지 |
+| latency 평균 | 21.07s | 19.05s | **-2.0s (-9.6%)** |
+| 외부 API 호출 | 7회 (Plant.id + OpenAI×6) | 4회 (Gemini + OpenAI×3) | **-43%** |
+
+**accuracy -13.64%p는 회귀가 아니라 [1-7] 재설계의 의도된 트레이드오프**: v8은 "건강에 가깝게" 보수 가이드로 아픈 식물을 자주 놓쳤다(recall 60%, FN 2). 1단계는 "증상 1개 이상이면 건강 금지"로 전환해 **아픈 식물을 한 장도 놓치지 않게(recall 100%, FN 0)** 만들었고, 그 대가로 건강한 식물을 아프다고 부르는 FP가 늘어 binary accuracy가 내려갔다. precision은 v8과 동일(~23%) — FP의 본질 원인은 generate 가이드가 아니라 RAG 데이터셋(병해 코퍼스가 실내식물 자연 변색과 매칭)이며, 이는 B 묶음 데이터셋 교체로 해소 예정이다.
+
+## 핵심 발견 (자산)
+
+- **temperature=0.0에서도 비결정성 잔존** ([1-10b] 신규): Vision(Gemini 2.5 Pro)·generate(gpt-4o-mini) 동시 temperature=0.0으로 고정해도 동일 입력 2회(run1/run2)가 **33장 중 7장 불일치**(analyze 종 식별 4건, generate status 3건). gpt-4o-mini·Gemini는 temperature=0에서도 비트 동일을 보장하지 않으며, **analyze·generate run-to-run noise가 시스템 본질**임을 실증. 단일 run 게이트 판정 금지의 근거(메모리 `eval-gate-noise-and-mapping-artifact` 보강).
+  - analyze 4건(종 식별): `chlorophytum_comosum_001`(Liriope→Dianella), `dracaena_001`(reflexa 'White Jewel'→reflexa), `dracaena_003`(Cordyline→fragrans), `dracaena_004`(fragrans 'Warneckii'→reflexa) — 3건이 dracaena 변종/근연 속 흔들림.
+  - generate 3건(status): `comosum_003`(건강→병해 의심), `monstera_001`(영양 부족→병해 의심), `haengun_002`(병해 의심→영양 부족).
+- **FP 근본 원인 = generate(영양부족 과호출), analyze 아님** ([1-3] v4 실패 + [1-7] 재설계): observed_symptoms over-report 가설을 v4로 직접 검증했으나 반증됨. 메모리 `fp-root-cause-generate-not-analyze`.
+- **병해 의심 FP = RAG 데이터셋 레버** ([1-7.5] 발견): 병해 의심 FP는 generate 프롬프트가 아니라 NCPMS 병해 코퍼스가 실내식물 자연 변색과 매칭되는 데이터셋 문제. B 묶음 가속 근거.
+- **temperature 3옵션 비교는 단일런 노이즈가 지배** ([1-10b]): 0.0/0.2/0.5의 precision·accuracy 격차(최대 15%p)가 temperature에 단조 반응하지 않음(00 최고·02 최저·05 중간) → fp 변동(15/20/17) 노이즈. 0.0이 precision·accuracy·correct 모두 동률 이상 + 결정성 이점이라 채택.
+
+## 결정 갱신 (phase2_decisions 누적)
+
+- **decision #3 (RAG_FAILED 폐기)**: [1-10a]에서 실행. rag_failed=True 시 LLM 호출 0회 + 정적 안내 즉시 반환(`default_structured_fallback`).
+- **decision #6 (temperature 튜닝)**: [1-10b]에서 실행. 0.0 채택. `app/model_utils.LLM_TEMPERATURE` 단일 상수로 Vision 생성자 기본값 + generate GPT 호출이 참조.
+  - **적용 범위 = Vision(analyze) + generate GPT 두 곳만**. keyword GPT(`generate_english_keywords`, 한국어 증상→영어 번역)는 **의도적으로 미고정** — 작업프롬프트 명시 scope(2곳) 준수. 단 keyword도 retrieval 쿼리에 영향을 주므로 **잔여 비결정 출처 1개**로 남음(위 7건 불일치에 일부 기여 가능). 결정성 추가 강화가 필요하면 keyword 호출에 `LLM_TEMPERATURE` 적용이 후속 1줄 작업.
+
+## 미해결 (B 묶음 진입 조건)
+
+1. **병해 의심 FP 잔존** → RAG 데이터셋 교체로 해소 (PennState Extension·Missouri Botanical Garden·농촌진흥청 가정원예·하우스플랜트 마스터 가이드).
+2. **precision ~23% / accuracy ~50%** — RAG 데이터셋 본질 해소 후 재측정. 현재 값은 병해 코퍼스 매칭 한계가 상한.
+3. **plant_korean 매핑 사전 아티팩트** (dracaena 변종·구학명 누락 등 unmappable) — 별도 학명→한국어 매핑 작업.

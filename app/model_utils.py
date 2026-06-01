@@ -23,6 +23,11 @@ from app import prompts
 
 load_dotenv()
 
+# [1-10b] decision #6: 모든 LLM 호출에 동일 temperature 적용 (영역 1 A — Vision + GPT 동시 동일 값).
+# 결정성(run1==run2) 확보가 목적. gemini.GeminiProvider 생성자 기본값과
+# generate_structured_diagnosis_with_gpt가 이 상수를 참조한다.
+LLM_TEMPERATURE: float = 0.0
+
 
 def get_openai_api_key() -> Optional[str]:
     return os.getenv("OPENAI_API_KEY")
@@ -211,6 +216,7 @@ async def generate_structured_diagnosis_with_gpt(
             ],
             max_tokens=1024,
             response_format={"type": "json_object"},
+            temperature=LLM_TEMPERATURE,
         )
         raw_text = (resp.choices[0].message.content or "").strip()
         parsed = _parse_json_object_from_llm(raw_text)

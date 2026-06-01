@@ -45,6 +45,10 @@ plant_korean / status / is_diseased / action_keywords 일치율 모두 baseline 
 
 **근거**: 둘 다 직관 초기값으로 시작하면 회귀 시 원인 분리 어려움. 단계 완료점에서 격리 튜닝하면 baseline 대비 영향 정량화 가능.
 
+**실행 ([1-10b])**: temperature **0.0 채택**. `app/model_utils.LLM_TEMPERATURE` 단일 상수로 Vision 생성자 기본값 + generate GPT 호출이 참조.
+적용 범위 = Vision(analyze) + generate GPT **두 곳만**. keyword GPT(`generate_english_keywords`)는 의도적 미고정 → 잔여 비결정 출처 1개.
+결정성: temperature=0에서도 run1≠run2 **7/33**(analyze 4·generate 3). gpt-4o-mini·Gemini는 temp=0에서도 비트 동일 보장 안 함.
+
 ## 7. 이미지 중복 검사 — (image_hash, plant_handle) UNIQUE + cached 플래그
 
 진단 1건당 sha256 hash 계산 → `(image_hash, plant_handle)` 조회 → 히트 시 graph 스킵, 기존 레코드 반환 + `"cached": true` 플래그. 같은 이미지를 다른 plant_handle에 올리면 새 진단(의도된 동작).
