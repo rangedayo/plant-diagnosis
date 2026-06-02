@@ -40,6 +40,17 @@ RAG_SYMPTOM_KEYWORD_MAX = 5
 
 HEALTHY_KEYWORDS = ["건강", "이상 없음", "문제 없음", "정상", "깨끗", "갈변 없음"]
 
+# [B-prime] 종 메타 (a) 정상화 신호 — 격리 컬렉션. b_dataset_rag/main_rag와 분리.
+SPECIES_NORMAL_COLLECTION = "species_normal_rag"
+# 식별된 식물(plant_name_korean + plant_name) → species_normal_rag 메타 species 키.
+# 구체 종 먼저 매칭(행운목=Dracaena fragrans은 generic '드라세나'보다 앞에 둠).
+SPECIES_KEYWORD_MAP: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("행운목", ("행운목", "fragrans", "corn plant")),
+    ("스파티필룸", ("스파티필", "스파트", "spathiphyllum", "peace lil")),
+    ("산세베리아", ("산세베리아", "산세비에리아", "sansevieria", "snake plant", "trifasciata", "mother in law")),
+    ("드라세나", ("드라세나", "dracaena")),
+)
+
 
 class DiagnosisState(TypedDict, total=False):
     image_bytes: bytes
@@ -63,11 +74,44 @@ class DiagnosisState(TypedDict, total=False):
     rag_metas: list[dict[str, Any]]  # 필터 통과 문서의 메타(problem_type 포함)
     rag_sims: list[float]  # 필터 통과 문서의 raw cosine (rag_metas와 정렬 일치)
     top_3_problem_type_weighted: dict[str, Any]  # top_3 sim 가중 다수결
+    # [B-prime] 종 메타 (a) 정상화 신호: 식별 종에 매칭된 species_normal_rag 카드
+    species_normal_docs: list[str]
+    species_normal_species: str  # 매칭된 정규화 종명 (없으면 "")
     structured_result: dict[str, Any]
 
 
 def _vector_db_path() -> Path:
     return Path(__file__).resolve().parent.parent / "data" / "vector_db"
+
+
+def _normalize_species(
+    plant_name_korean: str | None, plant_name: str | None
+) -> str | None:
+    """[B-prime] 식별 식물명 → species_normal_rag 메타 species 키 (없으면 None).
+
+    plant_name_korean(통명)·plant_name(학명)을 합쳐 키워드 매칭. 구체 종 우선.
+    """
+    hay = f"{plant_name_korean or ''} {plant_name or ''}".lower()
+    if not hay.strip():
+        return None
+    for key, tokens in SPECIES_KEYWORD_MAP:
+        if any(tok.lower() in hay for tok in tokens):
+            return key
+    return None
+
+
+def _fetch_species_normal_sync(species_key: str, db_path: str) -> list[str]:
+    """[B-prime] species_normal_rag에서 종 키로 정상화 카드 조회 (메타 where, 결정적)."""
+    try:
+        client = chromadb.PersistentClient(path=db_path)
+        coll = client.get_collection(SPECIES_NORMAL_COLLECTION)
+        res = coll.get(where={"species": species_key}, include=["documents"])
+        return [d for d in (res.get("documents") or []) if d]
+    except Exception as e:
+        logger.warning(
+            "species_normal 조회 실패 (species=%s): %s", species_key, e
+        )
+        return []
 
 
 def _chroma_query_sync(
@@ -643,6 +687,20 @@ def build_diagnosis_graph(
             "retrieve: top_3 problem_type 가중 다수결=%s",
             top_3_pt_weighted,
         )
+        # [B-prime] 종 메타 (a) 정상화 카드 조회 — 식별 종에 결정적 매칭(메타 where).
+        species_key = _normalize_species(state.get("plant_name_korean"), pn)
+        species_normal_docs = (
+            await loop.run_in_executor(
+                None, _fetch_species_normal_sync, species_key, db_path
+            )
+            if species_key
+            else []
+        )
+        logger.info(
+            "retrieve: species_normal species=%r cards=%d",
+            species_key,
+            len(species_normal_docs),
+        )
         ret = {
             "rag_docs": docs_tagged,
             "rag_metas": list(filtered_metas or []),
@@ -653,6 +711,8 @@ def build_diagnosis_graph(
             "rag_failed": rag_failed,
             "rag_no_docs": rag_no_docs,
             "rag_weak_evidence": rag_weak,
+            "species_normal_docs": species_normal_docs,
+            "species_normal_species": species_key or "",
         }
         if DEBUG:
             print("[DEBUG] rag_docs count:", len(ret.get("rag_docs", [])))
@@ -696,6 +756,13 @@ def build_diagnosis_graph(
             f"- 1위 카드 타입: {top_pt}\n"
             f"- 분포: {dist_str}\n"
         )
+        # [B-prime] 종 메타 (a) 정상화 신호를 별도 섹션으로 주입 (진단 카드와 분리).
+        species_normal_docs = state.get("species_normal_docs") or []
+        if species_normal_docs:
+            species_block = "\n".join(f"- {d}" for d in species_normal_docs)
+            context_summary += (
+                f"\n[이 종의 정상 생육 특성 (참고)]\n{species_block}\n"
+            )
         rag_chunks = "\n\n".join(state.get("rag_docs") or [])
         structured = await model_utils.generate_structured_diagnosis_with_gpt(
             context_summary,

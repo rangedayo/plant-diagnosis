@@ -36,7 +36,11 @@ sys.path.insert(0, str(_ROOT))
 sys.path.insert(0, str(_SCRIPTS))  # eval_retrieval 재사용 ([B-4a] 경우 2)
 
 from app import prompts  # noqa: E402
-from app.graph import _vector_db_path, build_diagnosis_graph  # noqa: E402
+from app.graph import (  # noqa: E402
+    _normalize_species,
+    _vector_db_path,
+    build_diagnosis_graph,
+)
 from app.vision.gemini import GeminiProvider  # noqa: E402
 from test_data.labeling_vocab import PLANT_NAME_KO_MAP  # noqa: E402
 
@@ -241,6 +245,76 @@ def _build_tp_analysis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _build_species_normal_diagnosis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """[B-prime] 종 메타 (a) 정상화 효과 진단 — (i)/(ii)/(iii) 판정 근거.
+
+    gt_plant이 이번 라운드 커버 종(드라세나/행운목/스파티필룸/산세베리아)인 케이스만 대상.
+    - card_injected: generate 컨텍스트에 정상화 카드가 실제로 올라간 케이스 수.
+    - covered_fp_with_card_present: 카드가 올라갔는데도 FP(오진) 유지 → (ii) generate 무시.
+    - covered_fp_without_card: 커버 종인데 카드 미주입(analyze 종 오식별) → (i) 연결 문제.
+    """
+    rows: list[tuple[str, dict[str, Any]]] = []
+    for c in per_case:
+        gt_key = _normalize_species(c.get("gt_plant"), None)
+        if gt_key:
+            rows.append((gt_key, c))
+
+    by_species: dict[str, dict[str, int]] = {}
+    for gt_key, c in rows:
+        b = by_species.setdefault(
+            gt_key,
+            {
+                "images": 0,
+                "card_injected": 0,
+                "healthy": 0,
+                "fp": 0,
+                "sick": 0,
+                "tp": 0,
+                "fn": 0,
+                "inject_mismatch": 0,
+            },
+        )
+        b["images"] += 1
+        injected = int(c.get("species_normal_card_count") or 0) > 0
+        if injected:
+            b["card_injected"] += 1
+        sn_sp = c.get("species_normal_species") or ""
+        if sn_sp and sn_sp != gt_key:
+            b["inject_mismatch"] += 1
+        gt_h = c.get("gt_is_healthy")
+        pred_h = c.get("pred_is_healthy")
+        if gt_h:
+            b["healthy"] += 1
+            if pred_h is False:
+                b["fp"] += 1
+        elif gt_h is False:
+            b["sick"] += 1
+            if pred_h is False:
+                b["tp"] += 1
+            elif pred_h is True:
+                b["fn"] += 1
+
+    fp_with_card = sum(
+        1
+        for _k, c in rows
+        if c.get("gt_is_healthy")
+        and c.get("pred_is_healthy") is False
+        and int(c.get("species_normal_card_count") or 0) > 0
+    )
+    tot_fp = sum(b["fp"] for b in by_species.values())
+    return {
+        "covered_gt_species": sorted(by_species.keys()),
+        "covered_gt_images": sum(b["images"] for b in by_species.values()),
+        "covered_gt_healthy_images": sum(b["healthy"] for b in by_species.values()),
+        "card_injected_images": sum(b["card_injected"] for b in by_species.values()),
+        "covered_fp": tot_fp,
+        "covered_fp_with_card_present": fp_with_card,  # (ii) generate 무시
+        "covered_fp_without_card": tot_fp - fp_with_card,  # (i) analyze 오식별
+        "covered_fn": sum(b["fn"] for b in by_species.values()),  # recall 안전장치
+        "by_species": by_species,
+    }
+
+
 async def _run_one_case(graph, image_bytes: bytes) -> tuple[dict[str, Any], float]:
     """그래프 1회 구동. (최종 state, latency_sec) 반환."""
     start = time.perf_counter()
@@ -290,6 +364,8 @@ async def async_main() -> None:
                     "json_ok": False,
                     "observed_symptoms": [],
                     "top_3_rag": [],
+                    "species_normal_species": "",
+                    "species_normal_card_count": 0,
                     "error": "image_not_found",
                 }
             )
@@ -315,6 +391,8 @@ async def async_main() -> None:
                     "json_ok": False,
                     "observed_symptoms": [],
                     "top_3_rag": [],
+                    "species_normal_species": "",
+                    "species_normal_card_count": 0,
                     "error": f"{type(e).__name__}: {e}",
                 }
             )
@@ -351,6 +429,11 @@ async def async_main() -> None:
                 # [B-4a] FP 진단 측정 신규 키 (read-only)
                 "observed_symptoms": list(out.get("observed_symptoms") or []),
                 "top_3_rag": _build_top_3_rag(out, db_path),
+                # [B-prime] 종 메타 정상화 카드 주입 여부 (i/ii/iii 진단용)
+                "species_normal_species": out.get("species_normal_species") or "",
+                "species_normal_card_count": len(
+                    out.get("species_normal_docs") or []
+                ),
             }
         )
         print(
@@ -434,6 +517,9 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         "latency_sec": lat,
         "fp_analysis": _build_fp_analysis(per_case),  # [B-4a] FP 17건 본질 진단
         "tp_analysis": _build_tp_analysis(per_case),  # [B-4c] recall 안전장치
+        "species_normal_diagnosis": _build_species_normal_diagnosis(
+            per_case
+        ),  # [B-prime] (a) 정상화 카드 효과 (i/ii/iii)
         "per_case": per_case,
     }
 
@@ -499,6 +585,26 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         print(
             f"    증상: {s.get('observed_symptoms', [])}  "
             f"타입: {s.get('top_3_problem_types', [])}"
+        )
+    snd = result["species_normal_diagnosis"]
+    print("\n[종 메타 정상화 진단] ([B-prime] (a) 카드 효과)")
+    print(f"  커버 종(gt 기준): {snd['covered_gt_species']}")
+    print(
+        f"  커버 종 이미지={snd['covered_gt_images']} "
+        f"(healthy={snd['covered_gt_healthy_images']}), "
+        f"카드 주입={snd['card_injected_images']}"
+    )
+    print(
+        f"  커버 종 FP={snd['covered_fp']} "
+        f"(카드 올라갔는데 FP={snd['covered_fp_with_card_present']} → (ii) 무시, "
+        f"카드 미주입 FP={snd['covered_fp_without_card']} → (i) 오식별)"
+    )
+    print(f"  커버 종 FN={snd['covered_fn']} (recall 안전장치, 0이어야 정상)")
+    for sp, b in sorted(snd["by_species"].items()):
+        print(
+            f"    {sp:8} img={b['images']} 카드={b['card_injected']} "
+            f"healthy={b['healthy']} FP={b['fp']} sick={b['sick']} "
+            f"TP={b['tp']} FN={b['fn']} 오매칭={b['inject_mismatch']}"
         )
     print("\n저장:", OUTPUT_PATH)
 

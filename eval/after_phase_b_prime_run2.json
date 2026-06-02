@@ -1,0 +1,1921 @@
+{
+  "measured_at": "2026-06-02T23:31:17.265165+09:00",
+  "total": 33,
+  "plant_name": {
+    "correct": 26,
+    "wrong": 5,
+    "unmappable": 2,
+    "accuracy": 0.8387096774193549
+  },
+  "is_healthy": {
+    "positive_class": "unhealthy",
+    "tp": 4,
+    "tn": 10,
+    "fp": 18,
+    "fn": 1,
+    "precision": 0.18181818181818182,
+    "recall": 0.8,
+    "accuracy": 0.42424242424242425
+  },
+  "status_distribution": {
+    "병해 의심": 21,
+    "건강": 11,
+    "영양 부족": 1
+  },
+  "status_by_is_healthy": {
+    "병해 의심": {
+      "gt_healthy": 17,
+      "gt_unhealthy": 4
+    },
+    "건강": {
+      "gt_healthy": 10,
+      "gt_unhealthy": 1
+    },
+    "영양 부족": {
+      "gt_healthy": 1,
+      "gt_unhealthy": 0
+    }
+  },
+  "json_parse_success_rate": 1.0,
+  "json_parse_failed_ids": [],
+  "latency_sec": {
+    "mean": 20.754,
+    "min": 15.298,
+    "max": 34.403
+  },
+  "fp_analysis": {
+    "fp_count": 18,
+    "fp_status_distribution": {
+      "병해 의심": 17,
+      "영양 부족": 1
+    },
+    "fp_observed_symptoms_buckets": {
+      "empty": 0,
+      "non_empty": 18
+    },
+    "fp_top3_problem_type_majority": {
+      "disease": 2,
+      "tie": 13,
+      "general": 3
+    },
+    "fp_observed_symptoms_samples": [
+      {
+        "image_id": "self_dracaena_001",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 가장자리 갈색 반점",
+          "잎집(엽초) 갈변"
+        ],
+        "top_3_problem_types": [
+          "disease",
+          "disease",
+          "abiotic"
+        ]
+      },
+      {
+        "image_id": "self_dracaena_002",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변"
+        ],
+        "top_3_problem_types": [
+          "",
+          "abiotic",
+          "general"
+        ]
+      },
+      {
+        "image_id": "self_dracaena_003",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "frame",
+          ""
+        ]
+      },
+      {
+        "image_id": "self_dracaena_004",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "frame",
+          ""
+        ]
+      },
+      {
+        "image_id": "self_dracaena_006",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 마름",
+          "잎 처짐"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "frame",
+          ""
+        ]
+      },
+      {
+        "image_id": "self_haengun_001",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "아래잎 황화",
+          "잎 표면 미세한 노란 반점"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "disease"
+        ]
+      },
+      {
+        "image_id": "self_haengun_004",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "새잎 끝부분 손상 및 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "env",
+          ""
+        ]
+      },
+      {
+        "image_id": "inat_aglaonema_003",
+        "gt_plant": "아글라오네마",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎 가장자리 갈변"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "",
+          "general"
+        ]
+      },
+      {
+        "image_id": "inat_chlorophytum_comosum_001",
+        "gt_plant": "접란",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 일부 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "frame"
+        ]
+      },
+      {
+        "image_id": "inat_chlorophytum_comosum_003",
+        "gt_plant": "접란",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎끝 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "disease"
+        ]
+      },
+      {
+        "image_id": "inat_epipremnum_aureum_001",
+        "gt_plant": "스킨답서스",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 가장자리 갈변",
+          "잎의 검은색 괴사 반점"
+        ],
+        "top_3_problem_types": [
+          "",
+          "general",
+          "general"
+        ]
+      },
+      {
+        "image_id": "inat_ficus_elastica_002",
+        "gt_plant": "고무나무",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎 표면 작은 갈색 반점",
+          "잎 가장자리 찢어짐"
+        ],
+        "top_3_problem_types": [
+          "",
+          "general",
+          "pest"
+        ]
+      },
+      {
+        "image_id": "inat_monstera_deliciosa_001",
+        "gt_plant": "몬스테라",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎 황화",
+          "잎 갈색 반점",
+          "잎 가장자리 찢어짐",
+          "잎 가장자리 갈변"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "frame",
+          ""
+        ]
+      },
+      {
+        "image_id": "inat_monstera_deliciosa_002",
+        "gt_plant": "몬스테라",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎 표면의 백색 변색"
+        ],
+        "top_3_problem_types": [
+          "pest",
+          "disease",
+          ""
+        ]
+      },
+      {
+        "image_id": "inat_sansevieria_trifasciata_002",
+        "gt_plant": "산세베리아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎 일부 갈변"
+        ],
+        "top_3_problem_types": [
+          "disease",
+          "disease",
+          "abiotic"
+        ]
+      },
+      {
+        "image_id": "inat_spathiphyllum_001",
+        "gt_plant": "스파티필름",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 가장자리 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "nutrient"
+        ]
+      },
+      {
+        "image_id": "inat_spathiphyllum_002",
+        "gt_plant": "스파티필름",
+        "pred_status": "영양 부족",
+        "observed_symptoms": [
+          "아래잎 고사",
+          "마른 줄기"
+        ],
+        "top_3_problem_types": [
+          "env",
+          "",
+          "abiotic"
+        ]
+      },
+      {
+        "image_id": "inat_spathiphyllum_003",
+        "gt_plant": "스파티필름",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎 가장자리 갈변"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "general",
+          "general"
+        ]
+      }
+    ]
+  },
+  "tp_analysis": {
+    "tp_count": 4,
+    "fn_count": 1,
+    "tp_status_distribution": {
+      "병해 의심": 4
+    },
+    "tp_top3_majority": {
+      "tie": 3,
+      "disease": 1
+    },
+    "fn_top3_majority": {
+      "tie": 1
+    },
+    "tp_samples": [
+      {
+        "image_id": "self_haengun_002",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "아래잎 황화 및 고사",
+          "일부 잎끝 마름",
+          "잎 표면의 미세한 노란 반점"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "frame"
+        ],
+        "top_3_majority": "tie"
+      },
+      {
+        "image_id": "self_haengun_003",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "아래잎 황화 및 고사",
+          "새순 잎끝 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "frame"
+        ],
+        "top_3_majority": "tie"
+      },
+      {
+        "image_id": "self_haengun_005",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 표면의 작은 노란 반점"
+        ],
+        "top_3_problem_types": [
+          "disease",
+          "",
+          "disease"
+        ],
+        "top_3_majority": "disease"
+      },
+      {
+        "image_id": "self_haengun_008",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "잎 처짐",
+          "줄기 일부 고사"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "",
+          "disease"
+        ],
+        "top_3_majority": "tie"
+      }
+    ],
+    "fn_samples": [
+      {
+        "image_id": "self_haengun_006",
+        "gt_plant": "행운목",
+        "pred_status": "건강",
+        "observed_symptoms": [
+          "잎끝 갈변",
+          "아래잎 황화"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "nutrient",
+          "frame"
+        ],
+        "top_3_majority": "tie"
+      }
+    ]
+  },
+  "species_normal_diagnosis": {
+    "covered_gt_species": [
+      "드라세나",
+      "산세베리아",
+      "스파티필룸",
+      "행운목"
+    ],
+    "covered_gt_images": 18,
+    "covered_gt_healthy_images": 13,
+    "card_injected_images": 18,
+    "covered_fp": 11,
+    "covered_fp_with_card_present": 11,
+    "covered_fp_without_card": 0,
+    "covered_fn": 1,
+    "by_species": {
+      "드라세나": {
+        "images": 5,
+        "card_injected": 5,
+        "healthy": 5,
+        "fp": 5,
+        "sick": 0,
+        "tp": 0,
+        "fn": 0,
+        "inject_mismatch": 3
+      },
+      "행운목": {
+        "images": 7,
+        "card_injected": 7,
+        "healthy": 2,
+        "fp": 2,
+        "sick": 5,
+        "tp": 4,
+        "fn": 1,
+        "inject_mismatch": 0
+      },
+      "산세베리아": {
+        "images": 3,
+        "card_injected": 3,
+        "healthy": 3,
+        "fp": 1,
+        "sick": 0,
+        "tp": 0,
+        "fn": 0,
+        "inject_mismatch": 0
+      },
+      "스파티필룸": {
+        "images": 3,
+        "card_injected": 3,
+        "healthy": 3,
+        "fp": 3,
+        "sick": 0,
+        "tp": 0,
+        "fn": 0,
+        "inject_mismatch": 0
+      }
+    }
+  },
+  "per_case": [
+    {
+      "image_id": "self_dracaena_001",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena sanderiana",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 25.541,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 가장자리 갈색 반점",
+        "잎집(엽초) 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.8632,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8603,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8576,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "드라세나",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_dracaena_002",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 32.799,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8577,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8531,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mu_trinklein_012",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Additionally, temperatures too low for the houseplant…",
+          "sim": 0.8292,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_dracaena_003",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 27.824,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8634,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8464,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8437,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_dracaena_004",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 27.364,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8634,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8464,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8437,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_dracaena_006",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena reflexa",
+      "pred_plant_ko": "드라세나 송 오브 인디아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 34.403,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 마름",
+        "잎 처짐"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8666,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8651,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8631,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "드라세나",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_001",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 20.062,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "아래잎 황화",
+        "잎 표면 미세한 노란 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8623,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8611,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8458,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_002",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 23.055,
+      "json_ok": true,
+      "observed_symptoms": [
+        "아래잎 황화 및 고사",
+        "일부 잎끝 마름",
+        "잎 표면의 미세한 노란 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8699,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8676,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8637,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_003",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 22.112,
+      "json_ok": true,
+      "observed_symptoms": [
+        "아래잎 황화 및 고사",
+        "새순 잎끝 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.866,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8637,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8623,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_004",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 24.859,
+      "json_ok": true,
+      "observed_symptoms": [
+        "새잎 끝부분 손상 및 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.857,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mobot_indoor_003",
+          "problem_type": "env",
+          "source": "mobot_indoor",
+          "title": "Sunburn",
+          "sim": 0.8549,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8482,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_005",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.559,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 표면의 작은 노란 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.8719,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8693,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8687,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_006",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": false,
+      "latency_sec": 22.403,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "아래잎 황화"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8733,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mobot_indoor_021",
+          "problem_type": "nutrient",
+          "source": "mobot_indoor",
+          "title": "Nitrogen deficiency",
+          "sim": 0.8714,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8677,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "self_haengun_008",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 23.566,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 처짐",
+        "줄기 일부 고사"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8548,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8534,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_007",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Anthracnose Collectrotrichum",
+          "sim": 0.8524,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "행운목",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_aglaonema_001",
+      "gt_plant": "아글라오네마",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 20.426,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_011",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Spindly plants",
+          "sim": 0.8055,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_ucanr_012",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Few flowers • Poor",
+          "sim": 0.7928,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.7888,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "스파티필룸",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_aglaonema_002",
+      "gt_plant": "아글라오네마",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 15.841,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_011",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Spindly plants",
+          "sim": 0.8055,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_ucanr_012",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Few flowers • Poor",
+          "sim": 0.7928,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.7888,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "스파티필룸",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_aglaonema_003",
+      "gt_plant": "아글라오네마",
+      "pred_plant_scientific": "Aglaonema commutatum",
+      "pred_plant_ko": "아글라오네마",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 19.068,
+      "json_ok": true,
+      "observed_symptoms": [
+        "일부 잎 가장자리 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_007",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "In the case of damage caused by…",
+          "sim": 0.8262,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.7995,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_009",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Excess fertilizer salts applied to the growing…",
+          "sim": 0.7965,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_chlorophytum_comosum_001",
+      "gt_plant": "접란",
+      "pred_plant_scientific": "Dianella tasmanica",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 21.281,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 일부 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8576,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8575,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8437,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_chlorophytum_comosum_002",
+      "gt_plant": "접란",
+      "pred_plant_scientific": "Chlorophytum comosum",
+      "pred_plant_ko": "접란",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 15.94,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_007",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Anthracnose Collectrotrichum",
+          "sim": 0.8065,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_ucanr_019",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Wilting plant",
+          "sim": 0.7909,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.7896,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_chlorophytum_comosum_003",
+      "gt_plant": "접란",
+      "pred_plant_scientific": "Chlorophytum comosum",
+      "pred_plant_ko": "접란",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 18.061,
+      "json_ok": true,
+      "observed_symptoms": [
+        "일부 잎끝 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8693,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8603,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_007",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Anthracnose Collectrotrichum",
+          "sim": 0.8486,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_001",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 21.512,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 가장자리 갈변",
+        "잎의 검은색 괴사 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8571,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8429,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mu_trinklein_009",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Excess fertilizer salts applied to the growing…",
+          "sim": 0.842,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_002",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 16.678,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_herb_011",
+          "problem_type": "pest",
+          "source": "mobot_herb",
+          "title": "Scale insects",
+          "sim": 0.7694,
+          "rag_source": "mobot_herb"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.768,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mobot_indoor_010",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Scale",
+          "sim": 0.768,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_003",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 16.338,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_herb_011",
+          "problem_type": "pest",
+          "source": "mobot_herb",
+          "title": "Scale insects",
+          "sim": 0.7694,
+          "rag_source": "mobot_herb"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.768,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mobot_indoor_010",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Scale",
+          "sim": 0.768,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_ficus_elastica_001",
+      "gt_plant": "고무나무",
+      "pred_plant_scientific": "Ficus elastica",
+      "pred_plant_ko": "고무나무",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 16.056,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_003",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Soft scales",
+          "sim": 0.8093,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7775,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.7703,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_ficus_elastica_002",
+      "gt_plant": "고무나무",
+      "pred_plant_scientific": "Ficus elastica",
+      "pred_plant_ko": "고무나무",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 19.133,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎 표면 작은 갈색 반점",
+        "잎 가장자리 찢어짐"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8529,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8432,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mobot_indoor_014",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Thrips",
+          "sim": 0.8405,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_ficus_elastica_003",
+      "gt_plant": "고무나무",
+      "pred_plant_scientific": "Ficus elastica",
+      "pred_plant_ko": "고무나무",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 15.298,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_003",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Soft scales",
+          "sim": 0.8093,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7775,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.7703,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_monstera_deliciosa_001",
+      "gt_plant": "몬스테라",
+      "pred_plant_scientific": "Monstera deliciosa",
+      "pred_plant_ko": "몬스테라",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 17.879,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎 황화",
+        "잎 갈색 반점",
+        "잎 가장자리 찢어짐",
+        "잎 가장자리 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8624,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8617,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8616,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_monstera_deliciosa_002",
+      "gt_plant": "몬스테라",
+      "pred_plant_scientific": "Monstera deliciosa",
+      "pred_plant_ko": "몬스테라",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 17.26,
+      "json_ok": true,
+      "observed_symptoms": [
+        "일부 잎 표면의 백색 변색"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_indoor_013",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Whiteflies",
+          "sim": 0.8696,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.8556,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8497,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_monstera_deliciosa_003",
+      "gt_plant": "몬스테라",
+      "pred_plant_scientific": "Monstera deliciosa",
+      "pred_plant_ko": "몬스테라",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 21.745,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.774,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.7725,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7714,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0
+    },
+    {
+      "image_id": "inat_sansevieria_trifasciata_001",
+      "gt_plant": "산세베리아",
+      "pred_plant_scientific": "Dracaena trifasciata",
+      "pred_plant_ko": "산세베리아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 15.866,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.8071,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_011",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Another common abiotic cause of leaf edge…",
+          "sim": 0.7971,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.786,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "산세베리아",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_sansevieria_trifasciata_002",
+      "gt_plant": "산세베리아",
+      "pred_plant_scientific": "Dracaena trifasciata",
+      "pred_plant_ko": "산세베리아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 18.075,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎 일부 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.8504,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8452,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8431,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "산세베리아",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_sansevieria_trifasciata_003",
+      "gt_plant": "산세베리아",
+      "pred_plant_scientific": "Dracaena trifasciata",
+      "pred_plant_ko": "산세베리아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 17.719,
+      "json_ok": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.8071,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_011",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Another common abiotic cause of leaf edge…",
+          "sim": 0.7971,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.786,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "산세베리아",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_spathiphyllum_001",
+      "gt_plant": "스파티필름",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 18.577,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎끝 갈변",
+        "잎 가장자리 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8584,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8566,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mobot_indoor_021",
+          "problem_type": "nutrient",
+          "source": "mobot_indoor",
+          "title": "Nitrogen deficiency",
+          "sim": 0.8556,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "스파티필룸",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_spathiphyllum_002",
+      "gt_plant": "스파티필름",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "영양 부족",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 19.672,
+      "json_ok": true,
+      "observed_symptoms": [
+        "아래잎 고사",
+        "마른 줄기"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_indoor_006",
+          "problem_type": "env",
+          "source": "mobot_indoor",
+          "title": "Leaf and flower drop",
+          "sim": 0.837,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8256,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_017",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Small leaves",
+          "sim": 0.817,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "스파티필룸",
+      "species_normal_card_count": 1
+    },
+    {
+      "image_id": "inat_spathiphyllum_003",
+      "gt_plant": "스파티필름",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 19.894,
+      "json_ok": true,
+      "observed_symptoms": [
+        "잎 가장자리 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_011",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Another common abiotic cause of leaf edge…",
+          "sim": 0.8714,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mu_trinklein_012",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Additionally, temperatures too low for the houseplant…",
+          "sim": 0.8696,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mu_trinklein_007",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "In the case of damage caused by…",
+          "sim": 0.8387,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "스파티필룸",
+      "species_normal_card_count": 1
+    }
+  ]
+}
