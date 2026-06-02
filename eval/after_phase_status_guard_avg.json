@@ -1,0 +1,47 @@
+{
+  "note": "status guard + 교정분 cause 경량 재생성(정합) 후 2회 측정. 정합은 cause만 교체하므로 FP/FN은 status-only(7.5/0)와 불변이어야 정상.",
+  "run1": {
+    "FP": 8,
+    "FN": 0,
+    "TP": 5,
+    "TN": 20,
+    "recall": 1.0,
+    "precision": 0.38461538461538464,
+    "plant_acc": 0.8666666666666667,
+    "healthy_acc": 0.7575757575757576,
+    "fired": 8,
+    "by_reason": {
+      "all_cosmetic_nondisease_top1": 8
+    },
+    "correct_fp": 8,
+    "induced_fn": 0,
+    "cause_regenerated": 8
+  },
+  "run2": {
+    "FP": 7,
+    "FN": 0,
+    "TP": 5,
+    "TN": 21,
+    "recall": 1.0,
+    "precision": 0.4166666666666667,
+    "plant_acc": 0.8666666666666667,
+    "healthy_acc": 0.7878787878787878,
+    "fired": 9,
+    "by_reason": {
+      "all_cosmetic_nondisease_top1": 9
+    },
+    "correct_fp": 9,
+    "induced_fn": 0,
+    "cause_regenerated": 9
+  },
+  "avg": {
+    "FP": 7.5,
+    "FN": 0.0,
+    "recall": 1.0,
+    "plant_acc": 0.8666666666666667,
+    "healthy_acc": 0.7727272727272727,
+    "fired": 8.5,
+    "induced_fn": 0.0,
+    "cause_regenerated": 8.5
+  }
+}

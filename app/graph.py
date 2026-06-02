@@ -40,6 +40,73 @@ RAG_SYMPTOM_KEYWORD_MAX = 5
 
 HEALTHY_KEYWORDS = ["건강", "이상 없음", "문제 없음", "정상", "깨끗", "갈변 없음"]
 
+# ── [status guard] generate over-escalate 후처리 교정 ────────────────────────
+# generate 설득 3회(B-4b 프롬프트 / B-4c tie·cosmetic 룰 / B' 종 사실 RAG)가 모두
+# 커버-종 FP 순효과 0. 입력 신호로는 안 풀린다가 측정으로 확정 → generate 출력 뒤에서
+# 코드가 status enum 값만 교정(설득이 아니라 우회). JSON 구조·enum 집합·한국어 설명 불변.
+GUARD_HEALTHY_STATUS = "건강"
+# 병변(비건강 사수) 토큰 — 1개라도 있으면 건강 교정 금지(FN 0 안전판).
+# 도출: eval/after_phase_b_prime{,_run1,_run2} TP 전수가 동반한 단어
+# (고사·마름·황화·반점·처짐·줄기 고사·손상). TP를 깎지 않으려면 이 분리선이 핵심.
+STATUS_GUARD_LESION_TOKENS: tuple[str, ...] = (
+    "고사", "마름", "마른", "시들", "시듦", "위조",
+    "황화", "반점", "괴사", "부패", "썩", "무름",
+    "처짐", "주름", "손상", "절단", "찢", "구멍", "뚫",
+    "확산", "번짐", "줄기", "부착", "물질",
+    "백색", "흰", "검은", "흑색", "곰팡",
+)
+# cosmetic(건강쪽 신호) — 끝·가장자리·소수 잎 국한 + 변색. B-4c §5 분리선 재현.
+STATUS_GUARD_COSMETIC_LOCATION: tuple[str, ...] = (
+    "잎끝", "잎 끝", "끝부분", "끝 부분", "가장자리",
+    "일부", "자루", "엽초", "잎집", "불염포", "꽃",
+)
+STATUS_GUARD_COSMETIC_DISCOLOR: tuple[str, ...] = ("갈변", "변색", "갈색")
+STATUS_GUARD_DISEASE_TOP1: tuple[str, ...] = ("disease", "pest")
+
+
+def _symptom_has_lesion(symptom: str) -> bool:
+    """병변(비건강) 단어 포함 여부 — FN 0 안전판의 핵심 판정."""
+    return any(tok in symptom for tok in STATUS_GUARD_LESION_TOKENS)
+
+
+def _symptom_is_cosmetic(symptom: str) -> bool:
+    """끝·가장자리·소수 잎 국한 변색만인 cosmetic 증상인지 (병변 단어 없을 때만)."""
+    if _symptom_has_lesion(symptom):
+        return False
+    has_loc = any(tok in symptom for tok in STATUS_GUARD_COSMETIC_LOCATION)
+    has_disc = any(tok in symptom for tok in STATUS_GUARD_COSMETIC_DISCOLOR)
+    return has_loc and has_disc
+
+
+def apply_status_guard(
+    status: str | None,
+    observed_symptoms: list[str] | None,
+    top_1_problem_type: str | None,
+) -> tuple[str, str | None]:
+    """generate over-escalate 교정. ``(교정된 status, 발동 사유 | None)`` 반환.
+
+    이진 게이트(건강↔비건강)만 교정 — enum 값만 바꾸고 JSON 구조·설명문은 손대지 않는다.
+    보수적: 병변 단어 1개라도 있으면 비건강 유지(FN 0 사수 우선). 애매하면 LLM status 유지.
+    """
+    cur = str(status or "").strip()
+    if cur == GUARD_HEALTHY_STATUS:
+        return cur, None  # 이미 건강 — guard는 over-escalate만 교정
+    syms = [str(s) for s in (observed_symptoms or []) if str(s).strip()]
+    # 규칙 1: 증상 empty → 건강
+    if not syms:
+        return GUARD_HEALTHY_STATUS, "empty_symptoms"
+    # 규칙 2: 병변 단어 1개라도 → 유지(비건강) — FN 0 안전판
+    if any(_symptom_has_lesion(s) for s in syms):
+        return cur, None
+    # 규칙 3: 전 증상 cosmetic + 비-disease/pest top_1 → 건강 교정 (핵심)
+    if all(_symptom_is_cosmetic(s) for s in syms):
+        top1 = str(top_1_problem_type or "").strip().lower()
+        if top1 not in STATUS_GUARD_DISEASE_TOP1:
+            return GUARD_HEALTHY_STATUS, "all_cosmetic_nondisease_top1"
+        return cur, None  # disease/pest top_1 → 보수적 유지
+    # 규칙 4: 애매(cosmetic도 병변도 아닌 증상 혼재) → 유지
+    return cur, None
+
 
 class DiagnosisState(TypedDict, total=False):
     image_bytes: bytes
@@ -64,6 +131,8 @@ class DiagnosisState(TypedDict, total=False):
     rag_sims: list[float]  # 필터 통과 문서의 raw cosine (rag_metas와 정렬 일치)
     top_3_problem_type_weighted: dict[str, Any]  # top_3 sim 가중 다수결
     structured_result: dict[str, Any]
+    # [status guard] over-escalate 교정 발동 내역 (측정 진단용)
+    status_guard: dict[str, Any]
 
 
 def _vector_db_path() -> Path:
@@ -704,7 +773,38 @@ def build_diagnosis_graph(
             rag_no_docs=bool(state.get("rag_no_docs")),
             rag_weak_evidence=bool(state.get("rag_weak_evidence")),
         )
-        return {"structured_result": structured}
+        # [status guard] generate over-escalate 교정 — 입력 설득 3회 실패(B-4b/c/B') 후
+        # 출력 뒤에서 status enum 값만 교정. FN 0 사수(병변 단어 veto).
+        pre_status = structured.get("status") if isinstance(structured, dict) else None
+        new_status, guard_reason = apply_status_guard(pre_status, symptoms, top_pt)
+        guard_fired = guard_reason is not None
+        pre_cause = structured.get("cause") if isinstance(structured, dict) else None
+        cause_regenerated = False
+        if guard_fired and isinstance(structured, dict):
+            # status 교정과 cause 텍스트 정합: generate의 "병해 의심" cause가
+            # 교정된 status="건강"과 모순되므로 cause만 건강 전제로 재생성한다.
+            # ⚠ status는 guard 확정값(new_status)으로 고정 — 재생성은 cause만 건드린다.
+            new_cause = await model_utils.regenerate_healthy_cause(
+                plant_name_korean or plant_name, symptoms
+            )
+            structured = {**structured, "status": new_status, "cause": new_cause}
+            cause_regenerated = True
+            logger.info(
+                "status_guard 발동: %r→%r 사유=%s 증상=%s top_1=%r (cause 재생성)",
+                pre_status, new_status, guard_reason, symptoms, top_pt,
+            )
+        return {
+            "structured_result": structured,
+            "status_guard": {
+                "fired": bool(guard_fired),
+                "reason": guard_reason,
+                "pre_status": pre_status,
+                "post_status": new_status,
+                "top_1_problem_type": top_pt,
+                "cause_regenerated": cause_regenerated,
+                "pre_cause": pre_cause,
+            },
+        }
 
     g = StateGraph(DiagnosisState)
     g.add_node("analyze", analyze_node)

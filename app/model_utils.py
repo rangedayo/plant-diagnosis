@@ -237,3 +237,51 @@ async def generate_structured_diagnosis_with_gpt(
         out["summary"] = f"{REQUIRED_WEAK_EVIDENCE_PHRASE}\n\n{out['summary']}"
 
     return out
+
+
+# [status guard] guard가 status를 비건강→"건강"으로 교정한 케이스 전용 cause 경량 재생성.
+# generate가 쓴 "병해 의심" cause와 교정된 status="건강"의 모순을 해소한다(cause만 교체).
+# 호출부(graph.generate_node)는 응답의 cause만 취하고 status는 guard 확정값으로 고정한다.
+_STATUS_GUARD_CAUSE_FALLBACK = (
+    "관찰된 증상은 해당 식물에서 흔한 경미한 변색·자연 범위로 보이며, "
+    "건강 이상 신호로 보기는 어렵습니다. 빛·물·통풍 등 평소 관리를 유지해 주세요."
+)
+
+
+async def regenerate_healthy_cause(
+    plant_name: str | None,
+    observed_symptoms: list[str] | None,
+) -> str:
+    """status guard가 '건강'으로 교정한 케이스의 cause를 건강 전제로 다시 쓴다.
+
+    cause 텍스트(한국어)만 반환. status는 호출부에서 guard 값으로 고정하므로 여기서
+    재판정하지 않는다. API 키 부재·호출 실패·파싱 실패 시 안전한 정적 cause로 폴백한다.
+    """
+    syms = [str(s) for s in (observed_symptoms or []) if str(s).strip()]
+    api_key = get_openai_api_key()
+    if not api_key:
+        return _STATUS_GUARD_CAUSE_FALLBACK
+
+    user = prompts.STATUS_GUARD_CAUSE_REGEN_USER_TEMPLATE.format(
+        plant_name=str(plant_name or "알 수 없음"),
+        symptoms="\n".join(f"- {s}" for s in syms) if syms else "- (없음)",
+    )
+    oai = AsyncOpenAI(api_key=api_key)
+    try:
+        resp = await oai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": prompts.STATUS_GUARD_CAUSE_REGEN_SYSTEM},
+                {"role": "user", "content": user},
+            ],
+            max_tokens=512,
+            response_format={"type": "json_object"},
+            temperature=LLM_TEMPERATURE,
+        )
+        raw_text = (resp.choices[0].message.content or "").strip()
+        parsed = _parse_json_object_from_llm(raw_text)
+        cause = str((parsed or {}).get("cause", "")).strip()
+        return cause or _STATUS_GUARD_CAUSE_FALLBACK
+    except Exception:
+        logger.exception("regenerate_healthy_cause: 호출 실패, 정적 cause 폴백")
+        return _STATUS_GUARD_CAUSE_FALLBACK

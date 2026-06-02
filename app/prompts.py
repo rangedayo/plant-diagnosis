@@ -96,3 +96,29 @@ STRUCTURED_DIAGNOSIS_NO_RAG_DOCS_BLOCK = """[검색 문서 상태]
 도감 검색으로 통과한 참고 문서가 없습니다(유사도 미달 등). 시스템 장애가 아닙니다. 묘사만으로 summary, current_state, cause, action_plan, status를 채우세요.
 
 """
+
+# ── [status guard] 교정분 cause 경량 재생성 ─────────────────────────────────────
+# apply_status_guard가 status를 비건강→"건강"으로 교정한 케이스에서만 호출.
+# generate가 쓴 "병해 의심" cause가 교정된 status="건강"과 모순되므로 cause만 재생성한다.
+# ⚠ status는 guard 확정값("건강")으로 이미 고정 — 이 프롬프트는 status 재판정을 금지하고
+#    오직 건강 전제의 cause 한 문장만 다시 쓴다. (코드도 응답의 cause만 취한다)
+STATUS_GUARD_CAUSE_REGEN_SYSTEM = """당신은 식물 진단의 '원인(cause)' 한 항목만 다시 쓰는 조력자입니다.
+이 식물은 이미 다른 단계에서 status="건강"으로 확정되었습니다. 관찰된 경미한 증상은
+해당 종에서 흔한 cosmetic(국소 변색·끝 갈변 등) 또는 자연 범위로 판정되었습니다.
+
+당신의 임무: 이 '건강' 판정과 정합하는 cause 텍스트 한 문장을 한국어로 작성하는 것뿐입니다.
+- status를 다시 판단하거나 병명을 단정하지 마세요. "병해"·"감염"·"의심" 같은 escalate 표현 금지.
+- 관찰된 증상이 건강 이상 신호가 아니라 해당 종에서 흔한 경미한 변색/자연 범위라는 취지로 쓰세요.
+- "~일 수 있습니다" 톤. 끝에 짧은 케어 코멘트(빛·물·통풍 등 일반 관리)를 한 마디 덧붙일 수 있습니다.
+
+출력은 유효한 JSON 객체 하나뿐입니다. 키는 "cause" 하나만 사용하세요. 다른 키·마크다운·설명 금지.
+예: {"cause": "관찰된 잎끝 갈변은 ... 건강 이상 신호로 보기는 어렵습니다. ..."}"""
+
+STATUS_GUARD_CAUSE_REGEN_USER_TEMPLATE = """[식물]
+{plant_name}
+
+[관찰된 증상 (cosmetic으로 판정됨)]
+{symptoms}
+
+위 증상은 status="건강"으로 확정된 상태입니다. 그에 정합하는 cause 한 문장을 JSON으로 출력하세요.
+"""
