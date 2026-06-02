@@ -200,6 +200,47 @@ def _build_fp_analysis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _build_tp_analysis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """TP(진짜 아픈데 맞춤) + FN(진짜 아픈데 놓침) 분포 — [B-4c] recall 안전장치.
+
+    TP: gt_is_healthy=False AND pred_is_healthy is False
+    FN: gt_is_healthy=False AND pred_is_healthy is True  ← recall 직격, 0이어야 정상
+    """
+    sick_cases = [
+        c
+        for c in per_case
+        if c.get("gt_is_healthy") is False and c.get("pred_is_healthy") is not None
+    ]
+    tp_cases = [c for c in sick_cases if c.get("pred_is_healthy") is False]
+    fn_cases = [c for c in sick_cases if c.get("pred_is_healthy") is True]
+
+    def _dump(cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return [
+            {
+                "image_id": c["image_id"],
+                "gt_plant": c["gt_plant"],
+                "pred_status": c["pred_status"],
+                "observed_symptoms": c.get("observed_symptoms") or [],
+                "top_3_problem_types": [
+                    str(t.get("problem_type") or "") for t in (c.get("top_3_rag") or [])
+                ],
+                "top_3_majority": _majority_problem_type(c.get("top_3_rag")),
+            }
+            for c in cases
+        ]
+
+    return {
+        "tp_count": len(tp_cases),
+        "fn_count": len(fn_cases),
+        "tp_status_distribution": _count_by_key(tp_cases, "pred_status"),
+        "tp_top3_majority": _count_top3_majority(tp_cases),
+        "fn_top3_majority": _count_top3_majority(fn_cases),
+        # 전수 dump (TP+FN 합쳐 ~5건)
+        "tp_samples": _dump(tp_cases),
+        "fn_samples": _dump(fn_cases),  # ← 비어 있어야 recall 100%
+    }
+
+
 async def _run_one_case(graph, image_bytes: bytes) -> tuple[dict[str, Any], float]:
     """그래프 1회 구동. (최종 state, latency_sec) 반환."""
     start = time.perf_counter()
@@ -392,6 +433,7 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         "json_parse_failed_ids": json_fail_ids,
         "latency_sec": lat,
         "fp_analysis": _build_fp_analysis(per_case),  # [B-4a] FP 17건 본질 진단
+        "tp_analysis": _build_tp_analysis(per_case),  # [B-4c] recall 안전장치
         "per_case": per_case,
     }
 
@@ -433,6 +475,31 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     print(f"  status 분포: {fpa['fp_status_distribution']}")
     print(f"  observed_symptoms: {fpa['fp_observed_symptoms_buckets']}")
     print(f"  top_3 problem_type 다수결: {fpa['fp_top3_problem_type_majority']}")
+
+    tpa = result["tp_analysis"]
+    print("\n[TP/FN 분석] ([B-4c] recall 안전장치)")
+    print(f"  TP={tpa['tp_count']}  FN={tpa['fn_count']} (FN>0이면 recall 깎임)")
+    print(f"  TP status: {tpa['tp_status_distribution']}")
+    print(f"  TP top_3 majority: {tpa['tp_top3_majority']}")
+    print(f"  FN top_3 majority: {tpa['fn_top3_majority']}")
+
+    print("\n[관찰 증상 문장 - TP 케이스 (진짜 아픈 식물)]")
+    for s in tpa["tp_samples"]:
+        print(f"  - {s['image_id']} [{s['pred_status']}] majority={s['top_3_majority']}")
+        print(f"    증상: {s['observed_symptoms']}")
+    if tpa["fn_samples"]:
+        print("\n[(주의) 관찰 증상 문장 - FN 케이스 (놓친 아픈 식물)]")
+        for s in tpa["fn_samples"]:
+            print(f"  - {s['image_id']} [{s['pred_status']}] majority={s['top_3_majority']}")
+            print(f"    증상: {s['observed_symptoms']}")
+
+    print("\n[관찰 증상 문장 - FP 케이스 일부 (오진 유지분, 최대 8건)]")
+    for s in fpa.get("fp_observed_symptoms_samples", [])[:8]:
+        print(f"  - {s['image_id']} [{s['pred_status']}]")
+        print(
+            f"    증상: {s.get('observed_symptoms', [])}  "
+            f"타입: {s.get('top_3_problem_types', [])}"
+        )
     print("\n저장:", OUTPUT_PATH)
 
 
