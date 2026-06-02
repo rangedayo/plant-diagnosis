@@ -30,6 +30,40 @@ class AnalysisResult(BaseModel):
     )
 
 
+class CareWater(BaseModel):
+    """계절별 물주기 (농사로 garden, 한글명)."""
+
+    spring: Optional[str] = Field(default=None, description="봄 물주기")
+    summer: Optional[str] = Field(default=None, description="여름 물주기")
+    autumn: Optional[str] = Field(default=None, description="가을 물주기")
+    winter: Optional[str] = Field(default=None, description="겨울 물주기")
+
+
+class CareGuide(BaseModel):
+    """[기능 (b)] 종명 키 케어 가이드 (농사로 garden 구조화 케어 필드).
+
+    진단 결과와 무관하게 첨부되는 지속 관리 정보. (a) 정상화 RAG와 별개.
+    종 미커버 시 응답의 care_guide는 None.
+    """
+
+    species_key: str = Field(description="정규화 종 키 (예: 드라세나, 몬스테라)")
+    display_name: Optional[str] = Field(default=None, description="대표 표시명")
+    src_cntntsNo: Optional[str] = Field(default=None, description="농사로 garden 콘텐츠 번호")
+    scientific_name: Optional[str] = Field(default=None, description="학명")
+    soil: Optional[str] = Field(default=None, description="토양")
+    water: Optional[CareWater] = Field(default=None, description="계절별 물주기")
+    light: Optional[str] = Field(default=None, description="광량")
+    temperature: Optional[str] = Field(default=None, description="생육 적온")
+    humidity: Optional[str] = Field(default=None, description="습도")
+    fertilizer: Optional[str] = Field(default=None, description="비료")
+    placement: Optional[str] = Field(default=None, description="배치 장소")
+    manage_level: Optional[str] = Field(default=None, description="관리 난이도")
+    winter_min_temp: Optional[str] = Field(default=None, description="겨울 최저온도")
+    growth_height_cm: Optional[str] = Field(default=None, description="생육 높이(cm)")
+    growth_area_cm: Optional[str] = Field(default=None, description="생육 면적(cm)")
+    note: Optional[str] = Field(default=None, description="종 매핑 비고")
+
+
 class DiagnosisResponse(BaseModel):
     """LangGraph 진단 완료 응답"""
 
@@ -38,6 +72,10 @@ class DiagnosisResponse(BaseModel):
     structured_result: dict[str, Any] = Field(
         default_factory=dict,
         description="summary, current_state, cause, action_plan, status",
+    )
+    care_guide: Optional[CareGuide] = Field(
+        default=None,
+        description="[기능 (b)] 종명 키 케어 가이드 (진단 무관, status 무관 첨부; 미커버 시 None)",
     )
 
 

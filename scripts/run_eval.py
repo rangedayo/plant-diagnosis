@@ -36,6 +36,7 @@ sys.path.insert(0, str(_ROOT))
 sys.path.insert(0, str(_SCRIPTS))  # eval_retrieval 재사용 ([B-4a] 경우 2)
 
 from app import prompts  # noqa: E402
+from app.care_guide import normalize_species_key  # noqa: E402
 from app.graph import (  # noqa: E402
     _vector_db_path,
     build_diagnosis_graph,
@@ -386,6 +387,62 @@ def _build_status_guard_diagnosis(per_case: list[dict[str, Any]]) -> dict[str, A
     }
 
 
+def _build_care_guide_diagnosis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """[기능 (b)] 케어 가이드 커버리지·종 연결 정확도 — PART C 산출물.
+
+    - coverage: 진단 성공 케이스 중 care_guide가 첨부된 비율(평가셋 9종 전체 커버 기대).
+    - link_correct/link_wrong: 첨부분 중 gt 기대 종 키와 일치/오연결(엉뚱한 케어 카드).
+    - by_species: gt 기대 종별 첨부·오연결 분해.
+    - mislink_samples: 오연결 케이스 전수(analyze 종 오식별 → 엉뚱 케어).
+    """
+    scored = [c for c in per_case if c.get("pred_is_healthy") is not None]
+    attached = [c for c in scored if c.get("care_attached")]
+    link_correct = [c for c in attached if c.get("care_link_correct") is True]
+    link_wrong = [c for c in attached if c.get("care_link_correct") is False]
+
+    by_species: dict[str, dict[str, int]] = {}
+    for c in scored:
+        exp = str(c.get("expected_care_key") or "(none)")
+        b = by_species.setdefault(exp, {"images": 0, "attached": 0, "link_correct": 0, "link_wrong": 0})
+        b["images"] += 1
+        if c.get("care_attached"):
+            b["attached"] += 1
+            if c.get("care_link_correct") is True:
+                b["link_correct"] += 1
+            elif c.get("care_link_correct") is False:
+                b["link_wrong"] += 1
+
+    return {
+        "scored_images": len(scored),
+        "care_attached": len(attached),
+        "coverage": _safe_div(len(attached), len(scored)),
+        "link_correct": len(link_correct),
+        "link_wrong": len(link_wrong),
+        "link_accuracy": _safe_div(len(link_correct), len(link_correct) + len(link_wrong)),
+        "by_species": by_species,
+        "mislink_samples": [
+            {
+                "image_id": c["image_id"],
+                "gt_plant": c["gt_plant"],
+                "pred_plant_scientific": c.get("pred_plant_scientific"),
+                "expected_care_key": c.get("expected_care_key"),
+                "care_species_key": c.get("care_species_key"),
+            }
+            for c in link_wrong
+        ],
+        "uncovered_samples": [
+            {
+                "image_id": c["image_id"],
+                "gt_plant": c["gt_plant"],
+                "pred_plant_scientific": c.get("pred_plant_scientific"),
+                "expected_care_key": c.get("expected_care_key"),
+            }
+            for c in scored
+            if not c.get("care_attached")
+        ],
+    }
+
+
 async def _run_one_case(graph, image_bytes: bytes) -> tuple[dict[str, Any], float]:
     """그래프 1회 구동. (최종 state, latency_sec) 반환."""
     start = time.perf_counter()
@@ -485,6 +542,17 @@ async def async_main() -> None:
 
         healthy_match = pred_is_healthy == gt_is_healthy
 
+        # [기능 (b)] 케어 가이드 첨부·종 연결 정확도 (진단 무관, 측정만)
+        care = out.get("care_guide")
+        care_species_key = (care or {}).get("species_key") if isinstance(care, dict) else None
+        care_attached = bool(care_species_key)
+        # gt 기반 기대 종 키 (평가셋 9종 전체 커버 → 정상이면 항상 매핑)
+        expected_care_key = normalize_species_key(gt_plant, pred_sci)
+        if not care_attached:
+            care_link_correct: bool | None = None  # 미첨부 → 연결 정확도 분모 제외
+        else:
+            care_link_correct = care_species_key == expected_care_key
+
         per_case.append(
             {
                 "image_id": image_id,
@@ -498,6 +566,11 @@ async def async_main() -> None:
                 "healthy_match": healthy_match,
                 "latency_sec": round(latency, 3),
                 "json_ok": json_ok,
+                # [기능 (b)] 케어 가이드 측정 (read-only)
+                "care_attached": care_attached,
+                "care_species_key": care_species_key,
+                "expected_care_key": expected_care_key,
+                "care_link_correct": care_link_correct,
                 # [B-4a] FP 진단 측정 신규 키 (read-only)
                 "observed_symptoms": list(out.get("observed_symptoms") or []),
                 "top_3_rag": _build_top_3_rag(out, db_path),
@@ -605,6 +678,9 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         "status_guard_diagnosis": _build_status_guard_diagnosis(
             per_case
         ),  # [status guard] over-escalate 교정 발동·FN 점검
+        "care_guide_diagnosis": _build_care_guide_diagnosis(
+            per_case
+        ),  # [기능 (b)] 케어 가이드 커버리지·종 연결 정확도
         "per_case": per_case,
     }
 
@@ -705,6 +781,33 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
             f"{s['pre_status']}→{s['post_status']} [{s['guard_reason']}]{flag}"
         )
         print(f"      증상: {s['observed_symptoms']}")
+
+    cgd = result["care_guide_diagnosis"]
+    print("\n[케어 가이드 진단] ([기능 b])")
+    print(
+        f"  커버리지={pct(cgd['coverage'])} ({cgd['care_attached']}/{cgd['scored_images']})  "
+        f"연결정확도={pct(cgd['link_accuracy'])} "
+        f"(정상={cgd['link_correct']} 오연결={cgd['link_wrong']})"
+    )
+    for sp, b in sorted(cgd["by_species"].items()):
+        print(
+            f"    {sp:12} img={b['images']} 첨부={b['attached']} "
+            f"정상연결={b['link_correct']} 오연결={b['link_wrong']}"
+        )
+    if cgd["mislink_samples"]:
+        print("  [오연결 케이스 (엉뚱한 케어 카드)]")
+        for s in cgd["mislink_samples"]:
+            print(
+                f"    - {s['image_id']} gt={s['gt_plant']!r} "
+                f"기대={s['expected_care_key']!r} 첨부={s['care_species_key']!r}"
+            )
+    if cgd["uncovered_samples"]:
+        print("  [미첨부 케이스]")
+        for s in cgd["uncovered_samples"]:
+            print(
+                f"    - {s['image_id']} gt={s['gt_plant']!r} "
+                f"pred_sci={s['pred_plant_scientific']!r} 기대={s['expected_care_key']!r}"
+            )
     print("\n저장:", OUTPUT_PATH)
 
 

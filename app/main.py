@@ -202,10 +202,15 @@ async def diagnose(
     if not isinstance(sr, dict) or not sr:
         sr = model_utils.default_structured_fallback()
 
+    # [기능 (b)] 케어 가이드 첨부 (진단 무관, status 무관). 미커버 종은 None.
+    cg = out.get("care_guide")
+    care_guide = cg if isinstance(cg, dict) and cg else None
+
     return DiagnosisResponse(
         message="diagnosis complete",
         analysis=analysis,
         structured_result=sr,
+        care_guide=care_guide,
     )
 
 

@@ -15,6 +15,7 @@ import chromadb
 from langchain_openai import OpenAIEmbeddings
 from langgraph.graph import END, StateGraph
 
+from app import care_guide as care_guide_mod
 from app import model_utils
 from app.nodes.analyze import make_analyze_node
 from app.vision.base import VisionProvider
@@ -136,6 +137,8 @@ class DiagnosisState(TypedDict, total=False):
     structured_result: dict[str, Any]
     # [status guard] over-escalate 교정 발동 내역 (측정 진단용)
     status_guard: dict[str, Any]
+    # [기능 (b)] 종명 키 케어 가이드 (진단과 무관, 항상 첨부 시도; 미커버 시 None)
+    care_guide: dict[str, Any] | None
 
 
 def _vector_db_path() -> Path:
@@ -796,6 +799,12 @@ def build_diagnosis_graph(
                 "status_guard 발동: %r→%r 사유=%s 증상=%s top_1=%r (cause 재생성)",
                 pre_status, new_status, guard_reason, symptoms, top_pt,
             )
+        # [기능 (b)] 케어 가이드 첨부 — 진단(structured/guard) 확정 뒤 별도 lookup.
+        # status 무관 항상 시도(건강도 지속 관리법). 진단 필드는 일절 건드리지 않는다.
+        care_guide = care_guide_mod.lookup_care_guide(plant_name_korean, plant_name)
+        if DEBUG:
+            _ck = (care_guide or {}).get("species_key") if care_guide else None
+            print("[DEBUG] care_guide species_key:", _ck)
         return {
             "structured_result": structured,
             "status_guard": {
@@ -807,6 +816,7 @@ def build_diagnosis_graph(
                 "cause_regenerated": cause_regenerated,
                 "pre_cause": pre_cause,
             },
+            "care_guide": care_guide,
         }
 
     g = StateGraph(DiagnosisState)
