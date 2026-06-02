@@ -2,7 +2,7 @@
 [단계 B'] 종별 (a) 정상화 카드를 임베딩하여 Chroma `species_normal_rag` 컬렉션을 구축한다.
 
 - 입력: data/raw/species_normal/species_normal_cards.json (4 카드, 드라세나속 위주)
-- 출력: data/vector_db/ 의 Chroma `species_normal_rag` 컬렉션 (격리 — b_dataset_rag/main_rag 불변)
+- 출력: data/vector_db/ 의 Chroma `species_normal_rag` 컬렉션 (격리 — b_dataset_rag/a_dataset_rag 불변)
 - 메타: species(정규화 종명) / src_cntntsNo / card_id
 
 설계 ([B-prime] 작업 프롬프트 §3):
@@ -29,6 +29,9 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 
 COLLECTION_NAME = "species_normal_rag"
+# 임베딩 모델: 검색(app.graph)·다른 적재 스크립트와 동일해야 cosine이 유효.
+# langchain_openai 기본값을 명시 고정(기본값 변경 사고 방지).
+EMBEDDING_MODEL = "text-embedding-ada-002"
 CARDS_REL = "data/raw/species_normal/species_normal_cards.json"
 
 
@@ -84,7 +87,7 @@ def persist(
     openai_key: str,
 ) -> int:
     print(f"[2] OpenAI 임베딩 ({len(documents)} documents)…")
-    embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_key, model=EMBEDDING_MODEL)
     vectors = embeddings.embed_documents(documents)
 
     print(f"[3] Chroma 저장 ({COLLECTION_NAME}) - 격리, 기존 컬렉션 불변")
@@ -123,7 +126,7 @@ def main() -> None:
     if count != len(ids):
         print(f"오류: 적재 count {count} != 예상 {len(ids)}.", file=sys.stderr)
         sys.exit(1)
-    print("[5] 완료. 기존 b_dataset_rag/main_rag 컬렉션은 건드리지 않음.")
+    print("[5] 완료. 기존 b_dataset_rag/a_dataset_rag 컬렉션은 건드리지 않음.")
 
 
 if __name__ == "__main__":

@@ -23,11 +23,14 @@ logger = logging.getLogger("plant_api")
 
 DEBUG = True
 
-# multi-RAG ([B-2]): b_dataset 메인(top_k=7) + main_rag 보조(top_k=3) — 합 10 기준
-MAIN_TOP_K = 3              # 비중 재조정: main 보조
+# multi-RAG ([B-2]): b_dataset 메인(top_k=7) + a_dataset_rag 보조(top_k=3) — 합 10 기준
+MAIN_TOP_K = 3              # 비중 재조정: a_dataset_rag 보조
 B_DATASET_TOP_K = 7         # 비중 재조정: b_dataset 메인
 # 검색 후 필터: cosine similarity(임베딩) 기준
 RAG_MIN_COSINE_SIMILARITY = 0.65
+# 임베딩 모델: 적재(build_*_rag.py)와 검색이 같아야 cosine이 유효하다.
+# langchain_openai 기본값을 코드에 명시 고정 — 기본값 변경 사고 방지(적재 벡터와 동일).
+EMBEDDING_MODEL = "text-embedding-ada-002"
 # 필터 통과 문서만 있을 때, 최고 유사도가 이 값 미만이면 '약한 근거' 안내 (raw cosine)
 RAG_WEAK_MAX_SIMILARITY = 0.72
 # 랭킹 가중치
@@ -151,7 +154,7 @@ def _chroma_query_sync(
         logger.warning("Chroma 검색 생략: OPENAI_API_KEY 없음 (%s)", collection_name)
         return [], [], [], "OPENAI_API_KEY 미설정"
     try:
-        emb = OpenAIEmbeddings(openai_api_key=key)
+        emb = OpenAIEmbeddings(openai_api_key=key, model=EMBEDDING_MODEL)
         qe = emb.embed_query(query)
         client = chromadb.PersistentClient(path=db_path)
         try:
@@ -281,7 +284,7 @@ def _merge_rag_triples(
 
 
 def _doc_plant_for_ranking(doc: str, meta: dict[str, Any]) -> str:
-    """main_rag는 메타 plant_name, 그 외(b_dataset 등)는 plant_name 메타 없음 → generic."""
+    """a_dataset_rag는 메타 plant_name, 그 외(b_dataset 등)는 plant_name 메타 없음 → generic."""
     m = meta or {}
     pn = (m.get("plant_name") or "").strip()
     if pn:
@@ -369,7 +372,7 @@ def _weighted_problem_type_majority(
 ) -> dict[str, Any]:
     """top_N의 problem_type을 raw cosine으로 가중합 다수결.
 
-    main_rag 문서는 problem_type 메타가 없어(빈 문자열) 가중에서 제외된다
+    a_dataset_rag 문서는 problem_type 메타가 없어(빈 문자열) 가중에서 제외된다
     (eval_retrieval 일관성). 1위·2위 가중합 차이가 전체의 5% 미만이면 'tie'.
 
     Returns:
@@ -482,7 +485,7 @@ def build_diagnosis_graph(
         print("[DEBUG] query_en:", query_en)
         if not query_en:
             print(
-                "[INFO] query_en empty → main_rag uses query_ko (영어 코퍼스 폴백)",
+                "[INFO] query_en empty → a_dataset_rag uses query_ko (영어 코퍼스 폴백)",
                 flush=True,
             )
         logger.info(
@@ -537,7 +540,7 @@ def build_diagnosis_graph(
                 mq, db_path, B_DATASET_TOP_K, "b_dataset_rag"
             )
             docs_main, metas_main, sims_main, err_main = _chroma_query_sync(
-                mq, db_path, MAIN_TOP_K, "main_rag"
+                mq, db_path, MAIN_TOP_K, "a_dataset_rag"
             )
             return (
                 docs_b,
@@ -575,7 +578,7 @@ def build_diagnosis_graph(
         if err_b:
             logger.warning("retrieve: b_dataset_rag 시스템 오류: %s", err_b)
         if err_main:
-            logger.warning("retrieve: main_rag 시스템 오류: %s", err_main)
+            logger.warning("retrieve: a_dataset_rag 시스템 오류: %s", err_main)
         rag_system_failed = bool(err_b and err_main)
         if rag_system_failed:
             logger.error(

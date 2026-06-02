@@ -9,7 +9,7 @@ b_dataset raw JSON 5자료(영문)를 청크화·임베딩하여 Chroma `b_datas
 - 카드 = 청크 1:1 (영역 1 A). 청크 본문 = `title + ": " + body` (build_main_rag.flatten_document 일관성)
 - 청크 ID = 카드의 id 그대로 (source prefix가 자료 간 충돌 방지)
 - 메타 6 필드: source/source_id/section/title/problem_type/card_id (영역 3 B)
-- 임베딩 OpenAIEmbeddings() 기본값 (main_rag와 동일, 영역 5 A)
+- 임베딩 OpenAIEmbeddings(model="text-embedding-ada-002") 명시 (검색·a_dataset_rag와 동일, 영역 5 A)
 
 실행 (프로젝트 루트에서):
 
@@ -31,6 +31,9 @@ from langchain_openai import OpenAIEmbeddings
 
 COLLECTION_NAME = "b_dataset_rag"
 NCPMS_COLLECTION = "ncpms_rag"
+# 임베딩 모델: 검색(app.graph)·다른 적재 스크립트와 동일해야 cosine이 유효.
+# langchain_openai 기본값을 명시 고정(기본값 변경 사고 방지).
+EMBEDDING_MODEL = "text-embedding-ada-002"
 
 # (논리 source 키, 프로젝트 루트 기준 상대 경로)
 JSON_FILES: list[tuple[str, str]] = [
@@ -166,7 +169,7 @@ def persist_b_dataset_rag(
 ) -> int:
     """OpenAI 임베딩 + Chroma 적재. persist_main_rag 패턴 그대로. 반환: 적재 후 count."""
     print(f"[3] OpenAI 임베딩 ({len(documents)} documents)…")
-    embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_key, model=EMBEDDING_MODEL)
     vectors = embeddings.embed_documents(documents)
 
     print(f"[4] Chroma 저장 ({COLLECTION_NAME})…")

@@ -1,7 +1,7 @@
 """[B-3] retrieval 골든셋 측정 — Hit Rate@10 · MRR (외부 10 케이스, 자가검증화 방지).
 
 eval/golden_set.json(외부 10 케이스 + acceptable_card_ids)을 읽어
-각 케이스 symptom_en을 쿼리로 b_dataset_rag(top 7) + main_rag(top 3)를 검색하고
+각 케이스 symptom_en을 쿼리로 b_dataset_rag(top 7) + a_dataset_rag(top 3)를 검색하고
 app.graph._merge_rag_triples 로직 그대로 가중 정렬·중복제거한 top 10 기준으로
 Hit@10 / Reciprocal Rank를 계산한다.
 
@@ -60,12 +60,12 @@ def _retrieve_top_n(query: str, db_path: str) -> list[dict[str, Any]]:
         query, db_path, B_DATASET_TOP_K, "b_dataset_rag"
     )
     docs_main, metas_main, sims_main, err_main = _chroma_query_sync(
-        query, db_path, MAIN_TOP_K, "main_rag"
+        query, db_path, MAIN_TOP_K, "a_dataset_rag"
     )
     if err_b:
         print(f"[WARN] b_dataset_rag 검색 오류: {err_b}", file=sys.stderr)
     if err_main:
-        print(f"[WARN] main_rag 검색 오류: {err_main}", file=sys.stderr)
+        print(f"[WARN] a_dataset_rag 검색 오류: {err_main}", file=sys.stderr)
 
     t_b = _tag_triples_rag_source(
         _triples_from_chroma(docs_b, metas_b, sims_b), "b_dataset"
@@ -82,7 +82,7 @@ def _retrieve_top_n(query: str, db_path: str) -> list[dict[str, Any]]:
         if rank > TOP_N:
             break
         m = meta or {}
-        cid = str(m.get("card_id") or "")  # main_rag 문서는 card_id 없음 → ""
+        cid = str(m.get("card_id") or "")  # a_dataset_rag 문서는 card_id 없음 → ""
         out.append(
             {
                 "rank": rank,

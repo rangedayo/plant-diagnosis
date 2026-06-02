@@ -55,7 +55,7 @@ def image_bytes_to_rgb_size(image_bytes: bytes) -> tuple[Image.Image, tuple[int,
 
 async def generate_english_keywords(keywords_ko: list[str]) -> list[str]:
     """
-    한국어 키워드 리스트와 동일한 길이의 영어 검색 키워드 생성 (main_rag 등 영어 코퍼스용).
+    한국어 키워드 리스트와 동일한 길이의 영어 검색 키워드 생성 (a_dataset_rag 등 영어 코퍼스용).
     """
     if not keywords_ko:
         return []

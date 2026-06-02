@@ -1,5 +1,5 @@
 """
-UC IPM PDF(pnhouseplantproblems.pdf) + 수동 정제 HOUSEPLANT(data/houseplant.txt)로 main_rag를 구축한다.
+UC IPM PDF(pnhouseplantproblems.pdf) + 수동 정제 HOUSEPLANT(data/houseplant.txt)로 a_dataset_rag를 구축한다.
 
 - pnhouseplantproblems.pdf: UC IPM Pest Notes (Table 1 + MANAGEMENT)
 - data/houseplant.txt: issue_type / symptoms / cause / solution 블록(불릿)
@@ -8,7 +8,7 @@ UC IPM PDF(pnhouseplantproblems.pdf) + 수동 정제 HOUSEPLANT(data/houseplant.
 
   .venv\\\\Scripts\\\\python.exe scripts\\\\build_main_rag.py
 
-`.env`에 OPENAI_API_KEY 필요. `data/vector_db`에 Chroma `main_rag` 컬렉션 생성.
+`.env`에 OPENAI_API_KEY 필요. `data/vector_db`에 Chroma `a_dataset_rag` 컬렉션 생성.
 """
 
 from __future__ import annotations
@@ -23,7 +23,10 @@ import pdfplumber
 from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 
-COLLECTION_NAME = "main_rag"
+COLLECTION_NAME = "a_dataset_rag"
+# 임베딩 모델: 검색(app.graph)·다른 적재 스크립트와 동일해야 cosine이 유효.
+# langchain_openai 기본값을 명시 고정(기본값 변경 사고 방지).
+EMBEDDING_MODEL = "text-embedding-ada-002"
 
 PDF_UC_IPM = "pnhouseplantproblems.pdf"
 HOUSEPLANT_TXT = "data/houseplant.txt"
@@ -452,7 +455,7 @@ def persist_main_rag(
     vector_db: Path,
     openai_key: str,
 ) -> None:
-    embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_key, model=EMBEDDING_MODEL)
     vectors = embeddings.embed_documents(documents)
 
     vector_db.mkdir(parents=True, exist_ok=True)
@@ -465,7 +468,7 @@ def persist_main_rag(
         name=COLLECTION_NAME,
         metadata={"hnsw:space": "cosine"},
     )
-    ids = [f"main_{i}" for i in range(len(documents))]
+    ids = [f"a_dataset_{i}" for i in range(len(documents))]
     collection.add(
         ids=ids,
         embeddings=vectors,

@@ -26,8 +26,10 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 
 B_COLLECTION = "b_dataset_rag"
-MAIN_COLLECTION = "main_rag"
+MAIN_COLLECTION = "a_dataset_rag"
 NCPMS_COLLECTION = "ncpms_rag"
+# 임베딩 모델: 검색·적재와 동일해야 nearest-neighbor sanity가 유효(기본값 명시 고정).
+EMBEDDING_MODEL = "text-embedding-ada-002"
 
 EXPECTED_B = 82
 EXPECTED_MAIN = 21
@@ -74,9 +76,9 @@ def run_auto_gate(
     main = client.get_collection(MAIN_COLLECTION)
     main_count = main.count()
     assert main_count == EXPECTED_MAIN, (
-        f"main_rag count {main_count} != {EXPECTED_MAIN} (변수 격리 위반)"
+        f"a_dataset_rag count {main_count} != {EXPECTED_MAIN} (변수 격리 위반)"
     )
-    print(f"[OK] main_rag count == {EXPECTED_MAIN} (변수 격리)")
+    print(f"[OK] a_dataset_rag count == {EXPECTED_MAIN} (변수 격리)")
 
     try:
         client.get_collection(NCPMS_COLLECTION)
@@ -145,7 +147,7 @@ def run_inspect(ids: list[str], metas: list[dict], docs: list[str]) -> None:
 
 def run_sanity_queries(client: chromadb.ClientAPI, openai_key: str) -> None:
     print("=== (3) 임베딩 nearest neighbor sanity (top-5) ===")
-    emb = OpenAIEmbeddings(openai_api_key=openai_key)
+    emb = OpenAIEmbeddings(openai_api_key=openai_key, model=EMBEDDING_MODEL)
     b = client.get_collection(B_COLLECTION)
     for q in SANITY_QUERIES:
         qe = emb.embed_query(q)

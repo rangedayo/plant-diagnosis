@@ -1,0 +1,52 @@
+{
+  "note": "main_rag->a_dataset_rag 명명 정합 + 임베딩 모델 명시화(text-embedding-ada-002) 후 2회 측정. 리네임은 Chroma modify(name=)로 벡터 동일, 명시 모델=기존 기본값 -> 검색 결과 불변이 기대값. FN 불변(0), FP는 analyze 비결정 +-1.",
+  "run1": {
+    "FP": 9,
+    "FN": 0,
+    "TP": 5,
+    "TN": 19,
+    "recall": 1.0,
+    "precision": 0.35714285714285715,
+    "plant_acc": 0.8666666666666667,
+    "healthy_acc": 0.7272727272727273,
+    "fired": 9,
+    "by_reason": {
+      "all_cosmetic_nondisease_top1": 9
+    },
+    "correct_fp": 9,
+    "induced_fn": 0,
+    "cause_regenerated": 9
+  },
+  "run2": {
+    "FP": 7,
+    "FN": 0,
+    "TP": 5,
+    "TN": 21,
+    "recall": 1.0,
+    "precision": 0.4166666666666667,
+    "plant_acc": 0.9,
+    "healthy_acc": 0.7878787878787878,
+    "fired": 11,
+    "by_reason": {
+      "all_cosmetic_nondisease_top1": 11
+    },
+    "correct_fp": 11,
+    "induced_fn": 0,
+    "cause_regenerated": 11
+  },
+  "avg": {
+    "FP": 8.0,
+    "FN": 0.0,
+    "recall": 1.0,
+    "plant_acc": 0.8833333333333333,
+    "healthy_acc": 0.7575757575757576,
+    "fired": 10.0,
+    "induced_fn": 0.0,
+    "cause_regenerated": 10.0
+  },
+  "baseline_b493e7c": {
+    "FP": 7.5,
+    "FN": 0,
+    "healthy_acc": 0.7727272727272727
+  }
+}
