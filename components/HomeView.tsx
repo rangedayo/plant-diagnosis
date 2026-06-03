@@ -8,7 +8,14 @@ type Props = {
 // 진단 카드 중앙 식물 일러스트 (plantia_home.html 1:1 이식, 장식용)
 function PlantHero() {
   return (
-    <svg viewBox="0 0 324 288" className="hero-svg" aria-hidden="true">
+    <svg
+      viewBox="0 0 324 288"
+      width={259}
+      height={211}
+      // styled-jsx 스코프는 자식 컴포넌트(PlantHero)에 미적용 → 치수/위치를 인라인으로 고정(정본 HTML과 동일)
+      style={{ position: "absolute", left: "50%", top: 0, transform: "translateX(-50%)" }}
+      aria-hidden="true"
+    >
       <g transform="translate(162 215)">
         <g transform="rotate(-78) scale(0.85)">
           <path d="M0 0 C-12 -25 -16 -70 0 -110 C16 -70 12 -25 0 0 Z" fill="#2E6A35" />
@@ -108,6 +115,11 @@ export default function HomeView({ onFileSelect, error }: Props) {
         <div className="hero-wrap">
           <div className="hero-circle" aria-hidden="true" />
           <PlantHero />
+
+          {/* 가이드 점선 연결선 (정본 plantia_home.html .dl) */}
+          <span className="dl dl-focus" aria-hidden="true" />
+          <span className="dl dl-leaf" aria-hidden="true" />
+          <span className="dl dl-pot" aria-hidden="true" />
 
           {/* 촬영 가이드 3포인트 (정적) */}
           <div className="guide gd-focus">
@@ -311,13 +323,25 @@ export default function HomeView({ onFileSelect, error }: Props) {
           border-radius: var(--radius-circle);
           background: #e7f4e9;
         }
-        .hero-svg {
+        /* 가이드 점선 연결선 */
+        .dl {
           position: absolute;
-          left: 50%;
-          top: 0;
-          transform: translateX(-50%);
-          width: 259px;
-          height: 211px;
+          border-top: 1.6px dashed var(--border-dashed-upload);
+        }
+        .dl-focus {
+          top: 40px;
+          right: 88px;
+          width: 24px;
+        }
+        .dl-leaf {
+          top: 96px;
+          left: 84px;
+          width: 24px;
+        }
+        .dl-pot {
+          top: 168px;
+          right: 96px;
+          width: 24px;
         }
         .guide {
           position: absolute;
