@@ -401,7 +401,7 @@ export default function HomeView({ onFileSelect, error }: Props) {
           font-weight: 700;
           color: var(--text-primary);
           line-height: 1.2;
-          margin-bottom: 18px;
+          margin: 0 0 18px; /* p UA 기본 margin-top 제거 → FAB와 간격 정본 일치 */
           letter-spacing: -0.01em;
         }
         .album-btn {
