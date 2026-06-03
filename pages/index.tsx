@@ -85,7 +85,14 @@ export default function HomePage() {
         {screen === "loading" ? <LoadingView progress={progress} /> : null}
 
         {screen === "result" && result ? (
-          <ResultView result={result} imageUrl={previewUrl} onReset={handleReset} />
+          <ResultView
+            result={result}
+            imageUrl={previewUrl}
+            onReset={handleReset}
+            onViewCare={() => {
+              /* R3: 케어 가이드 화면(screen "care") 연결 예정 — 현재 미연결 placeholder */
+            }}
+          />
         ) : null}
 
         {error ? <div className="error-message">{error}</div> : null}
