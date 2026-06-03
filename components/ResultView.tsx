@@ -22,6 +22,15 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare }: Re
 
   return (
     <section className="dr">
+      {/* 진단 결과 네비 헤더 (정본 plantia_combined.html .dr-hdr). 뒤로=onReset(result→home), ✦=무액션 장식 */}
+      <div className="dr-hdr">
+        <button className="dr-back" type="button" onClick={onReset} aria-label="홈으로 돌아가기">
+          <i className="ti ti-chevron-left" aria-hidden="true" />
+        </button>
+        <h1 className="dr-htitle">진단 결과</h1>
+        <span className="dr-plus" aria-hidden="true">✦</span>
+      </div>
+
       {/* 사진 카드 + 상태 배지 */}
       <div className="card ph-card">
         <div className="ph-img">
@@ -138,6 +147,41 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare }: Re
           flex-direction: column;
           gap: 14px;
           animation: fadeIn 0.26s ease;
+        }
+
+        /* 진단 결과 네비 헤더 (정본 .dr-hdr) */
+        .dr-hdr {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0 0 6px;
+        }
+        .dr-back {
+          width: 36px;
+          height: 36px;
+          border-radius: var(--radius-circle);
+          background: none;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: -7px; /* 36px 버튼 내 22px 셰브론을 컨테이너 좌측 패딩에 시각 정렬 */
+        }
+        .dr-back i {
+          font-size: 22px;
+          color: var(--text-primary);
+        }
+        .dr-htitle {
+          font-size: 18px;
+          font-weight: 700;
+          color: var(--green-dark);
+          letter-spacing: -0.01em;
+          margin: 0;
+        }
+        .dr-plus {
+          font-size: 18px;
+          color: var(--text-disabled);
         }
         .card {
           background: var(--bg-card);
@@ -301,6 +345,7 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare }: Re
           line-height: 1;
         }
         .rx-txt {
+          margin: 0; /* globals.css가 p 마진 미리셋 → UA 기본 margin-block 제거(체크 아이콘 정렬) */
           font-size: 14px;
           color: #3a4a3c;
           line-height: 1.55;

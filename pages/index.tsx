@@ -64,7 +64,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Plant Butler</title>
+        <title>Plantia</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -74,9 +74,13 @@ export default function HomePage() {
         </main>
       ) : (
         <main className="container">
-          <h1>Plant Butler</h1>
-
-          {screen === "loading" ? <LoadingView progress={progress} /> : null}
+          {/* 브랜드 워드마크는 시안에 없음 → 전역 헤더 제거. 로딩(전용 시안 없음)에만 Plantia 표시. */}
+          {screen === "loading" ? (
+            <>
+              <h1>Plantia</h1>
+              <LoadingView progress={progress} />
+            </>
+          ) : null}
 
           {screen === "result" && result ? (
             <ResultView

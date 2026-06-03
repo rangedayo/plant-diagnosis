@@ -201,6 +201,7 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
           <i className="ti ti-chevron-left" aria-hidden="true" />
         </button>
         <h2 className="pg-title">케어 가이드</h2>
+        <span className="pg-plus" aria-hidden="true">✦</span>
       </div>
 
       {/* Card 1: 지속 관리법 + 계절별 물주기 */}
@@ -302,6 +303,11 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
           color: var(--green-dark);
           letter-spacing: -0.02em;
           margin: 0;
+        }
+        .pg-plus {
+          margin-left: auto; /* 좌측 뒤로+제목 유지, ✦만 우측 정렬(정본 .cg-hdr ✦ 복원) */
+          font-size: 18px;
+          color: var(--text-disabled);
         }
 
         /* 카드 베이스 */
