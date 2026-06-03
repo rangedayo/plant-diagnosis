@@ -218,9 +218,9 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
           </div>
 
           {careCells.length > 0 ? (
-            <div className="care-grid" style={{ gridTemplateColumns: `repeat(${careCells.length}, 1fr)` }}>
+            <div className="care-list">
               {careCells.map((cell) => (
-                <div className="care-col" key={cell.key}>
+                <div className="care-row" key={cell.key}>
                   <div className="care-ic">{cell.icon}</div>
                   <div className="care-lbl">{cell.label}</div>
                   {cell.badge ? (
@@ -356,55 +356,58 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
           font-weight: 500;
         }
 
-        /* 케어 그리드 (4-col, 동적 컬럼) */
-        .care-grid {
-          display: grid;
-        }
-        .care-col {
+        /* 케어 리스트 (세로 1열 스택 — 환경 정보 행과 통일) */
+        .care-list {
           display: flex;
           flex-direction: column;
-          align-items: center;
-          padding: 10px 4px 12px;
-          gap: 8px;
-          border-right: 1px solid var(--border-card-subtle);
         }
-        .care-col:last-child {
-          border-right: none;
+        .care-row {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 13px 2px;
+          border-bottom: 1.2px dashed var(--border-dashed-guide);
+        }
+        .care-row:last-child {
+          border-bottom: none;
         }
         .care-ic {
-          width: 52px;
-          height: 52px;
+          width: 44px;
+          height: 44px;
           border-radius: var(--radius-circle);
           background: var(--bg-icon-circle);
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
         .care-ic i {
-          font-size: 24px;
+          font-size: 22px;
           color: var(--green-dark);
         }
         .care-lbl {
-          font-size: 10.5px;
-          color: var(--text-muted);
+          font-size: 14.5px;
+          color: var(--text-secondary);
           font-weight: 500;
-          text-align: center;
-          line-height: 1.3;
+          flex: 1;
+          white-space: nowrap;
         }
         .care-val {
-          font-size: 11px;
+          font-size: 14px;
           color: #283a2a;
           font-weight: 600;
-          text-align: center;
-          line-height: 1.35;
+          line-height: 1.5;
+          text-align: right;
         }
         .diff-badge {
           background: var(--bg-section-header-icon);
           color: var(--green-dark);
-          font-size: 11.5px;
+          font-size: 12px;
           font-weight: 700;
-          padding: 4px 14px;
+          padding: 5px 16px;
           border-radius: 30px;
+          white-space: nowrap;
+          flex-shrink: 0;
         }
 
         /* 계절별 물주기 서브섹션 */
@@ -489,11 +492,15 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
           color: var(--text-primary);
           font-weight: 500;
           flex: 1;
+          white-space: nowrap; /* 긴 값(비료)에 라벨이 두 줄로 쪼개지지 않게 */
+          flex-shrink: 0;
         }
         .info-val {
           font-size: 14.5px;
           color: var(--green-dark);
           font-weight: 600;
+          min-width: 0; /* 긴 값이 값 쪽에서 줄바꿈되도록 */
+          text-align: right;
         }
 
         @keyframes fadeIn {

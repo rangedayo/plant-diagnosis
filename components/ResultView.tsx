@@ -84,7 +84,7 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare }: Re
               <div className="sec-ic">
                 <i className="ti ti-bulb" aria-hidden="true" />
               </div>
-              <span className="sec-ttl">원인 설명</span>
+              <span className="sec-ttl">이렇게 판단했어요</span>
             </div>
             <p className="dr-cause">{cause}</p>
           </div>
