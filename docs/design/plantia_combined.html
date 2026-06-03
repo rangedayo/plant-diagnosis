@@ -101,14 +101,14 @@
 .cg .sec-title{font-size:17px;font-weight:700;color:#1B2B1C;letter-spacing:-.01em}
 .cg .sec-sub{font-size:12.5px;color:#7A8C7B;margin-top:3px;font-weight:500}
 
-.cg .care-grid{display:grid;grid-template-columns:repeat(4,1fr)}
-.cg .care-col{display:flex;flex-direction:column;align-items:center;padding:10px 4px 12px;gap:8px;border-right:1px solid #EEF5EB}
-.cg .care-col:last-child{border-right:none}
-.cg .care-ic{width:52px;height:52px;border-radius:50%;background:#F2F8F2;display:flex;align-items:center;justify-content:center}
-.cg .care-ic i{font-size:24px;color:#2A5428}
-.cg .care-lbl{font-size:10.5px;color:#8A9A8B;font-weight:500;text-align:center;line-height:1.3}
-.cg .care-val{font-size:11px;color:#283A2A;font-weight:600;text-align:center;line-height:1.35}
-.cg .diff-badge{background:#E6F4E0;color:#2A5428;font-size:11.5px;font-weight:700;padding:4px 14px;border-radius:30px}
+.cg .care-list{display:flex;flex-direction:column}
+.cg .care-row{display:flex;align-items:center;gap:14px;padding:13px 2px;border-bottom:1.2px dashed #DDE8DA}
+.cg .care-row:last-child{border-bottom:none}
+.cg .care-ic{width:44px;height:44px;border-radius:50%;background:#F2F8F2;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cg .care-ic i{font-size:22px;color:#2A5428}
+.cg .care-lbl{font-size:14.5px;color:#4A5C4C;font-weight:500;flex:1;white-space:nowrap}
+.cg .care-val{font-size:14px;color:#283A2A;font-weight:600;line-height:1.5;text-align:right}
+.cg .diff-badge{background:#E6F4E0;color:#2A5428;font-size:12px;font-weight:700;padding:5px 16px;border-radius:30px;white-space:nowrap;flex-shrink:0}
 
 .cg .season-wrap{background:#F2F8F2;border-radius:18px;padding:16px;margin-top:16px}
 .cg .season-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -123,8 +123,8 @@
 .cg .info-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1.2px dashed #DDE8DA}
 .cg .info-row:last-child{border-bottom:none}
 .cg .info-ic{width:42px;height:42px;border-radius:50%;background:#F2F8F2;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cg .info-lbl{font-size:14.5px;color:#1B2B1C;font-weight:500;flex:1}
-.cg .info-val{font-size:14.5px;color:#2A5428;font-weight:600}
+.cg .info-lbl{font-size:14.5px;color:#1B2B1C;font-weight:500;flex:1;white-space:nowrap}
+.cg .info-val{font-size:14.5px;color:#2A5428;font-weight:600;min-width:0;text-align:right}
 </style>
 
 <div class="app-container">
@@ -191,7 +191,7 @@
     <div class="card-body">
       <div class="sec-hdr">
         <div class="sec-ic"><i class="ti ti-bulb"></i></div>
-        <span class="sec-ttl">원인 설명</span>
+        <span class="sec-ttl">이렇게 판단했어요</span>
       </div>
       <p class="dr-cause">잎이 단단하고 선명한 색을 띠며, 뿌리 상태도 안정적으로 확인되어 건강한 환경에서 잘 자라고 있어요.</p>
     </div>
@@ -258,8 +258,8 @@
         </div>
       </div>
 
-      <div class="care-grid">
-        <div class="care-col">
+      <div class="care-list">
+        <div class="care-row">
           <div class="care-ic">
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
               <path d="M4 19 Q13 10 22 19" stroke="#2A5428" stroke-width="1.7" stroke-linecap="round" fill="none"/>
@@ -268,14 +268,14 @@
             </svg>
           </div>
           <div class="care-lbl">토양</div>
-          <div class="care-val">배수 좋은<br>흙</div>
+          <div class="care-val">배수 좋은 흙</div>
         </div>
-        <div class="care-col">
-          <div class="care-ic"><i class="ti ti-sun" style="font-size:25px;color:#2A5428"></i></div>
+        <div class="care-row">
+          <div class="care-ic"><i class="ti ti-sun" style="font-size:22px;color:#2A5428"></i></div>
           <div class="care-lbl">광량</div>
           <div class="care-val">밝은 간접광</div>
         </div>
-        <div class="care-col">
+        <div class="care-row">
           <div class="care-ic">
             <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
               <path d="M8 14 L7 22 L19 22 L18 14 Z" stroke="#2A5428" stroke-width="1.6" stroke-linejoin="round" fill="none"/>
@@ -286,10 +286,10 @@
             </svg>
           </div>
           <div class="care-lbl">배치</div>
-          <div class="care-val">통풍이 잘<br>되는 실내</div>
+          <div class="care-val">통풍이 잘 되는 실내</div>
         </div>
-        <div class="care-col">
-          <div class="care-ic"><i class="ti ti-gauge" style="font-size:24px;color:#2A5428"></i></div>
+        <div class="care-row">
+          <div class="care-ic"><i class="ti ti-gauge" style="font-size:22px;color:#2A5428"></i></div>
           <div class="care-lbl">관리 난이도</div>
           <span class="diff-badge">쉬움</span>
         </div>
