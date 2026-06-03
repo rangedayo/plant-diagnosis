@@ -47,13 +47,13 @@
 | status 원값 | 의미 | 메인색 | 배지 배경 | 배지 텍스트 |
 |---|---|---|---|---|
 | `건강` | 건강 | `#7BCB8F` | `#D8F0CC` (= `bg-status-badge`) | `#2A5428` |
-| `과습` · `건조` · `영양 부족` | 환경 스트레스(주의) | `#F5CD64` | `#FBF1D2` ※제안 | `#7A5B12` ※제안 |
-| `병해 의심` | 병해 | `#F3A096` | `#FBE2DD` ※제안 | `#9A3D32` ※제안 |
-| (미스/빈값) | fallback | `#8FBBD9` | `#E3EEF5` ※제안 | `#3A5B70` ※제안 |
+| `과습` · `건조` · `영양 부족` | 환경 스트레스(주의) | `#F5CD64` | `#FBF1D2` | `#7A5B12` |
+| `병해 의심` | 병해 | `#F3A096` | `#FBE2DD` | `#9A3D32` |
+| (미스/빈값) | fallback | `#8FBBD9` | `#E3EEF5` | `#3A5B70` |
 
 - **CSS 변수**(R1 globals.css): `--status-healthy #7BCB8F` · `--status-caution #F5CD64` · `--status-disease #F3A096` · `--status-info #8FBBD9`(fallback).
 - 매핑 로직은 `lib/status.ts`의 `statusColor(status)` — status 원값 키, 미스 키는 fallback.
-- ⚠ ※제안 배경/텍스트는 시안에 비건강 배지가 없어 메인색에서 파생한 값. **R2(ResultView 이식)에서 실제 노란/코랄 배지를 띄워보고 시각 확정** — 어색하면 조정.
+- 비건강 배지 배경/텍스트(노랑·코랄·fallback)는 **R2에서 시각 확정됨** — 실제 ResultView에 띄워 어색함 없음 확인, 값 고정.
 - 미사용: `해충 발견 #F08C82`(대응 status 없음), `정보 #8FBBD9`는 메인 배지 아닌 fallback 전용.
 
 ### 구분선
@@ -136,5 +136,6 @@
 
 - "상태(status) 색" 섹션 신설 — 실제 status 5종(건강·과습·건조·병해 의심·영양 부족)을
   3색 + fallback에 매핑. 비건강 배지 배경/텍스트는 ※제안값(R2 시각 확정 대상).
+- R2 검증으로 비건강 배지 색 확정 (노랑 #FBF1D2/#7A5B12, 코랄 #FBE2DD/#9A3D32, fallback #E3EEF5/#3A5B70).
 - `bg-status-badge`를 "건강 전용"으로 명시 (기존엔 용도가 모호했음).
 - 폰트·아이콘 로드를 R1 `_document.tsx` 기준으로 명시.
