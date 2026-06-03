@@ -91,18 +91,6 @@ export default function HomePage() {
         {error ? <div className="error-message">{error}</div> : null}
       </main>
 
-      <style jsx global>{`
-        * {
-          box-sizing: border-box;
-        }
-        body {
-          margin: 0;
-          font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-          background: linear-gradient(180deg, #f3fff3 0%, #e8f5e9 100%);
-          color: #1f2b20;
-        }
-      `}</style>
-
       <style jsx>{`
         .container {
           max-width: 460px;

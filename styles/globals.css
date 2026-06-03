@@ -1,0 +1,78 @@
+/*
+ * Plantia 디자인 시스템 토큰 (정본: docs/design/plantia_design_system_sheet.md)
+ * R1: :root CSS 변수 1:1 이식 + body 기본. 화면 컴포넌트 스타일은 R2+.
+ * 참고: 시트의 text-* 토큰은 이중값(예: #1F2A21 / #1B2B1C)을 가지며, 첫 값을 카논으로 채택.
+ */
+
+:root {
+  /* ---------- 배경 ---------- */
+  --bg-page: #F4F7F2;
+  --bg-card: #FFFFFF;
+  --bg-icon-circle: #F2F8F2;
+  --bg-icon-circle-accent: #C8E6BF;
+  --bg-section-header-icon: #E6F4E0;
+  --bg-season-wrap: #F2F8F2;
+  --bg-season-icon: #D6ECCC;
+  --bg-info-row: #F9FAF7;
+  --bg-drop-fill: #EBF6E5;
+  --bg-status-badge: #D8F0CC; /* "건강" 전용 — 비건강은 status 변수 참조 */
+  --bg-photo-placeholder: linear-gradient(170deg, #EDE8DE, #E0D9CB, #D4CDB8);
+  --bg-camera-section: #ECF4EC;
+
+  /* ---------- 텍스트 ---------- */
+  --text-primary: #1F2A21;
+  --text-secondary: #4A5C4C;
+  --text-muted: #7A8C7B;
+  --text-disabled: #B8CCB8;
+
+  /* ---------- 브랜드 그린 ---------- */
+  --green-dark: #2A5428;
+  --green-medium: #3A6E37;
+  --green-camera: #1B5E20;
+  --green-check: #2E7D32;
+
+  /* ---------- status 색 (R0 §B-1 확정: 3색 + fallback) ---------- */
+  --status-healthy: #7BCB8F;
+  --status-caution: #F5CD64;
+  --status-disease: #F3A096;
+  --status-info: #8FBBD9; /* fallback 전용 (미스/빈 status) */
+
+  /* ---------- 구분선 ---------- */
+  --border-dashed: #C4CCC0;
+  --border-dashed-guide: #DDE8DA;
+  --border-dashed-upload: #A8DDB5;
+  --border-card-subtle: #EEF5EB;
+  --border-tab: #E6EEE3;
+
+  /* ---------- Border Radius ---------- */
+  --radius-card: 22px;
+  --radius-season-wrap: 18px;
+  --radius-photo-inner: 16px;
+  --radius-season-card: 14px;
+  --radius-info-block: 12px;
+  --radius-button: 30px;
+  --radius-badge: 40px;
+  --radius-circle: 50%;
+
+  /* ---------- 그림자 ---------- */
+  --shadow-card: 0 2px 12px rgba(42, 84, 40, 0.07);
+  --shadow-card-elevated: 0 4px 20px rgba(46, 125, 50, 0.13);
+  --shadow-camera-btn: 0 8px 22px rgba(27, 94, 32, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
