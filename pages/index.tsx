@@ -1,12 +1,13 @@
 import Head from "next/head";
 import { useEffect, useMemo, useState } from "react";
+import CareGuideView from "../components/CareGuideView";
 import LoadingView from "../components/LoadingView";
 import ResultView from "../components/ResultView";
 import UploadCard from "../components/UploadCard";
 import { diagnosePlant } from "../lib/api";
 import { DiagnosisResponse } from "../types/diagnosis";
 
-type Screen = "home" | "loading" | "result";
+type Screen = "home" | "loading" | "result" | "care";
 
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -89,10 +90,12 @@ export default function HomePage() {
             result={result}
             imageUrl={previewUrl}
             onReset={handleReset}
-            onViewCare={() => {
-              /* R3: 케어 가이드 화면(screen "care") 연결 예정 — 현재 미연결 placeholder */
-            }}
+            onViewCare={result.care_guide ? () => setScreen("care") : undefined}
           />
+        ) : null}
+
+        {screen === "care" && result?.care_guide ? (
+          <CareGuideView careGuide={result.care_guide} onBack={() => setScreen("result")} />
         ) : null}
 
         {error ? <div className="error-message">{error}</div> : null}
