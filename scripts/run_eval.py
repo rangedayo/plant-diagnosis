@@ -26,7 +26,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from dotenv import load_dotenv
 
@@ -455,6 +455,45 @@ def _safe_div(num: float, den: float) -> float | None:
     return (num / den) if den else None
 
 
+# ───────────────────────────── [L0-C] 가드 전/후 confusion ─────────────────────
+# status guard는 비건강→"건강" 단방향 교정(graph.apply_status_guard). pre_status는
+# generate 원본 status로 항상 기록되고, 가드 미발동이면 pre==post. 같은 confusion을
+# pre/post 두 벌로 내고 그 FP 차이(guard_caught_fp)로 "가드가 잡은 FP"를 한눈에 본다.
+
+def _post_guard_is_healthy(c: dict[str, Any]) -> bool:
+    """최종(가드 후) status 기준 건강 여부 — 기존 is_healthy와 동일 축."""
+    return bool(c["pred_is_healthy"])
+
+
+def _pre_guard_is_healthy(c: dict[str, Any]) -> bool:
+    """가드 전(generate 원본) status 기준 건강 여부. pre_status 없으면 pre=post."""
+    pre = c.get("guard_pre_status")
+    if pre is None:
+        return bool(c["pred_is_healthy"])
+    return _status_to_is_healthy(pre)
+
+
+def _confusion(
+    scored: list[dict[str, Any]],
+    pred_healthy: Callable[[dict[str, Any]], bool],
+) -> dict[str, Any]:
+    """건강여부 confusion (positive=비건강). pred_healthy(case)->건강 bool."""
+    tp = sum(1 for c in scored if not c["gt_is_healthy"] and not pred_healthy(c))
+    tn = sum(1 for c in scored if c["gt_is_healthy"] and pred_healthy(c))
+    fp = sum(1 for c in scored if c["gt_is_healthy"] and not pred_healthy(c))
+    fn = sum(1 for c in scored if not c["gt_is_healthy"] and pred_healthy(c))
+    return {
+        "positive_class": "unhealthy",
+        "tp": tp,
+        "tn": tn,
+        "fp": fp,
+        "fn": fn,
+        "precision": _safe_div(tp, tp + fp),
+        "recall": _safe_div(tp, tp + fn),
+        "accuracy": _safe_div(tp + tn, len(scored)),
+    }
+
+
 async def async_main() -> None:
     load_dotenv(_ROOT / ".env")
     labels = _load_labels(LABELS_PATH)
@@ -608,14 +647,19 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     plant_acc = _safe_div(correct, correct + wrong)  # 매칭가능한 것 중 비율
 
     # --- 건강 여부 (unhealthy = positive) ---
+    # [L0-C] 가드 전(generate 원본)/후(최종) confusion을 나란히. post_guard는 기존
+    # is_healthy와 동일(호환 유지), pre_guard는 guard_pre_status 기준.
     scored = [c for c in per_case if c["pred_is_healthy"] is not None]
-    tp = sum(1 for c in scored if not c["gt_is_healthy"] and not c["pred_is_healthy"])
-    tn = sum(1 for c in scored if c["gt_is_healthy"] and c["pred_is_healthy"])
-    fp = sum(1 for c in scored if c["gt_is_healthy"] and not c["pred_is_healthy"])
-    fn = sum(1 for c in scored if not c["gt_is_healthy"] and c["pred_is_healthy"])
-    precision = _safe_div(tp, tp + fp)
-    recall = _safe_div(tp, tp + fn)
-    healthy_acc = _safe_div(tp + tn, len(scored))
+    post_guard = _confusion(scored, _post_guard_is_healthy)
+    pre_guard = _confusion(scored, _pre_guard_is_healthy)
+    guard_caught_fp = pre_guard["fp"] - post_guard["fp"]
+    # 콘솔/기존 키 호환용 (post_guard 기준)
+    tp, tn, fp, fn = post_guard["tp"], post_guard["tn"], post_guard["fp"], post_guard["fn"]
+    precision, recall, healthy_acc = (
+        post_guard["precision"],
+        post_guard["recall"],
+        post_guard["accuracy"],
+    )
 
     # --- status 분포 + is_healthy 교차표 ---
     status_dist: dict[str, int] = {}
@@ -655,16 +699,11 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
             "unmappable": unmappable,
             "accuracy": plant_acc,
         },
-        "is_healthy": {
-            "positive_class": "unhealthy",
-            "tp": tp,
-            "tn": tn,
-            "fp": fp,
-            "fn": fn,
-            "precision": precision,
-            "recall": recall,
-            "accuracy": healthy_acc,
-        },
+        "is_healthy": post_guard,  # [L0-C] 기존 키 유지(= post_guard, 호환)
+        "is_healthy_post_guard": post_guard,  # 최종 status 기준
+        "is_healthy_pre_guard": pre_guard,  # generate 원본 status 기준
+        # 가드가 건강 복원해 잡은 FP 수 (pre.fp - post.fp). 0이면 가드 무발동/무효.
+        "guard_caught_fp": guard_caught_fp,
         "status_distribution": status_dist,
         "status_by_is_healthy": status_by_health,
         "json_parse_success_rate": json_rate,
@@ -700,9 +739,13 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     print("\n[식물 이름]")
     print(f"  correct={correct}  wrong={wrong}  unmappable={unmappable}")
     print(f"  정확도(매칭가능 중): {pct(plant_acc)}")
-    print("\n[건강 여부] (positive=unhealthy)")
+    print("\n[건강 여부] (positive=unhealthy, 최종=가드 후)")
     print(f"  TP={tp}  TN={tn}  FP={fp}  FN={fn}")
     print(f"  precision={pct(precision)}  recall={pct(recall)}  accuracy={pct(healthy_acc)}")
+    print(
+        f"  [가드 전] FP={pre_guard['fp']} → [가드 후] FP={post_guard['fp']}  "
+        f"(가드가 잡은 FP={guard_caught_fp})"
+    )
     print("\n[status 분포]")
     for st, cnt in sorted(status_dist.items(), key=lambda x: -x[1]):
         h = status_by_health.get(st, {})
