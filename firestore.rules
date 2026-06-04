@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// 소유자 격리: users/{uid} 하위 전체는 본인(uid)만 read/write. 그 외 경로·미인증은 기본 deny.
+// 데이터 모델: docs/design/design_timeline_firebase.md §3.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

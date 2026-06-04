@@ -1,4 +1,5 @@
 import { ChangeEvent, useRef } from "react";
+import AuthControl from "./AuthControl";
 
 type Props = {
   onFileSelect: (file: File) => void; // 파일 선택 시 상위에서 진단 흐름 트리거
@@ -87,10 +88,14 @@ export default function HomeView({ onFileSelect, error }: Props) {
           </svg>
           Plantia
         </div>
-        {/* 알림 기능 미구현 → 비활성·무반응(클릭 핸들러 없음) */}
-        <span className="ms-bell" aria-hidden="true">
-          <i className="ti ti-bell" />
-        </span>
+        {/* 우측: 인증 진입점(Google 로그인/아바타) + 무반응 알림 벨(기존 장식 유지) */}
+        <div className="ms-hdr-right">
+          <AuthControl />
+          {/* 알림 기능 미구현 → 비활성·무반응(클릭 핸들러 없음) */}
+          <span className="ms-bell" aria-hidden="true">
+            <i className="ti ti-bell" />
+          </span>
+        </div>
       </div>
 
       {/* 인사말 */}
@@ -242,6 +247,11 @@ export default function HomeView({ onFileSelect, error }: Props) {
           font-weight: 800;
           color: #1b3a1c;
           letter-spacing: -0.02em;
+        }
+        .ms-hdr-right {
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
         .ms-bell {
           width: 40px;
