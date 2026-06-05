@@ -7,9 +7,11 @@ type ResultViewProps = {
   onReset: () => void;
   onViewCare?: () => void; // R3에서 케어 화면 연결 예정 (현재 미연결 placeholder)
   onSave?: () => void; // 진단 기록 저장(로그인 게이트·모달은 상위에서). 미제공 시 버튼 숨김.
+  mode?: "fresh" | "history"; // 미제공 = "fresh"(기존 동작). history는 하단 우측 버튼만 분기.
 };
 
-export default function ResultView({ result, imageUrl, onReset, onViewCare, onSave }: ResultViewProps) {
+export default function ResultView({ result, imageUrl, onReset, onViewCare, onSave, mode }: ResultViewProps) {
+  const isHistory = mode === "history";
   const { structured_result: sr, analysis, care_guide } = result;
 
   const plantName = analysis?.plant_name_korean ?? analysis?.plant_name ?? "식물명 미식별";
@@ -144,9 +146,14 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare, onSa
           <i className="ti ti-download" aria-hidden="true" />
           리포트 저장
         </button>
-        <button className="dr-btn-fill" type="button" onClick={onReset} aria-label="홈으로 돌아가기">
-          <i className="ti ti-smart-home" aria-hidden="true" />
-          홈으로 돌아가기
+        <button
+          className="dr-btn-fill"
+          type="button"
+          onClick={onReset}
+          aria-label={isHistory ? "타임라인으로 돌아가기" : "홈으로 돌아가기"}
+        >
+          <i className={`ti ${isHistory ? "ti-chevron-left" : "ti-smart-home"}`} aria-hidden="true" />
+          {isHistory ? "타임라인으로 돌아가기" : "홈으로 돌아가기"}
         </button>
       </div>
 

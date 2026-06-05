@@ -1,9 +1,11 @@
 import { ChangeEvent, useRef } from "react";
 import AuthControl from "./AuthControl";
+import BottomTabBar, { type TabKey } from "./BottomTabBar";
 
 type Props = {
   onFileSelect: (file: File) => void; // 파일 선택 시 상위에서 진단 흐름 트리거
   error?: string;
+  onTabChange: (tab: TabKey) => void; // 하단 탭바 전환 (상위 상태머신에서 처리)
 };
 
 // 진단 카드 중앙 식물 일러스트 (plantia_home.html 1:1 이식, 장식용)
@@ -58,7 +60,7 @@ function PlantHero() {
   );
 }
 
-export default function HomeView({ onFileSelect, error }: Props) {
+export default function HomeView({ onFileSelect, error, onTabChange }: Props) {
   const cameraRef = useRef<HTMLInputElement | null>(null);
   const albumRef = useRef<HTMLInputElement | null>(null);
 
@@ -191,35 +193,8 @@ export default function HomeView({ onFileSelect, error }: Props) {
         <p className="rec-empty-sub">첫 진단을 시작해 식물 상태를 기록해보세요.</p>
       </div>
 
-      {/* 탭바 — 홈 활성, 나머지 비활성·무반응 */}
-      <nav className="tab-bar" aria-label="하단 내비게이션">
-        <div className="tab-item active" aria-current="page">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M12 3 L21 11 L19 11 L19 20.5 L5 20.5 L5 11 L3 11 Z"
-              fill="#D4EBC8"
-              stroke="#587A4E"
-              strokeWidth="1.6"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            />
-            <rect x="9" y="14" width="6" height="6.5" rx="1.2" fill="#587A4E" />
-          </svg>
-          <span>홈</span>
-        </div>
-        <div className="tab-item disabled" aria-disabled="true">
-          <i className="ti ti-scan" aria-hidden="true" />
-          <span>진단</span>
-        </div>
-        <div className="tab-item disabled" aria-disabled="true">
-          <i className="ti ti-plant-2" aria-hidden="true" />
-          <span>내 식물</span>
-        </div>
-        <div className="tab-item disabled" aria-disabled="true">
-          <i className="ti ti-settings" aria-hidden="true" />
-          <span>설정</span>
-        </div>
-      </nav>
+      {/* 탭바 — 공용 컴포넌트(home 활성). diagnose/settings disabled, myPlants는 상위에서 전환 */}
+      <BottomTabBar activeTab="home" onTabChange={onTabChange} />
 
       <style jsx>{`
         .ms {
@@ -524,38 +499,6 @@ export default function HomeView({ onFileSelect, error }: Props) {
           color: var(--text-muted);
           font-weight: 500;
           line-height: 1.5;
-        }
-
-        /* 탭바 */
-        .tab-bar {
-          margin-top: auto;
-          background: var(--bg-card);
-          border-top: 1px solid var(--border-tab);
-          display: flex;
-          padding: 10px 0 20px;
-        }
-        .tab-item {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 3px;
-        }
-        .tab-item i {
-          font-size: 24px;
-          color: var(--text-disabled);
-        }
-        .tab-item span {
-          font-size: 10.5px;
-          color: var(--text-disabled);
-          font-weight: 500;
-        }
-        .tab-item.active span {
-          color: var(--green-dark);
-          font-weight: 700;
-        }
-        .tab-item.disabled {
-          cursor: default;
         }
 
         @keyframes fadeIn {

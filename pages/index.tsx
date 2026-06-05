@@ -3,13 +3,18 @@ import { useEffect, useMemo, useState } from "react";
 import CareGuideView from "../components/CareGuideView";
 import HomeView from "../components/HomeView";
 import LoadingView from "../components/LoadingView";
+import MyPlantsView from "../components/MyPlantsView";
 import ResultView from "../components/ResultView";
 import SaveDiagnosisModal from "../components/SaveDiagnosisModal";
+import TimelineView from "../components/TimelineView";
+import { type TabKey } from "../components/BottomTabBar";
 import { diagnosePlant } from "../lib/api";
 import { useAuth } from "../lib/auth";
+import { diagnosisRecordToResponse } from "../lib/historyAdapter";
+import { type DiagnosisRecord, type PlantSummary } from "../lib/db";
 import { DiagnosisResponse } from "../types/diagnosis";
 
-type Screen = "home" | "loading" | "result" | "care";
+type Screen = "home" | "loading" | "result" | "care" | "myPlants" | "timeline";
 
 export default function HomePage() {
   const { user, signInWithGoogle } = useAuth();
@@ -20,6 +25,9 @@ export default function HomePage() {
   const [progress, setProgress] = useState<number>(0);
   const [showSave, setShowSave] = useState(false);
   const [savedMsg, setSavedMsg] = useState("");
+  // 2-B 읽기 UI — fresh 진단(result/file)과 격리. history 진입 시 result state는 건드리지 않음.
+  const [selectedPlant, setSelectedPlant] = useState<PlantSummary | null>(null);
+  const [historyDiagnosis, setHistoryDiagnosis] = useState<DiagnosisRecord | null>(null);
 
   const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
 
@@ -65,6 +73,25 @@ export default function HomePage() {
     setProgress(0);
     setError("");
     setShowSave(false);
+    setHistoryDiagnosis(null); // fresh 복귀 시 history 격리 상태도 정리
+  };
+
+  // 하단 탭바 전환 (diagnose/settings는 disabled — 호출 안 옴).
+  const handleTabChange = (tab: TabKey) => {
+    if (tab === "home") setScreen("home");
+    else if (tab === "myPlants") setScreen("myPlants");
+  };
+
+  // myPlants 식물 카드 클릭 → timeline.
+  const handlePickPlant = (plant: PlantSummary) => {
+    setSelectedPlant(plant);
+    setScreen("timeline");
+  };
+
+  // timeline 진단 카드 클릭 → result(history 모드).
+  const handlePickDiagnosis = (record: DiagnosisRecord) => {
+    setHistoryDiagnosis(record);
+    setScreen("result");
   };
 
   // 저장 버튼: 미로그인 시 로그인 게이트 → 성공하면 모달 오픈. 로그인돼 있으면 곧장 모달.
@@ -95,7 +122,15 @@ export default function HomePage() {
 
       {screen === "home" ? (
         <main>
-          <HomeView onFileSelect={runDiagnosis} error={error} />
+          <HomeView onFileSelect={runDiagnosis} error={error} onTabChange={handleTabChange} />
+        </main>
+      ) : screen === "myPlants" ? (
+        <main>
+          <MyPlantsView
+            onPickPlant={handlePickPlant}
+            onGoDiagnose={() => setScreen("home")}
+            onTabChange={handleTabChange}
+          />
         </main>
       ) : (
         <main className="container">
@@ -107,18 +142,47 @@ export default function HomePage() {
             </>
           ) : null}
 
-          {screen === "result" && result ? (
-            <ResultView
-              result={result}
-              imageUrl={previewUrl}
-              onReset={handleReset}
-              onViewCare={result.care_guide ? () => setScreen("care") : undefined}
-              onSave={() => void handleSaveClick()}
-            />
+          {/* result: history(과거 진단) vs fresh(신규 진단) 분기 — historyDiagnosis로 격리 */}
+          {screen === "result" ? (
+            historyDiagnosis ? (
+              <ResultView
+                result={diagnosisRecordToResponse(historyDiagnosis, { name: selectedPlant?.name ?? "" })}
+                imageUrl={historyDiagnosis.imageUrl}
+                mode="history"
+                onReset={() => {
+                  setHistoryDiagnosis(null);
+                  setScreen("timeline");
+                }}
+                onViewCare={historyDiagnosis.careGuide ? () => setScreen("care") : undefined}
+              />
+            ) : result ? (
+              <ResultView
+                result={result}
+                imageUrl={previewUrl}
+                mode="fresh"
+                onReset={handleReset}
+                onViewCare={result.care_guide ? () => setScreen("care") : undefined}
+                onSave={() => void handleSaveClick()}
+              />
+            ) : null
           ) : null}
 
-          {screen === "care" && result?.care_guide ? (
-            <CareGuideView careGuide={result.care_guide} onBack={() => setScreen("result")} />
+          {/* care: history면 historyDiagnosis.careGuide, fresh면 result.care_guide */}
+          {screen === "care"
+            ? (() => {
+                const cg = historyDiagnosis ? historyDiagnosis.careGuide : result?.care_guide;
+                if (!cg) return null;
+                return <CareGuideView careGuide={cg} onBack={() => setScreen("result")} />;
+              })()
+            : null}
+
+          {screen === "timeline" && user && selectedPlant ? (
+            <TimelineView
+              uid={user.uid}
+              plant={selectedPlant}
+              onBack={() => setScreen("myPlants")}
+              onPickDiagnosis={handlePickDiagnosis}
+            />
           ) : null}
         </main>
       )}
