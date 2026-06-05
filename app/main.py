@@ -25,6 +25,8 @@ from app.graph import get_compiled_graph, init_graph
 from app.vision.gemini import GeminiProvider
 from app.schemas import (
     AnalysisResult,
+    CompareRequest,
+    CompareResponse,
     DiagnosisResponse,
     HealthResponse,
 )
@@ -212,6 +214,28 @@ async def diagnose(
         structured_result=sr,
         care_guide=care_guide,
     )
+
+
+@app.post("/compare", response_model=CompareResponse)
+async def compare_diagnoses(req: CompareRequest) -> CompareResponse:
+    """[시계열 3단계] 같은 식물의 직전 vs 이번 진단 정성 비교 서술 생성.
+
+    무인증(/diagnose와 동일 정책). 권한은 Firestore 규칙이 담당 — 프론트가 본인 진단의
+    정성 필드만 페이로드로 전달. 진단 파이프라인·Gemini 비전 무관(텍스트 전용 LLM 호출).
+    """
+    if not model_utils.get_openai_api_key():
+        raise HTTPException(
+            status_code=503,
+            detail="OPENAI_API_KEY 미설정 — .env를 확인하세요.",
+        )
+    try:
+        comparison = await model_utils.generate_diagnosis_comparison(
+            req.previous, req.current
+        )
+    except Exception as e:
+        logger.exception("진단 비교 생성 실패")
+        raise HTTPException(status_code=502, detail="비교 분석에 실패했습니다.") from e
+    return CompareResponse(comparison=comparison)
 
 
 def custom_openapi():

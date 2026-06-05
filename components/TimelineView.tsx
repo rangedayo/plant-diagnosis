@@ -2,6 +2,13 @@ import { useEffect, useState } from "react";
 import { listDiagnoses, type DiagnosisRecord, type PlantSummary } from "../lib/db";
 import { statusBadge } from "../lib/status";
 import AuthControl from "./AuthControl";
+import CompareModal from "./CompareModal";
+
+// 비교 대상: previous(더 오래된) vs current(선택 카드).
+type CompareTarget = {
+  previous: DiagnosisRecord;
+  current: DiagnosisRecord;
+};
 
 type Props = {
   uid: string;
@@ -19,6 +26,7 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
   const [records, setRecords] = useState<DiagnosisRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [compareTarget, setCompareTarget] = useState<CompareTarget | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,10 +68,13 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
         <p className="tl-msg">진단 이력이 없습니다.</p>
       ) : (
         <ul className="dx-list">
-          {records.map((r) => {
+          {records.map((r, i) => {
             const badge = statusBadge(r.status);
+            // records는 최신순(desc). previous = 한 칸 더 오래된 records[i+1].
+            // 가장 오래된 카드(최하단)는 비교 대상이 없어 버튼 숨김.
+            const previous = i < records.length - 1 ? records[i + 1] : null;
             return (
-              <li key={r.id}>
+              <li key={r.id} className="dx-item">
                 <button className="dx-card" type="button" onClick={() => onPickDiagnosis(r)}>
                   <span className="thumb">
                     {r.imageUrl ? (
@@ -86,11 +97,32 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
                   </span>
                   <i className="ti ti-chevron-right arrow" aria-hidden="true" />
                 </button>
+                {previous ? (
+                  <button
+                    className="cmp-btn"
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCompareTarget({ previous, current: r });
+                    }}
+                  >
+                    <i className="ti ti-arrows-left-right" aria-hidden="true" />
+                    이전 진단과 비교
+                  </button>
+                ) : null}
               </li>
             );
           })}
         </ul>
       )}
+
+      {compareTarget ? (
+        <CompareModal
+          previous={compareTarget.previous}
+          current={compareTarget.current}
+          onClose={() => setCompareTarget(null)}
+        />
+      ) : null}
 
       <style jsx>{`
         .tl {
@@ -161,6 +193,11 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
           flex-direction: column;
           gap: 12px;
         }
+        .dx-item {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+        }
         .dx-card {
           width: 100%;
           display: flex;
@@ -173,6 +210,26 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
           box-shadow: var(--shadow-card);
           cursor: pointer;
           text-align: left;
+        }
+        .cmp-btn {
+          align-self: flex-end;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 4px 10px;
+          border: none;
+          background: none;
+          color: var(--green-medium);
+          font-size: 12.5px;
+          font-weight: 700;
+          cursor: pointer;
+          border-radius: 8px;
+        }
+        .cmp-btn i {
+          font-size: 15px;
+        }
+        .cmp-btn:hover {
+          background: var(--bg-info-row);
         }
         .thumb {
           width: 64px;

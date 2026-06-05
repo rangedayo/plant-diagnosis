@@ -84,3 +84,34 @@ class HealthResponse(BaseModel):
 
     status: str
     openai_configured: bool
+
+
+class DiagnosisSnapshot(BaseModel):
+    """[시계열 3단계] 비교 입력용 단일 진단 정성 스냅샷.
+
+    프론트가 Firestore DiagnosisRecord에서 읽은 정성 필드만 전달(이미지·식물명 미전달,
+    텍스트 전용 비교). date는 ISO 문자열.
+    """
+
+    date: str = Field(default="", description="진단 시각 ISO 문자열")
+    status: str = Field(default="", description="진단 상태(건강/과습/건조/병해 의심/영양 부족)")
+    summary: str = Field(default="", description="진단 요약")
+    current_state: str = Field(default="", description="현재 상태 서술")
+    cause: str = Field(default="", description="원인 서술")
+    action_plan: list[str] = Field(default_factory=list, description="권장 조치")
+    observed_symptoms: list[str] = Field(
+        default_factory=list, description="관찰된 증상 키워드(한국어)"
+    )
+
+
+class CompareRequest(BaseModel):
+    """[시계열 3단계] 직전 vs 이번 진단 비교 요청."""
+
+    previous: DiagnosisSnapshot = Field(description="직전(더 오래된) 진단")
+    current: DiagnosisSnapshot = Field(description="이번(최신) 진단")
+
+
+class CompareResponse(BaseModel):
+    """[시계열 3단계] 정성 비교 서술 응답(단일 필드)."""
+
+    comparison: str = Field(description="한국어 자연어 정성 비교 서술")

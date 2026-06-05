@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         source: "/diagnose",
         destination: `${backendUrl}/diagnose`,
       },
+      {
+        // [시계열 3단계] 진단 비교 — /diagnose와 동일 프록시 패턴(상대경로 fetch).
+        source: "/compare",
+        destination: `${backendUrl}/compare`,
+      },
     ];
   },
   // Firebase Auth signInWithPopup이 팝업 창 상태(window.close/closed)를 확인할 때

@@ -28,6 +28,11 @@ load_dotenv()
 # generate_structured_diagnosis_with_gpt가 이 상수를 참조한다.
 LLM_TEMPERATURE: float = 0.0
 
+# [시계열 3단계] 비교 서술 전용 temperature. 진단 결정성(LLM_TEMPERATURE=0.0) 정책에서
+# 의도적 예외: 정성 비교는 결정성 의무가 약하고, 약간의 표현 다양성이 과장 억제·자연스러움에
+# 유리(작업 프롬프트 §3.1.2 권장 0.3~0.5). 진단 경로(0.0)는 무영향.
+COMPARE_TEMPERATURE: float = 0.3
+
 
 def get_openai_api_key() -> Optional[str]:
     return os.getenv("OPENAI_API_KEY")
@@ -285,3 +290,50 @@ async def regenerate_healthy_cause(
     except Exception:
         logger.exception("regenerate_healthy_cause: 호출 실패, 정적 cause 폴백")
         return _STATUS_GUARD_CAUSE_FALLBACK
+
+
+def _format_symptoms(symptoms: list[str] | None) -> str:
+    syms = [str(s).strip() for s in (symptoms or []) if str(s).strip()]
+    return ", ".join(syms) if syms else "특이사항 없음"
+
+
+async def generate_diagnosis_comparison(prev: Any, curr: Any) -> str:
+    """[시계열 3단계] 같은 식물의 두 진단 스냅샷을 받아 정성 비교 서술(한국어)을 생성.
+
+    prev·curr는 app.schemas.DiagnosisSnapshot (date/status/summary/current_state/
+    cause/action_plan/observed_symptoms 속성). 진단 경로와 달리 폴백을 두지 않고,
+    API 키 부재·호출 실패 시 예외를 그대로 올려 호출부(main.compare)가 502로 매핑한다.
+    """
+    api_key = get_openai_api_key()
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
+
+    user = prompts.COMPARE_USER_TEMPLATE.format(
+        prev_date=prev.date or "(날짜 미상)",
+        prev_status=prev.status or "(미상)",
+        prev_summary=prev.summary or "(요약 없음)",
+        prev_current_state=prev.current_state or "(서술 없음)",
+        prev_cause=prev.cause or "(원인 미상)",
+        prev_symptoms=_format_symptoms(prev.observed_symptoms),
+        curr_date=curr.date or "(날짜 미상)",
+        curr_status=curr.status or "(미상)",
+        curr_summary=curr.summary or "(요약 없음)",
+        curr_current_state=curr.current_state or "(서술 없음)",
+        curr_cause=curr.cause or "(원인 미상)",
+        curr_symptoms=_format_symptoms(curr.observed_symptoms),
+    )
+
+    oai = AsyncOpenAI(api_key=api_key)
+    resp = await oai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": prompts.COMPARE_SYSTEM},
+            {"role": "user", "content": user},
+        ],
+        max_tokens=512,
+        temperature=COMPARE_TEMPERATURE,
+    )
+    text = (resp.choices[0].message.content or "").strip()
+    if not text:
+        raise RuntimeError("비교 서술 생성 실패: 빈 응답")
+    return text
