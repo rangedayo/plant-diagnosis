@@ -230,6 +230,73 @@
         "license": "CC0",
         "collection_method": "manual_curation"
       }
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_004",
+      "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_004.jpg",
+      "source": {
+        "site": "inaturalist",
+        "url": "https://www.inaturalist.org/observations/263764838",
+        "photographer": "reishisagnik",
+        "license": "CC-BY 4.0",
+        "collection_method": "manual_curation"
+      }
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_005",
+      "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_005.jpg",
+      "source": {
+        "site": "inaturalist",
+        "url": "https://www.inaturalist.org/observations/271084401",
+        "photographer": "lexgo",
+        "license": "CC-BY 4.0",
+        "collection_method": "manual_curation"
+      }
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_006",
+      "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_006.jpg",
+      "source": {
+        "site": "inaturalist",
+        "url": "https://www.inaturalist.org/observations/354291669",
+        "photographer": "chinchu_c",
+        "license": "CC-BY 4.0",
+        "collection_method": "manual_curation"
+      }
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_007",
+      "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_007.jpg",
+      "source": {
+        "site": "inaturalist",
+        "url": "https://www.inaturalist.org/observations/351610111",
+        "photographer": "ash2016",
+        "license": "CC-BY 4.0",
+        "collection_method": "manual_curation"
+      }
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_008",
+      "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_008.jpg",
+      "source": {
+        "site": "inaturalist",
+        "url": "https://www.inaturalist.org/observations/330973710",
+        "photographer": "der-naturforscher",
+        "license": "CC-BY 4.0",
+        "collection_method": "manual_curation"
+      },
+      "note": "본 폴더 파일은 크롭본 (인물 원본은 iNaturalist 페이지에만 존재, 로컬 미보관)"
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_009",
+      "image_path": "test_data/inaturalist_candidates/images/inat_epipremnum_aureum_009.jpg",
+      "source": {
+        "site": "inaturalist",
+        "url": "https://www.inaturalist.org/observations/253263062",
+        "photographer": "michaelbakkerpaiva",
+        "license": "CC-BY 4.0",
+        "collection_method": "manual_curation"
+      }
     }
   ]
 }
