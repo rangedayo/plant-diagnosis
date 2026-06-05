@@ -24,6 +24,12 @@ SYMPTOM_VOCAB: list[str] = [
     "leaf_pale",        # 잎 색 옅음
 ]
 
+# 5-status 정답 라벨용 enum (app/model_utils.py ALLOWED_STRUCT_STATUS와 동일 5종)
+STATUS_VOCAB: list[str] = ["건강", "과습", "건조", "병해 의심", "영양 부족"]
+
+# 사람이 잎 사진만으로 5종 판정이 곤란한 케이스 → 평가에서 제외
+STATUS_AMBIGUOUS: str = "ambiguous"
+
 PLANT_NAME_KO_MAP: dict[str, str] = {
     "Monstera deliciosa": "몬스테라",
     "Epipremnum aureum": "스킨답서스",
@@ -55,7 +61,7 @@ def validate_label(label: dict) -> None:
         raise ValueError(f"필수 필드 누락: {label}")
 
     gt = label["ground_truth"]
-    required = {"plant_name_korean", "is_healthy", "symptoms", "diagnosis"}
+    required = {"plant_name_korean", "is_healthy", "symptoms", "diagnosis", "true_status"}
     missing = required - gt.keys()
     if missing:
         raise ValueError(f"{label['image_id']}: ground_truth 누락 필드 {missing}")
@@ -67,32 +73,74 @@ def validate_label(label: dict) -> None:
         if s not in SYMPTOM_VOCAB:
             raise ValueError(f"{label['image_id']}: 알 수 없는 증상 {s}")
 
+    # true_status enum 검증 (TODO 등 미기입 값은 여기서 ValueError → "사람이 채울 자리" 게이트)
+    true_status = gt["true_status"]
+    if true_status not in STATUS_VOCAB and true_status != STATUS_AMBIGUOUS:
+        allowed = STATUS_VOCAB + [STATUS_AMBIGUOUS]
+        raise ValueError(
+            f"{label['image_id']}: 알 수 없는 true_status {true_status!r} (허용: {allowed})"
+        )
+
+    # is_healthy ↔ true_status 정합성 (ambiguous는 면제)
+    if true_status != STATUS_AMBIGUOUS:
+        if true_status == "건강" and not gt["is_healthy"]:
+            raise ValueError(
+                f"{label['image_id']}: true_status='건강'인데 is_healthy=False (정합성 위반)"
+            )
+        if true_status != "건강" and gt["is_healthy"]:
+            raise ValueError(
+                f"{label['image_id']}: true_status={true_status!r}인데 is_healthy=True (정합성 위반)"
+            )
+
 
 def validate_dataset(labels: list[dict]) -> dict:
-    """전체 데이터셋 검증 + 통계 리포트 출력."""
+    """전체 데이터셋 검증 + 통계 리포트 출력.
+
+    단건 ValueError를 모아 어떤 image_id가 실패했는지 함께 보여준다
+    (true_status 미기입/TODO 항목을 한 번에 드러내는 게이트). 실패가 하나라도
+    있으면 분포 리포트를 출력한 뒤 ValueError를 던진다.
+    """
+    errors: list[str] = []
     for label in labels:
-        validate_label(label)
+        try:
+            validate_label(label)
+        except ValueError as e:
+            errors.append(str(e))
 
     n = len(labels)
     n_healthy = sum(1 for label in labels if label["ground_truth"]["is_healthy"])
     symptom_counts: dict[str, int] = {}
     plant_counts: dict[str, int] = {}
+    status_counts: dict[str, int] = {}
     for label in labels:
-        for s in label["ground_truth"]["symptoms"]:
+        gt = label["ground_truth"]
+        for s in gt.get("symptoms", []):
             symptom_counts[s] = symptom_counts.get(s, 0) + 1
-        p = label["ground_truth"]["plant_name_korean"]
+        p = gt.get("plant_name_korean", "(없음)")
         plant_counts[p] = plant_counts.get(p, 0) + 1
+        ts = gt.get("true_status", "(없음)")
+        status_counts[ts] = status_counts.get(ts, 0) + 1
 
     report = {
         "total": n,
         "healthy_ratio": n_healthy / n if n else 0,
         "symptom_distribution": symptom_counts,
         "plant_distribution": plant_counts,
+        "true_status_distribution": status_counts,
     }
-    print("=== Dataset validation passed ===")
+    print("=== Dataset validation report ===")
     print(f"Total: {n}, Healthy: {n_healthy} ({report['healthy_ratio']:.1%})")
     print(f"Plant distribution: {plant_counts}")
     print(f"Symptom distribution: {symptom_counts}")
+    print(f"true_status distribution: {status_counts}")
+
+    if errors:
+        print(f"=== Validation FAILED: {len(errors)} label(s) ===")
+        for msg in errors:
+            print(f"  - {msg}")
+        raise ValueError(f"{len(errors)} label(s) failed validation: " + "; ".join(errors))
+
+    print("=== All labels valid ===")
     return report
 
 
