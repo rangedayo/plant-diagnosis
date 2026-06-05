@@ -19,6 +19,7 @@ TODO(baseline 제외, 추후 정밀 채점기 별도 작업):
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import datetime
 import json
@@ -42,7 +43,11 @@ from app.graph import (  # noqa: E402
     build_diagnosis_graph,
 )
 from app.vision.gemini import GeminiProvider  # noqa: E402
-from test_data.labeling_vocab import PLANT_NAME_KO_MAP  # noqa: E402
+from test_data.labeling_vocab import (  # noqa: E402
+    PLANT_NAME_KO_MAP,
+    STATUS_AMBIGUOUS,
+    STATUS_VOCAB,
+)
 
 # [B-prime→status guard] gt_plant → 종 키 매핑. B' 종 주입 revert 후 graph가
 # _normalize_species를 더는 export 안 하므로 run_eval 자립용 로컬 사본
@@ -73,6 +78,8 @@ def _normalize_species(
 from eval_retrieval import _retrieve_top_n  # noqa: E402
 
 LABELS_PATH = _ROOT / "test_data" / "main_eval" / "labels.json"
+# [ACC-R4] --aux 보조 측정용 PlantVillage 50장 평가셋.
+PLANTVILLAGE_LABELS_PATH = _ROOT / "test_data" / "plantvillage_50" / "labels.json"
 # 기본은 baseline.json. RUN_EVAL_OUT로 출력 파일명을 바꿔 baseline 덮어쓰기 방지
 # (예: [1-5] 회귀 측정은 RUN_EVAL_OUT=after_phase1_wiring.json).
 OUTPUT_PATH = _ROOT / "eval" / os.environ.get("RUN_EVAL_OUT", "baseline.json")
@@ -233,10 +240,13 @@ def _build_tp_analysis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
     TP: gt_is_healthy=False AND pred_is_healthy is False
     FN: gt_is_healthy=False AND pred_is_healthy is True  ← recall 직격, 0이어야 정상
     """
+    # [ACC-R4] §137 — ambiguous는 이진 TP/FN 분모에서도 제외.
     sick_cases = [
         c
         for c in per_case
-        if c.get("gt_is_healthy") is False and c.get("pred_is_healthy") is not None
+        if c.get("gt_is_healthy") is False
+        and c.get("pred_is_healthy") is not None
+        and not _is_ambiguous(c)
     ]
     tp_cases = [c for c in sick_cases if c.get("pred_is_healthy") is False]
     fn_cases = [c for c in sick_cases if c.get("pred_is_healthy") is True]
@@ -494,28 +504,71 @@ def _confusion(
     }
 
 
-async def async_main() -> None:
-    load_dotenv(_ROOT / ".env")
-    labels = _load_labels(LABELS_PATH)
+# ───────────────────────────── [ACC-R4] 5-status 혼동표 ─────────────────────────
+# true_status(정답 5-status) × pred_status(모델 status) 혼동표. ambiguous는 행으로
+# 보여주되 정확도 계산에서 제외(excluded_rows). 표본 0인 status는 unmeasured_rows로
+# 명시(현 39건 기준 과습·영양 부족은 미측정). pred가 5-status 밖이거나 None(skip/error)
+# 인 케이스는 어느 열에도 들어가지 않아 행 합이 sample_size보다 작을 수 있다.
+
+def _is_ambiguous(case: dict[str, Any]) -> bool:
+    """gt true_status가 ambiguous인가 (정확도 분모에서 완전 제외 대상)."""
+    return case.get("gt_true_status") == STATUS_AMBIGUOUS
+
+
+def build_status_confusion_matrix(per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """5-status 혼동표 산출 (read-only 집계, 진단 로직 무관).
+
+    rows = STATUS_VOCAB + [ambiguous] (true), cols = STATUS_VOCAB (predicted).
+    counts[i][j] = true=rows[i] & pred=cols[j] 인 케이스 수.
+    """
+    rows = list(STATUS_VOCAB) + [STATUS_AMBIGUOUS]
+    cols = list(STATUS_VOCAB)
+    row_idx = {r: i for i, r in enumerate(rows)}
+    col_idx = {c: j for j, c in enumerate(cols)}
+    counts = [[0 for _ in cols] for _ in rows]
+    sample_sizes = {r: 0 for r in rows}
+
+    for c in per_case:
+        gt = c.get("gt_true_status")
+        if gt not in row_idx:  # gt 미기입/미지원 status → 표 제외
+            continue
+        sample_sizes[gt] += 1
+        pred = c.get("pred_status")
+        if pred in col_idx:  # pred None(skip/error)·off-enum은 어느 열에도 안 들어감
+            counts[row_idx[gt]][col_idx[pred]] += 1
+
+    unmeasured_rows = [r for r in STATUS_VOCAB if sample_sizes[r] == 0]
+    return {
+        "rows": rows,
+        "cols": cols,
+        "counts": counts,
+        "unmeasured_rows": unmeasured_rows,  # 표본 0 (예: 과습·영양 부족)
+        "excluded_rows": [STATUS_AMBIGUOUS],  # 정확도 분모 제외
+        "sample_sizes": sample_sizes,
+    }
+
+
+async def _measure_labels(
+    graph, db_path: str, labels: list[dict[str, Any]], tag: str
+) -> list[dict[str, Any]]:
+    """평가셋 1개를 그래프로 측정해 per_case 리스트 반환 (집계/출력은 분리).
+
+    tag는 콘솔 로그 접두(main/aux 구분). 진단 로직 무변경.
+    """
     total = len(labels)
-    print(f"[run_eval] 평가셋 {total}장 로드: {LABELS_PATH}")
-
     per_case: list[dict[str, Any]] = []
-
-    vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
-    graph = build_diagnosis_graph(vision_provider)
-    db_path = str(_vector_db_path())  # [B-4a] top_3_rag 재검색용
 
     for i, row in enumerate(labels, start=1):
         image_id = row.get("image_id", "")
         gt = row.get("ground_truth", {}) or {}
         gt_plant = gt.get("plant_name_korean")
         gt_is_healthy = bool(gt.get("is_healthy"))
+        gt_true_status = gt.get("true_status")  # [ACC-R4] 5-status 혼동표용
         rel = row.get("image_path", "")
         img_path = _ROOT / rel
 
         if not img_path.is_file():
-            print(f"[{i}/{total}] {image_id}: [skip] 이미지 없음 {rel}")
+            print(f"[{tag} {i}/{total}] {image_id}: [skip] 이미지 없음 {rel}")
             per_case.append(
                 {
                     "image_id": image_id,
@@ -524,6 +577,7 @@ async def async_main() -> None:
                     "pred_plant_ko": None,
                     "plant_match": None,
                     "gt_is_healthy": gt_is_healthy,
+                    "gt_true_status": gt_true_status,
                     "pred_status": None,
                     "pred_is_healthy": None,
                     "healthy_match": None,
@@ -542,7 +596,7 @@ async def async_main() -> None:
         try:
             out, latency = await _run_one_case(graph, image_bytes)
         except Exception as e:  # noqa: BLE001 — baseline은 케이스 실패를 기록만
-            print(f"[{i}/{total}] {image_id}: [error] {type(e).__name__}: {e}")
+            print(f"[{tag} {i}/{total}] {image_id}: [error] {type(e).__name__}: {e}")
             per_case.append(
                 {
                     "image_id": image_id,
@@ -551,6 +605,7 @@ async def async_main() -> None:
                     "pred_plant_ko": None,
                     "plant_match": None,
                     "gt_is_healthy": gt_is_healthy,
+                    "gt_true_status": gt_true_status,
                     "pred_status": None,
                     "pred_is_healthy": None,
                     "healthy_match": None,
@@ -600,6 +655,7 @@ async def async_main() -> None:
                 "pred_plant_ko": pred_ko,
                 "plant_match": plant_match,
                 "gt_is_healthy": gt_is_healthy,
+                "gt_true_status": gt_true_status,  # [ACC-R4] 5-status 정답
                 "pred_status": pred_status,
                 "pred_is_healthy": pred_is_healthy,
                 "healthy_match": healthy_match,
@@ -631,15 +687,47 @@ async def async_main() -> None:
             }
         )
         print(
-            f"[{i}/{total}] {image_id}: plant={pred_sci!r}->{pred_ko!r} "
+            f"[{tag} {i}/{total}] {image_id}: plant={pred_sci!r}->{pred_ko!r} "
             f"(gt={gt_plant!r}) status={pred_status!r} "
             f"gt_healthy={gt_is_healthy} json_ok={json_ok} {latency:.1f}s"
         )
 
-    _aggregate_and_report(total, per_case)
+    return per_case
 
 
-def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
+async def async_main(run_aux: bool = False) -> None:
+    load_dotenv(_ROOT / ".env")
+    labels = _load_labels(LABELS_PATH)
+    total = len(labels)
+    print(f"[run_eval] 평가셋 {total}장 로드: {LABELS_PATH}")
+
+    vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
+    graph = build_diagnosis_graph(vision_provider)
+    db_path = str(_vector_db_path())  # [B-4a] top_3_rag 재검색용
+
+    per_case = await _measure_labels(graph, db_path, labels, "main")
+    result = _build_result(total, per_case)
+
+    if run_aux:
+        # [ACC-R4] PlantVillage 50장 보조 sanity check (게이트 제외, 메인과 분리).
+        aux_labels = _load_labels(PLANTVILLAGE_LABELS_PATH)
+        aux_total = len(aux_labels)
+        print(
+            f"\n[run_eval --aux] 보조 평가셋 {aux_total}장 로드: "
+            f"{PLANTVILLAGE_LABELS_PATH}"
+        )
+        aux_per_case = await _measure_labels(graph, db_path, aux_labels, "aux")
+        result["aux_plantvillage_results"] = _build_result(aux_total, aux_per_case)
+
+    _write_result(result)
+    _report_console(result)
+    if run_aux:
+        _report_aux_console(result["aux_plantvillage_results"])
+    print("\n저장:", OUTPUT_PATH)
+
+
+def _build_result(total: int, per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """per_case → 집계 result dict (파일 쓰기·콘솔 출력과 분리, aux에서도 재사용)."""
     # --- 식물 이름 ---
     correct = sum(1 for c in per_case if c["plant_match"] is True)
     wrong = sum(1 for c in per_case if c["plant_match"] is False)
@@ -649,7 +737,12 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     # --- 건강 여부 (unhealthy = positive) ---
     # [L0-C] 가드 전(generate 원본)/후(최종) confusion을 나란히. post_guard는 기존
     # is_healthy와 동일(호환 유지), pre_guard는 guard_pre_status 기준.
-    scored = [c for c in per_case if c["pred_is_healthy"] is not None]
+    # [ACC-R4] §137 — true_status=ambiguous는 정확도 분모에서 완전 제외(이진·5-status 공통).
+    scored = [
+        c
+        for c in per_case
+        if c["pred_is_healthy"] is not None and not _is_ambiguous(c)
+    ]
     post_guard = _confusion(scored, _post_guard_is_healthy)
     pre_guard = _confusion(scored, _pre_guard_is_healthy)
     guard_caught_fp = pre_guard["fp"] - post_guard["fp"]
@@ -704,6 +797,8 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         "is_healthy_pre_guard": pre_guard,  # generate 원본 status 기준
         # 가드가 건강 복원해 잡은 FP 수 (pre.fp - post.fp). 0이면 가드 무발동/무효.
         "guard_caught_fp": guard_caught_fp,
+        # [ACC-R4] 5-status 혼동표 (ambiguous 행 제외표시, 표본 0 행 미측정표시).
+        "status_confusion_matrix": build_status_confusion_matrix(per_case),
         "status_distribution": status_dist,
         "status_by_is_healthy": status_by_health,
         "json_parse_success_rate": json_rate,
@@ -722,15 +817,62 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
         ),  # [기능 (b)] 케어 가이드 커버리지·종 연결 정확도
         "per_case": per_case,
     }
+    return result
 
+
+def _write_result(result: dict[str, Any]) -> None:
+    """result dict를 OUTPUT_PATH(BOM 없는 UTF-8)로 기록."""
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
         f.write("\n")
 
-    # --- 콘솔 요약표 ---
-    def pct(v: float | None) -> str:
-        return f"{v:.1%}" if v is not None else "N/A"
+
+def _pct(v: float | None) -> str:
+    return f"{v:.1%}" if v is not None else "N/A"
+
+
+def _print_status_confusion_matrix(scm: dict[str, Any]) -> None:
+    """[ACC-R4] 5-status 혼동표 콘솔 출력. 미측정 행·제외 행 명시."""
+    rows = scm["rows"]
+    cols = scm["cols"]
+    counts = scm["counts"]
+    sizes = scm["sample_sizes"]
+    unmeasured = set(scm["unmeasured_rows"])
+    excluded = set(scm["excluded_rows"])
+
+    print("\n[5-status 혼동표] (행=정답 true_status, 열=예측 pred_status)")
+    print(f"  표본 수: {sizes}")
+    print(f"  미측정 행(표본 0): {scm['unmeasured_rows'] or '없음'}")
+    print(f"  제외 행(정확도 분모 제외): {scm['excluded_rows']}")
+    header = "  " + " " * 12 + "".join(f"{c:>10}" for c in cols)
+    print(header)
+    for i, r in enumerate(rows):
+        if r in excluded:
+            tag = " (제외)"
+        elif r in unmeasured:
+            tag = " (미측정)"
+        else:
+            tag = ""
+        cells = "".join(f"{counts[i][j]:>10}" for j in range(len(cols)))
+        print(f"  {r:<12}{cells}{tag}")
+
+
+def _report_console(result: dict[str, Any]) -> None:
+    """메인 측정 result 콘솔 요약 (기존 출력 + 5-status 혼동표)."""
+    total = result["total"]
+    pn = result["plant_name"]
+    correct, wrong, unmappable = pn["correct"], pn["wrong"], pn["unmappable"]
+    post_guard = result["is_healthy_post_guard"]
+    pre_guard = result["is_healthy_pre_guard"]
+    guard_caught_fp = result["guard_caught_fp"]
+    tp, tn, fp, fn = post_guard["tp"], post_guard["tn"], post_guard["fp"], post_guard["fn"]
+    status_dist = result["status_distribution"]
+    status_by_health = result["status_by_is_healthy"]
+    json_rate = result["json_parse_success_rate"]
+    json_fail_ids = result["json_parse_failed_ids"]
+    json_ok_count = total - len(json_fail_ids)
+    lat = result["latency_sec"]
 
     print("\n" + "=" * 56)
     print("BASELINE 요약")
@@ -738,14 +880,18 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     print(f"총 케이스: {total}")
     print("\n[식물 이름]")
     print(f"  correct={correct}  wrong={wrong}  unmappable={unmappable}")
-    print(f"  정확도(매칭가능 중): {pct(plant_acc)}")
+    print(f"  정확도(매칭가능 중): {_pct(pn['accuracy'])}")
     print("\n[건강 여부] (positive=unhealthy, 최종=가드 후)")
     print(f"  TP={tp}  TN={tn}  FP={fp}  FN={fn}")
-    print(f"  precision={pct(precision)}  recall={pct(recall)}  accuracy={pct(healthy_acc)}")
+    print(
+        f"  precision={_pct(post_guard['precision'])}  "
+        f"recall={_pct(post_guard['recall'])}  accuracy={_pct(post_guard['accuracy'])}"
+    )
     print(
         f"  [가드 전] FP={pre_guard['fp']} → [가드 후] FP={post_guard['fp']}  "
         f"(가드가 잡은 FP={guard_caught_fp})"
     )
+    _print_status_confusion_matrix(result["status_confusion_matrix"])
     print("\n[status 분포]")
     for st, cnt in sorted(status_dist.items(), key=lambda x: -x[1]):
         h = status_by_health.get(st, {})
@@ -754,7 +900,7 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
             f"gt비건강={h.get('gt_unhealthy',0)})"
         )
     print("\n[보조 지표]")
-    print(f"  JSON 파싱 성공률: {pct(json_rate)} ({json_ok_count}/{total})")
+    print(f"  JSON 파싱 성공률: {_pct(json_rate)} ({json_ok_count}/{total})")
     if json_fail_ids:
         print(f"  JSON 실패 케이스: {json_fail_ids}")
     print(f"  latency(s): mean={lat['mean']} min={lat['min']} max={lat['max']}")
@@ -828,8 +974,8 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
     cgd = result["care_guide_diagnosis"]
     print("\n[케어 가이드 진단] ([기능 b])")
     print(
-        f"  커버리지={pct(cgd['coverage'])} ({cgd['care_attached']}/{cgd['scored_images']})  "
-        f"연결정확도={pct(cgd['link_accuracy'])} "
+        f"  커버리지={_pct(cgd['coverage'])} ({cgd['care_attached']}/{cgd['scored_images']})  "
+        f"연결정확도={_pct(cgd['link_accuracy'])} "
         f"(정상={cgd['link_correct']} 오연결={cgd['link_wrong']})"
     )
     for sp, b in sorted(cgd["by_species"].items()):
@@ -851,11 +997,39 @@ def _aggregate_and_report(total: int, per_case: list[dict[str, Any]]) -> None:
                 f"    - {s['image_id']} gt={s['gt_plant']!r} "
                 f"pred_sci={s['pred_plant_scientific']!r} 기대={s['expected_care_key']!r}"
             )
-    print("\n저장:", OUTPUT_PATH)
+
+
+def _report_aux_console(aux: dict[str, Any]) -> None:
+    """[ACC-R4] --aux PlantVillage 보조 측정 요약 (게이트 제외, sanity 한정)."""
+    post_guard = aux["is_healthy_post_guard"]
+    print("\n" + "=" * 56)
+    print("AUX (PlantVillage 50) 보조 sanity — 게이트 제외")
+    print("=" * 56)
+    print(f"총 케이스: {aux['total']}")
+    print("\n[건강 여부] (positive=unhealthy)")
+    print(
+        f"  TP={post_guard['tp']}  TN={post_guard['tn']}  "
+        f"FP={post_guard['fp']}  FN={post_guard['fn']}"
+    )
+    print(
+        f"  precision={_pct(post_guard['precision'])}  "
+        f"recall={_pct(post_guard['recall'])}  accuracy={_pct(post_guard['accuracy'])}"
+    )
+    _print_status_confusion_matrix(aux["status_confusion_matrix"])
+    print(f"\n  JSON 파싱 성공률: {_pct(aux['json_parse_success_rate'])}")
 
 
 def main() -> None:
-    asyncio.run(async_main())
+    parser = argparse.ArgumentParser(
+        description="main_eval 평가셋 측정 (+ --aux PlantVillage 보조 sanity)"
+    )
+    parser.add_argument(
+        "--aux",
+        action="store_true",
+        help="PlantVillage 50장 보조 측정 추가 (게이트 제외, sanity 한정)",
+    )
+    args = parser.parse_args()
+    asyncio.run(async_main(run_aux=args.aux))
 
 
 if __name__ == "__main__":
