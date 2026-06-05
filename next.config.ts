@@ -16,6 +16,23 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Firebase Auth signInWithPopup이 팝업 창 상태(window.close/closed)를 확인할 때
+  // Chrome의 기본 strict COOP 정책이 차단하며 콘솔 경고를 남김. same-origin-allow-popups로
+  // 팝업 핸들 접근을 허용해 경고 제거(실 동작엔 영향 없던 알려진 이슈). COEP는 추가하지 않음
+  // — Firebase 외부 리소스(googleusercontent.com 아바타 등) 로딩과 충돌 가능성.
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin-allow-popups",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

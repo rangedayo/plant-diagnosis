@@ -1,3 +1,4 @@
+import { FirebaseError } from "firebase/app";
 import {
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -35,7 +36,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       signInWithGoogle: async () => {
         const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
+        try {
+          await signInWithPopup(auth, provider);
+        } catch (err) {
+          // 중복 클릭/연속 호출로 이전 팝업이 cancel된 경우 — 정상 동작의 부산물이라 silent.
+          // 다른 모든 에러는 호출 측이 처리할 수 있게 그대로 throw.
+          if (err instanceof FirebaseError && err.code === "auth/cancelled-popup-request") {
+            return;
+          }
+          throw err;
+        }
       },
       signOut: async () => {
         await firebaseSignOut(auth);
