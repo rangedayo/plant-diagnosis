@@ -9,7 +9,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -28,7 +29,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -47,7 +49,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -66,7 +69,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -85,7 +89,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -104,7 +109,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -123,7 +129,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -142,7 +149,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -161,7 +169,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -180,7 +189,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "토마토 잎마름병 (Late blight)"
+      "diagnosis": "토마토 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -198,7 +208,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -216,7 +227,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -234,7 +246,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -252,7 +265,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -270,7 +284,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -288,7 +303,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -306,7 +322,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -324,7 +341,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -342,7 +360,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -360,7 +379,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "토마토 겹무늬병 (Early blight)"
+      "diagnosis": "토마토 겹무늬병 (Early blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -379,7 +399,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -398,7 +419,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -417,7 +439,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -436,7 +459,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -455,7 +479,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -474,7 +499,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -493,7 +519,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -512,7 +539,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -531,7 +559,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -550,7 +579,8 @@
         "leaf_spots",
         "leaf_browning"
       ],
-      "diagnosis": "감자 잎마름병 (Late blight)"
+      "diagnosis": "감자 잎마름병 (Late blight)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -568,7 +598,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -586,7 +617,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -604,7 +636,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -622,7 +655,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -640,7 +674,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -658,7 +693,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -676,7 +712,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -694,7 +731,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -712,7 +750,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -730,7 +769,8 @@
       "symptoms": [
         "leaf_spots"
       ],
-      "diagnosis": "사과 검은별무늬병 (Apple scab)"
+      "diagnosis": "사과 검은별무늬병 (Apple scab)",
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "PlantVillage",
@@ -746,7 +786,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -762,7 +803,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -778,7 +820,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -794,7 +837,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -810,7 +854,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -826,7 +871,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -842,7 +888,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -858,7 +905,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -874,7 +922,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
@@ -890,7 +939,8 @@
       "plant_name_korean": "토마토",
       "is_healthy": true,
       "symptoms": [],
-      "diagnosis": "정상 상태"
+      "diagnosis": "정상 상태",
+      "true_status": "건강"
     },
     "source": {
       "site": "PlantVillage",
