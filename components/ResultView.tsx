@@ -6,9 +6,10 @@ type ResultViewProps = {
   imageUrl: string | null;
   onReset: () => void;
   onViewCare?: () => void; // R3에서 케어 화면 연결 예정 (현재 미연결 placeholder)
+  onSave?: () => void; // 진단 기록 저장(로그인 게이트·모달은 상위에서). 미제공 시 버튼 숨김.
 };
 
-export default function ResultView({ result, imageUrl, onReset, onViewCare }: ResultViewProps) {
+export default function ResultView({ result, imageUrl, onReset, onViewCare, onSave }: ResultViewProps) {
   const { structured_result: sr, analysis, care_guide } = result;
 
   const plantName = analysis?.plant_name_korean ?? analysis?.plant_name ?? "식물명 미식별";
@@ -126,6 +127,14 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare }: Re
           <div className="care-nav-arrow">
             <i className="ti ti-chevron-right" aria-hidden="true" />
           </div>
+        </button>
+      ) : null}
+
+      {/* 진단 기록 저장 (onSave 제공 시만; 로그인 게이트·모달은 상위에서 처리) */}
+      {onSave ? (
+        <button className="dr-save" type="button" onClick={onSave} aria-label="이 식물 기록에 저장">
+          <i className="ti ti-bookmark" aria-hidden="true" />
+          이 식물 기록에 저장
         </button>
       ) : null}
 
@@ -404,6 +413,27 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare }: Re
         }
         .care-nav-arrow i {
           font-size: 20px;
+        }
+
+        /* 진단 기록 저장 버튼 (시안 톤: 연한 그린 배경 + 다크 그린 텍스트) */
+        .dr-save {
+          width: 100%;
+          height: 52px;
+          border-radius: var(--radius-button);
+          border: 1.5px solid var(--green-medium);
+          background: var(--bg-icon-circle);
+          color: var(--green-dark);
+          font-size: 14px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          cursor: pointer;
+          letter-spacing: -0.01em;
+        }
+        .dr-save i {
+          font-size: 18px;
         }
 
         /* 하단 액션 */

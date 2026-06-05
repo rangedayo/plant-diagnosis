@@ -4,17 +4,22 @@ import CareGuideView from "../components/CareGuideView";
 import HomeView from "../components/HomeView";
 import LoadingView from "../components/LoadingView";
 import ResultView from "../components/ResultView";
+import SaveDiagnosisModal from "../components/SaveDiagnosisModal";
 import { diagnosePlant } from "../lib/api";
+import { useAuth } from "../lib/auth";
 import { DiagnosisResponse } from "../types/diagnosis";
 
 type Screen = "home" | "loading" | "result" | "care";
 
 export default function HomePage() {
+  const { user, signInWithGoogle } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [screen, setScreen] = useState<Screen>("home");
   const [result, setResult] = useState<DiagnosisResponse | null>(null);
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
+  const [showSave, setShowSave] = useState(false);
+  const [savedMsg, setSavedMsg] = useState("");
 
   const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
 
@@ -59,6 +64,26 @@ export default function HomePage() {
     setFile(null);
     setProgress(0);
     setError("");
+    setShowSave(false);
+  };
+
+  // 저장 버튼: 미로그인 시 로그인 게이트 → 성공하면 모달 오픈. 로그인돼 있으면 곧장 모달.
+  const handleSaveClick = async () => {
+    setSavedMsg("");
+    if (!user) {
+      try {
+        await signInWithGoogle();
+      } catch {
+        return; // 팝업 취소/실패 시 모달 미오픈
+      }
+    }
+    setShowSave(true);
+  };
+
+  const handleSaved = () => {
+    setShowSave(false);
+    setSavedMsg("기록에 저장했어요.");
+    window.setTimeout(() => setSavedMsg(""), 3000);
   };
 
   return (
@@ -88,6 +113,7 @@ export default function HomePage() {
               imageUrl={previewUrl}
               onReset={handleReset}
               onViewCare={result.care_guide ? () => setScreen("care") : undefined}
+              onSave={() => void handleSaveClick()}
             />
           ) : null}
 
@@ -97,7 +123,56 @@ export default function HomePage() {
         </main>
       )}
 
+      {/* 저장 모달 — 로그인·결과·파일이 모두 갖춰졌을 때만 (file은 result 화면 동안 유지됨) */}
+      {showSave && user && result && file ? (
+        <SaveDiagnosisModal
+          result={result}
+          imageFile={file}
+          onClose={() => setShowSave(false)}
+          onSaved={handleSaved}
+        />
+      ) : null}
+
+      {/* 저장 성공 토스트 */}
+      {savedMsg ? (
+        <div className="toast" role="status">
+          <i className="ti ti-circle-check" aria-hidden="true" />
+          {savedMsg}
+        </div>
+      ) : null}
+
       <style jsx>{`
+        .toast {
+          position: fixed;
+          left: 50%;
+          bottom: 28px;
+          transform: translateX(-50%);
+          z-index: 60;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: #1f6f2a;
+          color: #fff;
+          font-size: 14px;
+          font-weight: 700;
+          padding: 12px 20px;
+          border-radius: 999px;
+          box-shadow: 0 6px 20px rgba(31, 111, 42, 0.35);
+          animation: toastIn 0.24s ease;
+        }
+        .toast i {
+          font-size: 18px;
+        }
+        @keyframes toastIn {
+          from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+          }
+        }
         .container {
           max-width: 460px;
           margin: 0 auto;

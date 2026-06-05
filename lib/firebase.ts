@@ -18,5 +18,8 @@ const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebas
 
 export const firebaseApp = app;
 export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
+// Firestore는 명명 DB(plant-diagnosis)로 생성됨 — getFirestore(app)은 '(default)'를 가리켜 못 찾음.
+// env로 DB id 주입, 미설정 시 확인된 id로 fallback.
+const firestoreDbId = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_DATABASE_ID || "plant-diagnosis";
+export const db: Firestore = getFirestore(app, firestoreDbId);
 export const storage: FirebaseStorage = getStorage(app);
