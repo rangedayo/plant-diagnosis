@@ -66,6 +66,18 @@ PLANTVILLAGE_LABEL_MAP: dict[str, dict] = {
     },
 }
 
+# PlantVillage 클래스 → 5-status(true_status) 사전매핑 (사람 정의 룰, §9 자동화 예외).
+# 규칙 본질: '*_healthy' → "건강", 그 외 모든 병해 클래스 → "병해 의심"
+# (PlantVillage는 작물 잎 병해셋이라 과습/건조/영양 부족엔 매핑되지 않음 — 보조 sanity 한정).
+# 키는 PLANTVILLAGE_LABEL_MAP과 동일한 full class명. 새 클래스 추가 시 여기도 함께 채운다.
+PLANTVILLAGE_STATUS_MAP: dict[str, str] = {
+    "Tomato___Late_blight": "병해 의심",
+    "Tomato___Early_blight": "병해 의심",
+    "Potato___Late_blight": "병해 의심",
+    "Apple___Apple_scab": "병해 의심",
+    "Tomato___healthy": "건강",
+}
+
 PLANTVILLAGE_SOURCE_URL = "https://data.mendeley.com/datasets/tywbtsjrjv/1"
 IMAGE_EXTENSIONS: tuple[str, ...] = (".jpg", ".jpeg", ".png", ".JPG", ".JPEG", ".PNG")
 
@@ -130,6 +142,7 @@ def _build_label(image_id: str, image_path: Path, class_name: str) -> dict:
             "is_healthy": gt_template["is_healthy"],
             "symptoms": list(gt_template["symptoms"]),
             "diagnosis": gt_template["diagnosis"],
+            "true_status": PLANTVILLAGE_STATUS_MAP[class_name],
         },
         "source": {
             "site": "PlantVillage",
