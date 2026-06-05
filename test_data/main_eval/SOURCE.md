@@ -5,15 +5,15 @@
 
 §9 데이터 범위 원칙 — "외부 데이터셋 라이선스 준수 (CC BY = 출처 표기)" 의무에 따라 작성.
 
-> 본 문서는 ACC-R3에서 신설. 이미지 6장(`inat_epipremnum_001~006.jpg`)은
+> 본 문서는 ACC-R3에서 신설(ACC-R3-followup에서 명명 통일). 이미지 6장(`inat_epipremnum_aureum_004~009.jpg`)은
 > `test_data/main_eval/images/`에 로컬 배치(.gitignore 대상, git 미추적).
 > labels.json 항목(symptoms·diagnosis·true_status)은 사용자 직접 라벨링 대기(이번 라운드 보류).
 
 ---
 
-## inat_epipremnum_001.jpg
+## inat_epipremnum_aureum_004.jpg
 
-- 파일: `test_data/main_eval/images/inat_epipremnum_001.jpg`
+- 파일: `test_data/main_eval/images/inat_epipremnum_aureum_004.jpg`
 - 출처: iNaturalist 관찰 #263764838
 - URL: https://www.inaturalist.org/observations/263764838
 - 저작권자: reishisagnik (iNaturalist 사용자명)
@@ -21,9 +21,9 @@
 - 종: Epipremnum aureum
 - 등급: Research Grade
 
-## inat_epipremnum_002.jpg
+## inat_epipremnum_aureum_005.jpg
 
-- 파일: `test_data/main_eval/images/inat_epipremnum_002.jpg`
+- 파일: `test_data/main_eval/images/inat_epipremnum_aureum_005.jpg`
 - 출처: iNaturalist 관찰 #271084401
 - URL: https://www.inaturalist.org/observations/271084401
 - 저작권자: lexgo
@@ -31,9 +31,9 @@
 - 종: Epipremnum aureum
 - 등급: Research Grade
 
-## inat_epipremnum_003.jpg
+## inat_epipremnum_aureum_006.jpg
 
-- 파일: `test_data/main_eval/images/inat_epipremnum_003.jpg`
+- 파일: `test_data/main_eval/images/inat_epipremnum_aureum_006.jpg`
 - 출처: iNaturalist 관찰 #354291669
 - URL: https://www.inaturalist.org/observations/354291669
 - 저작권자: chinchu_c
@@ -41,9 +41,9 @@
 - 종: Epipremnum aureum
 - 등급: Research Grade
 
-## inat_epipremnum_004.jpg
+## inat_epipremnum_aureum_007.jpg
 
-- 파일: `test_data/main_eval/images/inat_epipremnum_004.jpg`
+- 파일: `test_data/main_eval/images/inat_epipremnum_aureum_007.jpg`
 - 출처: iNaturalist 관찰 #351610111
 - URL: https://www.inaturalist.org/observations/351610111
 - 저작권자: ash2016
@@ -51,9 +51,9 @@
 - 종: Epipremnum aureum
 - 등급: Needs ID
 
-## inat_epipremnum_005.jpg
+## inat_epipremnum_aureum_008.jpg
 
-- 파일: `test_data/main_eval/images/inat_epipremnum_005.jpg`
+- 파일: `test_data/main_eval/images/inat_epipremnum_aureum_008.jpg`
 - 출처: iNaturalist 관찰 #330973710
 - URL: https://www.inaturalist.org/observations/330973710
 - 저작권자: der-naturforscher
@@ -62,9 +62,9 @@
 - 등급: Research Grade
 - 메모: 원본에서 인물 영역을 크롭한 derivative. CC-BY 4.0의 derivative work 허용 범위 내 사용.
 
-## inat_epipremnum_006.jpg
+## inat_epipremnum_aureum_009.jpg
 
-- 파일: `test_data/main_eval/images/inat_epipremnum_006.jpg`
+- 파일: `test_data/main_eval/images/inat_epipremnum_aureum_009.jpg`
 - 출처: iNaturalist 관찰 #253263062
 - URL: https://www.inaturalist.org/observations/253263062
 - 저작권자: michaelbakkerpaiva
