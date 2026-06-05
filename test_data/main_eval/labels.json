@@ -628,5 +628,131 @@
       "license": "CC0",
       "collection_method": "manual_curation"
     }
+  },
+  {
+    "image_id": "inat_epipremnum_aureum_004",
+    "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_004.jpg",
+    "ground_truth": {
+      "plant_name_korean": "스킨답서스",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_edge_dry",
+        "leaf_browning"
+      ],
+      "diagnosis": "잎 가장자리와 절개 부위 주변에 갈색으로 마른 조직이 넓게 나타난다. 강한 직사광선이나 일시적인 수분 부족으로 인한 조직 손상 흔적으로 보이며, 전반적인 잎 색은 비교적 양호하다.",
+      "true_status": "건조"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/263764838",
+      "photographer": "reishisagnik",
+      "license": "CC-BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_epipremnum_aureum_005",
+    "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_005.jpg",
+    "ground_truth": {
+      "plant_name_korean": "스킨답서스",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "잎 표면에 다수의 검은색 및 갈색 반점이 분포하며 일부 조직이 괴사한 모습이 관찰된다. 노화 외에도 곰팡이성 또는 세균성 잎 반점 증상이 의심된다.",
+      "true_status": "병해 의심"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/271084401",
+      "photographer": "lexgo",
+      "license": "CC-BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_epipremnum_aureum_006",
+    "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "스킨답서스",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_pale",
+        "leaf_yellowing"
+      ],
+      "diagnosis": "전체적으로 연한 녹색과 황록색 잎이 많으며 색이 다소 옅어 보인다. 생육은 양호하지만 광량 부족이나 영양 결핍으로 인한 엽색 저하 가능성이 있다.",
+      "true_status": "ambiguous"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/354291669",
+      "photographer": "chinchu_c",
+      "license": "CC-BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_epipremnum_aureum_007",
+    "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_007.jpg",
+    "ground_truth": {
+      "plant_name_korean": "스킨답서스",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_holes",
+        "leaf_browning"
+      ],
+      "diagnosis": "여러 잎에서 구멍과 가장자리 손상이 확인되며 일부 부위는 갈변이 진행되어 있다. 물리적 손상 또는 해충 가해 흔적이 혼재된 상태로 보인다.",
+      "true_status": "ambiguous"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/351610111",
+      "photographer": "ash2016",
+      "license": "CC-BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_epipremnum_aureum_008",
+    "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_008.jpg",
+    "ground_truth": {
+      "plant_name_korean": "스킨답서스",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_browning",
+        "leaf_spots"
+      ],
+      "diagnosis": "무성하게 자란 개체 중 일부 잎에 갈색 괴사 부위와 반점이 관찰된다. 전반적인 생육은 양호하지만 국소적인 잎 손상과 병반이 존재한다.",
+      "true_status": "병해 의심"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/330973710",
+      "photographer": "der-naturforscher",
+      "license": "CC-BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_epipremnum_aureum_009",
+    "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_009.jpg",
+    "ground_truth": {
+      "plant_name_korean": "스킨답서스",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_yellowing",
+        "leaf_browning"
+      ],
+      "diagnosis": "중앙 좌측의 대형 잎에서 전반적인 황변 현상과 중심부 갈색 괴사 반점이 관찰되며, 우측 후면의 잎은 심하게 갈변하여 고사 중입니다. 자생지 환경 특성상 수분 과다 또는 잎의 노화로 인한 손상이 의심됩니다.",
+      "true_status": "ambiguous"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/253263062",
+      "photographer": "michaelbakkerpaiva",
+      "license": "CC-BY 4.0",
+      "collection_method": "manual_curation"
+    }
   }
 ]
