@@ -106,7 +106,7 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
                       setCompareTarget({ previous, current: r });
                     }}
                   >
-                    <i className="ti ti-arrows-left-right" aria-hidden="true" />
+                    <i className="ti ti-arrows-up-down" aria-hidden="true" />
                     이전 진단과 비교
                   </button>
                 ) : null}
@@ -196,7 +196,7 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
         .dx-item {
           display: flex;
           flex-direction: column;
-          gap: 7px;
+          gap: 8px;
         }
         .dx-card {
           width: 100%;
@@ -212,24 +212,26 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
           text-align: left;
         }
         .cmp-btn {
-          align-self: flex-end;
+          align-self: center;
           display: inline-flex;
           align-items: center;
-          gap: 5px;
-          padding: 4px 10px;
-          border: none;
-          background: none;
-          color: var(--green-medium);
-          font-size: 12.5px;
+          gap: 6px;
+          height: 36px;
+          padding: 0 16px;
+          border: 0.5px solid #b3b3b3;
+          background: var(--bg-card);
+          color: #0f6e56;
+          font-size: 13px;
           font-weight: 700;
+          letter-spacing: -0.01em;
           cursor: pointer;
-          border-radius: 8px;
+          border-radius: 999px;
         }
         .cmp-btn i {
           font-size: 15px;
         }
         .cmp-btn:hover {
-          background: var(--bg-info-row);
+          background: var(--bg-icon-circle);
         }
         .thumb {
           width: 64px;
