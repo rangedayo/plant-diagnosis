@@ -192,6 +192,41 @@ def persist_b_dataset_rag(
     return collection.count()
 
 
+def verify_b_dataset_query(vector_db: Path) -> None:
+    """[ACC-fix2 재발방지#3] 빌드 후 신규 클라이언트로 1쿼리 성공까지 검증.
+
+    count는 sqlite 메타만 읽으므로 HNSW 세그먼트 불완전 영속(R11 "Nothing found on
+    disk")을 잡지 못한다. 신규 PersistentClient로 재오픈해 더미 임베딩 쿼리(무과금)가
+    실제 문서를 반환하는지 확인한다. 실패 시 atomic 보호(retire_ncpms 전 중단).
+    """
+    print(f"[5b] 쿼리 검증 (신규 클라이언트, {COLLECTION_NAME})…")
+    client = chromadb.PersistentClient(path=str(vector_db))
+    collection = client.get_collection(COLLECTION_NAME)
+    got = collection.get(limit=1, include=["embeddings"])
+    embs = got.get("embeddings")
+    if embs is None or len(embs) == 0:
+        print("오류: 검증 실패 — 저장된 임베딩을 읽지 못했습니다.", file=sys.stderr)
+        sys.exit(1)
+    dim = len(embs[0])
+    try:
+        res = collection.query(
+            query_embeddings=[[0.0] * dim], n_results=3, include=["documents"]
+        )
+    except Exception as e:
+        print(
+            f"오류: 검증 쿼리 실패 (HNSW 세그먼트 읽기 불가): {e}", file=sys.stderr
+        )
+        sys.exit(1)
+    docs = (res.get("documents") or [[]])[0]
+    if len(docs) == 0:
+        print(
+            "오류: 검증 쿼리가 0건 반환 — HNSW 인덱스 불완전. 재적재 필요.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    print(f"[5b] 쿼리 검증 통과: {len(docs)} docs 반환")
+
+
 def retire_ncpms(vector_db: Path) -> None:
     """ncpms_rag 폐기 (atomic — b_dataset_rag 적재·검증 통과 후에만 호출)."""
     client = chromadb.PersistentClient(path=str(vector_db))
@@ -229,7 +264,10 @@ def main() -> None:
         )
         sys.exit(1)
 
-    # 적재·count 검증 통과 후에만 NCPMS 폐기 (atomic)
+    # [ACC-fix2 재발방지#3] count 통과 후 신규 클라이언트 쿼리까지 검증 (HNSW 영속 확인)
+    verify_b_dataset_query(vector_db)
+
+    # 적재·count·쿼리 검증 통과 후에만 NCPMS 폐기 (atomic)
     retire_ncpms(vector_db)
 
 
