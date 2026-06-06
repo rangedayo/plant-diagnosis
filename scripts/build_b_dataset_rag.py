@@ -8,7 +8,8 @@ b_dataset raw JSON 5자료(영문)를 청크화·임베딩하여 Chroma `b_datas
 설계 ([B-2] 작업 프롬프트 영역 결정):
 - 카드 = 청크 1:1 (영역 1 A). 청크 본문 = `title + ": " + body` (build_main_rag.flatten_document 일관성)
 - 청크 ID = 카드의 id 그대로 (source prefix가 자료 간 충돌 방지)
-- 메타 6 필드: source/source_id/section/title/problem_type/card_id (영역 3 B)
+- 메타 8 필드: source/source_id/section/title/problem_type/card_id (영역 3 B)
+  + license/source_url (R12c-1). [R12d-1] status_hint 제거(graph.py 미소비 dead metadata)
 - 임베딩 OpenAIEmbeddings(model="text-embedding-ada-002") 명시 (검색·a_dataset_rag와 동일, 영역 5 A)
 
 실행 (프로젝트 루트에서):
@@ -50,14 +51,12 @@ JSON_FILES: list[tuple[str, str]] = [
 PROBLEM_TYPE_ABIOTIC_WATER = "abiotic-water"
 
 # [R12c-1] 기존 dry-adjacent 카드 재분류 (본문 확인 후 판정, R12c1 §2.4).
-# card_id → (problem_type, status_hint). 본문이 명확한 수분 카드만 — over-claim 금지.
-RECLASSIFY: dict[str, tuple[str, str]] = {
-    # "Too dry" — 순수 underwatering (확정)
-    "mobot_indoor_001": (PROBLEM_TYPE_ABIOTIC_WATER, "건조"),
-    # "Overwatering" — 순수 과습 (status_hint로 과습도 강화)
-    "mobot_indoor_002": (PROBLEM_TYPE_ABIOTIC_WATER, "과습"),
-    # "Wilting plant • Soil either too wet or too dry" — 수분 양방향(방향 미정 → hint 없음)
-    "psu_ucanr_019": (PROBLEM_TYPE_ABIOTIC_WATER, ""),
+# card_id → problem_type. 본문이 명확한 수분 카드만 — over-claim 금지.
+# [R12d-1] status_hint 제거 (graph.py 미소비 dead metadata) — problem_type만 유지.
+RECLASSIFY: dict[str, str] = {
+    "mobot_indoor_001": PROBLEM_TYPE_ABIOTIC_WATER,  # "Too dry" — 순수 underwatering
+    "mobot_indoor_002": PROBLEM_TYPE_ABIOTIC_WATER,  # "Overwatering" — 순수 과습
+    "psu_ucanr_019": PROBLEM_TYPE_ABIOTIC_WATER,     # "Wilting • too wet/dry" — 수분 양방향
 }
 
 # EXPECTED_TOTAL은 동적: 각 JSON의 선언 card_count 합으로 산출(silent load 실패 탐지 유지).
@@ -140,21 +139,8 @@ def resolve_problem_type(source: str, section: str, card_id: str, card: dict) ->
     if explicit:
         return explicit
     if card_id in RECLASSIFY:
-        return RECLASSIFY[card_id][0]
+        return RECLASSIFY[card_id]
     return classify_problem_type(source, section, card_id)
-
-
-def resolve_status_hint(card_id: str, card: dict) -> str:
-    """status_hint 결정 우선순위: 카드 명시값 > RECLASSIFY > "" (없음).
-
-    Chroma 메타는 None 불가 → 없으면 빈 문자열. 값: 건강/과습/건조/병해 의심/영양 부족/"".
-    """
-    explicit = str(card.get("status_hint") or "").strip()
-    if explicit:
-        return explicit
-    if card_id in RECLASSIFY:
-        return RECLASSIFY[card_id][1]
-    return ""
 
 
 def load_cards(
@@ -188,7 +174,6 @@ def load_cards(
             body = str(card.get("body") or "")
             doc = build_chunk_text(title, body)
             problem_type = resolve_problem_type(source, section, card_id, card)
-            status_hint = resolve_status_hint(card_id, card)
             source_url = str(card.get("source_url") or "")
             ids.append(card_id)
             documents.append(doc)
@@ -200,8 +185,7 @@ def load_cards(
                     "title": title,
                     "problem_type": problem_type,
                     "card_id": card_id,
-                    # [R12c-1] 신규 메타: enum 직결 힌트 + 라이선스 + 원문 URL
-                    "status_hint": status_hint,
+                    # [R12c-1] 라이선스 + 원문 URL ([R12d-1] status_hint 제거: dead metadata)
                     "license": license_str,
                     "source_url": source_url,
                 }
@@ -353,7 +337,7 @@ def dry_run(root: Path) -> None:
     assert len(ids) == declared_total, "선언 합과 로드 수 불일치"
     assert len(set(ids)) == len(ids), "card_id 중복 존재"
     required = {"source", "source_id", "section", "title", "problem_type",
-                "card_id", "status_hint", "license", "source_url"}
+                "card_id", "license", "source_url"}
     for m in metadatas:
         missing = required - set(m.keys())
         assert not missing, f"메타 키 누락 {missing} @ {m.get('card_id')}"
@@ -361,8 +345,6 @@ def dry_run(root: Path) -> None:
             assert isinstance(v, str), f"메타 값 비문자열 {k}={v!r} @ {m.get('card_id')}"
     dist = Counter(m["problem_type"] for m in metadatas)
     print(f"[dry-run] problem_type 분포: {dict(sorted(dist.items()))}")
-    hint = Counter(m["status_hint"] for m in metadatas if m["status_hint"])
-    print(f"[dry-run] status_hint 분포: {dict(sorted(hint.items()))}")
     aw = [m["card_id"] for m in metadatas if m["problem_type"] == PROBLEM_TYPE_ABIOTIC_WATER]
     print(f"[dry-run] abiotic-water 카드 {len(aw)}장: {aw}")
     print("[dry-run] 메타 무결성 검증 통과 (Chroma 무변경)")
@@ -385,8 +367,6 @@ def main() -> None:
 
     dist = Counter(m["problem_type"] for m in metadatas)
     print(f"[2] problem_type 분포: {dict(sorted(dist.items()))}")
-    hint_dist = Counter(m["status_hint"] for m in metadatas if m["status_hint"])
-    print(f"[2] status_hint 분포(비어있지 않은 것): {dict(sorted(hint_dist.items()))}")
 
     count = persist_b_dataset_rag(ids, documents, metadatas, vector_db, openai_key)
     match = "일치" if count == declared_total else f"불일치(선언 합 {declared_total})"
