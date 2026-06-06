@@ -695,11 +695,63 @@ async def _measure_labels(
     return per_case
 
 
+def _probe_rag_collections(db_path: str, names: tuple[str, ...]) -> None:
+    """[ACC-fix2 재발방지#4] 측정 전 RAG 자가점검.
+
+    Gemini(과금) 호출 전에 각 컬렉션을 1쿼리 프로브하고, count==0/로드 에러/0건
+    반환이면 즉시 중단한다. chromadb 1.x HNSW 일시 읽기 실패(R11 "Nothing found on
+    disk") 상태로 측정해 과금만 태우는 사고를 차단한다.
+    """
+    import chromadb
+
+    client = chromadb.PersistentClient(path=db_path)
+    for name in names:
+        try:
+            coll = client.get_collection(name)
+            cnt = coll.count()
+        except Exception as e:
+            print(
+                f"[run_eval] RAG 자가점검 실패 — 컬렉션 로드 불가 ({name}): {e}",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        if cnt == 0:
+            print(
+                f"[run_eval] RAG 자가점검 실패 — {name} count=0 (빈 컬렉션). 측정 중단.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        try:
+            got = coll.get(limit=1, include=["embeddings"])
+            embs = got.get("embeddings")
+            dim = len(embs[0])
+            res = coll.query(
+                query_embeddings=[[0.0] * dim], n_results=1, include=["documents"]
+            )
+            docs = (res.get("documents") or [[]])[0]
+        except Exception as e:
+            print(
+                f"[run_eval] RAG 자가점검 실패 — {name} 쿼리 에러 (HNSW 세그먼트?): {e}",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        if len(docs) == 0:
+            print(
+                f"[run_eval] RAG 자가점검 실패 — {name} 쿼리 0건. HNSW 불완전. 측정 중단.",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        print(f"[run_eval] RAG 자가점검 OK: {name} count={cnt}, 쿼리 {len(docs)} docs")
+
+
 async def async_main(run_aux: bool = False) -> None:
     load_dotenv(_ROOT / ".env")
     labels = _load_labels(LABELS_PATH)
     total = len(labels)
     print(f"[run_eval] 평가셋 {total}장 로드: {LABELS_PATH}")
+
+    # [ACC-fix2 재발방지#4] Gemini 과금 전 RAG 자가점검 (죽은 채 측정 차단)
+    _probe_rag_collections(str(_vector_db_path()), ("b_dataset_rag", "a_dataset_rag"))
 
     vision_provider = GeminiProvider(system_prompt=prompts.ANALYZE_SYSTEM)
     graph = build_diagnosis_graph(vision_provider)
