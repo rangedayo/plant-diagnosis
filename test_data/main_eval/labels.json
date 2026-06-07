@@ -475,7 +475,7 @@
       "is_healthy": true,
       "symptoms": [],
       "diagnosis": "건강한 성숙 잎 클로즈업. 잎이 진녹색·광택 양호하며, 잎맥 사이 절개(fenestration)와 천공이 잘 발달한 정상 형태. 표면 물방울 자국과 일부 이물질은 환경 요인이며 병징은 아님.",
-      "true_status": "건강"
+      "true_status": "ambiguous"
     },
     "source": {
       "site": "inaturalist",
@@ -598,10 +598,13 @@
     "image_path": "test_data/main_eval/images/inat_spathiphyllum_002.jpg",
     "ground_truth": {
       "plant_name_korean": "스파티필름",
-      "is_healthy": true,
-      "symptoms": [],
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_browning",
+        "leaf_droop"
+      ],
       "diagnosis": "실내 환경에서 활짝 핀 스파티필름의 흰 불염포(spathe) 클로즈업. 옆에 새 꽃봉오리도 보이며 꽃이 핀 것은 식물이 충분히 성숙·건강한 상태라는 신호. 배경에 보이는 갈색 잔해는 자연 노화한 이전 꽃·잎의 흔적으로 현재 식물 건강 상태와 무관.",
-      "true_status": "건강"
+      "true_status": "비건강-원인미상"
     },
     "source": {
       "site": "inaturalist",
