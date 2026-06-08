@@ -66,6 +66,10 @@ STATUS_GUARD_COSMETIC_LOCATION: tuple[str, ...] = (
 )
 STATUS_GUARD_COSMETIC_DISCOLOR: tuple[str, ...] = ("갈변", "변색", "갈색")
 STATUS_GUARD_DISEASE_TOP1: tuple[str, ...] = ("disease", "pest")
+# [R12a] 하부 위치 신호 토큰 — "아래쪽 잎 갈변"은 말단(잎끝·가장자리) cosmetic이 아니라
+# 건조 등 진행성 신호일 수 있다. cosmetic 건강 교정을 차단(veto)해 over-correct로 인한
+# FN을 막는다. lesion veto(규칙 2)와 동형의 보수적 FN-0 안전판. 부분 일치(substring).
+STATUS_GUARD_PROGRESSIVE_LOCATION: tuple[str, ...] = ("아래쪽", "하엽", "하부", "하단")
 
 
 def _symptom_has_lesion(symptom: str) -> bool:
@@ -80,6 +84,11 @@ def _symptom_is_cosmetic(symptom: str) -> bool:
     has_loc = any(tok in symptom for tok in STATUS_GUARD_COSMETIC_LOCATION)
     has_disc = any(tok in symptom for tok in STATUS_GUARD_COSMETIC_DISCOLOR)
     return has_loc and has_disc
+
+
+def _symptom_has_progressive_location(symptom: str) -> bool:
+    """하부 위치(아래쪽·하엽 등) 진행성 신호 포함 여부 — cosmetic 건강 교정 veto용 (R12a)."""
+    return any(tok in symptom for tok in STATUS_GUARD_PROGRESSIVE_LOCATION)
 
 
 def apply_status_guard(
@@ -104,6 +113,11 @@ def apply_status_guard(
         return cur, None
     # 규칙 3: 전 증상 cosmetic + 비-disease/pest top_1 → 건강 교정 (핵심)
     if all(_symptom_is_cosmetic(s) for s in syms):
+        # [R12a] 하부 위치 veto — 증상에 "아래쪽·하엽" 등 진행성 위치 신호가 있으면
+        # 말단 cosmetic으로 보지 않고 건강 교정을 차단(비건강 유지). lesion veto와 동형.
+        # status 미변경이므로 (cur, None) 반환 — guard_fired=False·cause 재생성 미발동.
+        if any(_symptom_has_progressive_location(s) for s in syms):
+            return cur, None
         top1 = str(top_1_problem_type or "").strip().lower()
         if top1 not in STATUS_GUARD_DISEASE_TOP1:
             return GUARD_HEALTHY_STATUS, "all_cosmetic_nondisease_top1"
