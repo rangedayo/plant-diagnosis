@@ -20,13 +20,13 @@ from app.vision.errors import VisionRetryableError
 async def _with_retry(
     fn: Callable[..., Awaitable[Any]],
     *args: Any,
-    max_attempts: int = 2,
+    max_attempts: int = 3,
     **kwargs: Any,
 ) -> Any:
     """
     VisionRetryableError 재시도. backoff은 e.retry_hint.backoff_seconds.
     VisionPermanentError 등 다른 예외는 잡지 않고 전파.
-    max_attempts=2 = 총 시도 2회 (최초 + 재시도 1회).
+    max_attempts=3 = 총 시도 3회 (최초 + 재시도 2회). 일시적 429 흡수용 상향(eval 케이스 탈락 방지).
 
     TODO: extract to decorator when 2nd provider added (phase2_decisions #8)
     """

@@ -107,15 +107,15 @@ async def test_analyze_node_retries_on_retryable_error_then_succeeds() -> None:
 
 @pytest.mark.asyncio
 async def test_analyze_node_raises_after_max_attempts() -> None:
-    provider = _FakeProvider(_retryable(), _retryable())
+    provider = _FakeProvider(_retryable(), _retryable(), _retryable())
     analyze_node = make_analyze_node(provider)
 
     with patch(SLEEP_PATCH_TARGET, new_callable=AsyncMock) as sleep_mock:
         with pytest.raises(VisionRetryableError):
             await analyze_node(_state())
 
-    assert provider.analyze.await_count == 2  # 최초 + 재시도 1회
-    assert sleep_mock.await_count == 1  # max_attempts - 1
+    assert provider.analyze.await_count == 3  # 최초 + 재시도 2회
+    assert sleep_mock.await_count == 2  # max_attempts - 1
 
 
 @pytest.mark.asyncio
