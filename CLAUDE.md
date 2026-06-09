@@ -34,8 +34,18 @@
 
 ## 2. 현재 비교 앵커 (활성 기준점)
 
-> **⚠️ R15 — GT가 3단(tier: 건강/경미/비건강)으로 마이그레이션됨** (분모 35→39, ambiguous 0). 아래 이진 앵커들은 전부 **옛 이진 GT 기준**이라 3단 측정과 **직접 비교 불가 = 역사적 참고**로 강등. 새 **3단 baseline은 다음 라운드(run_eval 3단 채점 확장 + 재측정) 후 확정**된다. 그 전까지는 활성 3단 앵커 없음.
+> **⚠️ R15 — GT가 3단(tier: 건강/경미/비건강)으로 마이그레이션됨** (분모 35→39, ambiguous 0). 아래 이진 앵커들은 전부 **옛 이진 GT 기준**이라 3단 측정과 **직접 비교 불가 = 역사적 참고**로 강등.
 
+- **현 활성 3단 baseline 앵커 (R16)**: `eval/after_acc_r16_3tier_baseline.json` — 현 생산 모델(3.5-flash/global, R14 롤백 프롬프트) 출력을 **R15 3단 GT로 무과금 재채점**(`rescore_from_output.py`, 모델 0). **모델이 경미를 못 내는 현 상태의 0점(출발선)**.
+  - **3×3 tier 혼동표** (행=gt_tier, 열=pred_tier; scored 39, skipped 0):
+    | gt\pred | 건강 | 경미 | 비건강 |
+    |---|---|---|---|
+    | **건강**(16) | 11 | 0 | 5 |
+    | **경미**(7) | 2 | 0 | 5 |
+    | **비건강**(16) | 0 | 0 | 16 |
+  - `exact_match` **27/39 (69.2%)** · 🔴`cardinal_miss`(gt비건강→pred건강) **0**(하드 게이트 사수, 옛 FN 0의 3단판) · `soft_miss` 0(모델 경미 미출력이라 정상) · `minor_undercall`(gt경미→pred건강) **2** · `over_call` **10**(→경미 0 / →비건강 10 = 건강→비건강 5 + 경미→비건강 5).
+  - **이진 동치**: TP 16 · TN 13 · FP 10 · FN 0 · recall **1.0** · acc **74.36%**(29/39). 이진 FP 10 = over_call→비건강 10과 동일 집합(건강 5 + 경미 5).
+  - **읽기**: 모델이 비건강 16건 전수 비건강으로 잡음(cardinal_miss 0). 핵심 = `over_call→비건강` 10 중 **5건이 경미 GT**(3단에선 "한 칸 과대", 이진에선 FP). 경미를 모델이 낼 수 있으면 분리 가능 → 다음 트랙(generate 경미 출력).
 - **이진 참고 앵커(R15 이전, 직접 비교 불가)**: `eval/after_acc_armC_3p5flash_relabeled.json` (R13 Arm C, analyze=**gemini-3.5-flash/global**, **GT 정정 후**)
   - acc **71.4%** (25/35), 분모 **35**, FP **10** · TP **13** · TN **12** · FN **0**, recall **1.0**, precision 0.565
   - GT 재검(FP14 방향a) → 4건 건강→비건강+status 정정(haengun_001 건조·epipremnum_001 병해 의심·spathiphyllum_001/003 과습) → FP 14→10. 무과금 재채점(`rescore_from_output.py`).
@@ -333,5 +343,5 @@ CLAUDE.md는 **살아있는 문서**. 다음 시점에 업데이트:
 
 ---
 
-*마지막 업데이트: 2026-06-10 — R15: GT 3단 스키마 반영(tier 건강16/경미7/비건강16, ambiguous 0). vocab/validate 확장(TIER_VOCAB·STATUS_MILD), 이진 앵커 역사적 참고로 강등. 다음=run_eval 3단 채점 확장 + 재측정 → 3단 baseline 확정.*
-*다음 업데이트 트리거: run_eval 3단 채점 라운드 설계·결과 보고 시.*
+*마지막 업데이트: 2026-06-10 — R16: 3단 채점 + baseline 재채점. run_eval `_status_to_tier`·`build_tier_diagnosis`(3×3+비대칭 게이트)·rescore tier 재병합. 새 활성 3단 앵커 `after_acc_r16_3tier_baseline.json`(exact 27/39·cardinal_miss 0·over_call 10·이진 FP10/FN0/recall1.0). 다음=모델 경미 출력(generate) + 재측정.*
+*다음 업데이트 트리거: generate 경미 출력 라운드 설계·결과 보고 시.*
