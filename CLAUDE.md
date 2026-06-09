@@ -12,7 +12,7 @@
 
 - **5-status 분류**: 건강 / 과습 / 건조 / 병해 의심 / 영양 부족 (+ ambiguous 평가 제외)
 - **추가 라벨**: `비건강-원인미상` (is_healthy=false 확정·원인 미상, 5-status 매칭 시 중립)
-- **워크플로**: Vision(analyze, Gemini) → retrieve(RAG) → generate(gpt-4o-mini) → status guard
+- **워크플로**: Vision(analyze, **Gemini 3.5-flash/global**) → retrieve(RAG) → generate(gpt-4o-mini) → status guard
 - **개발 방식**: 라운드 기반 평가 중심. 한 라운드 = 한 변수 격리 측정.
 
 ---
@@ -34,9 +34,10 @@
 
 ## 2. 현재 비교 앵커 (활성 기준점)
 
-- **현 활성 앵커**: `eval/after_acc_r12d1_relabeled.json`
-  - acc **62.86%**, 분모 **35**, FP **13** · FN **0**, recall **1.0**, precision **0.409**
-  - FP 13 구성: 드라세나 hard 3 (종 인지 영역) + 개선 가능 10 (analyze 정밀화 타깃)
+- **현 활성 앵커**: `eval/after_acc_armC_3p5flash.json` (R13 Arm C, analyze=**gemini-3.5-flash/global**)
+  - acc **60.0%**, 분모 **35**, FP **14** · FN **0**, recall **1.0**
+  - 직전 2.5-pro 앵커 대비 FP 13→14(+1, 1케이스)·recall 유지 → 모델 교체는 FP 중립(채택 근거=속도).
+- **참고(강등)**: `eval/after_acc_r12d1_relabeled.json` = 2.5-pro 기준 옛 앵커 (acc 62.86%·FP13·FN0). 보존·**비교 금지**(arm 다름).
 - **참고 — 옛 baseline.json은 비교 앵커 아님**: 라벨 정정 전 기준. 보존만.
 - 새 라운드는 항상 이 활성 앵커 대비 게이트 설계.
 
@@ -70,6 +71,14 @@ $env:PYTHONIOENCODING="utf-8"
 - 재적재: `.venv\Scripts\python.exe scripts\build_b_dataset_rag.py` — 임베딩 과금 발생.
 - 메타 키: `title, card_id, problem_type, source, source_id, section, license, source_url`.
 - `status_hint` 메타는 **R12d-1에서 dead code 확인 후 제거** — 다시 추가 금지.
+
+### 3.4 analyze 모델·엔드포인트 (R13 Arm C 채택)
+
+- **기본**: `gemini-3.5-flash` / Vertex **global** 엔드포인트 (was 2.5-pro / asia-northeast1).
+- 진실원: **모델 기본값 = 버전관리 코드**(`app/vision/gemini.py` fallback). **location = `.env`의 `GOOGLE_CLOUD_LOCATION=global`** (`load_dotenv(override=False)`라 .env 기존값이 코드 fallback을 가리는 shadowing 방지 위해 정합; `ANALYZE_MODEL`은 .env에 없어 코드 fallback 적용).
+- **롤백 메커니즘 보존**: env override로 2.5-pro/asia 복귀 — `$env:ANALYZE_MODEL="gemini-2.5-pro"`, `$env:GOOGLE_CLOUD_LOCATION="asia-northeast1"` (세션 env가 .env·코드 fallback보다 우선).
+- **global 엔드포인트 = 데이터 레지던시 미보장** (식물 사진이라 수용).
+- **R13 Arm C 결론**: 모델 교체 = FP 중립(13→14, 1케이스)·recall 1.0 유지 → **속도 근거로 채택**. FP의 진짜 레버는 "미용 vs 병리" 임계값(generate/guard) → 다음 트랙.
 
 ---
 
@@ -310,5 +319,5 @@ CLAUDE.md는 **살아있는 문서**. 다음 시점에 업데이트:
 
 ---
 
-*마지막 업데이트: 2026-06-08 (R12d-1 + generate_escalation 트랙 기준)*
-*다음 업데이트 트리거: generate_escalation 측정 결과 보고 시*
+*마지막 업데이트: 2026-06-09 (R13 Arm C — analyze gemini-3.5-flash/global 채택, 앵커 교체)*
+*다음 업데이트 트리거: 다음 트랙(미용 vs 병리 임계값 = generate/guard) 결과 보고 시*
