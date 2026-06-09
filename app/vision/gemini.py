@@ -106,7 +106,7 @@ class GeminiProvider:
         # 인증 모드 자동 분기 (옵션 A, [1-2.5]):
         #   GOOGLE_CLOUD_PROJECT 있으면 Vertex(ADC), 없으면 GEMINI_API_KEY로 AI Studio.
         project = project or os.getenv("GOOGLE_CLOUD_PROJECT")
-        location = location or os.getenv("GOOGLE_CLOUD_LOCATION") or "asia-northeast1"
+        location = location or os.getenv("GOOGLE_CLOUD_LOCATION") or "global"
         if project:
             self._client = genai.Client(
                 vertexai=True, project=project, location=location
@@ -123,15 +123,16 @@ class GeminiProvider:
                 )
             self._client = genai.Client(api_key=resolved_key)
             self._auth_mode = "ai_studio"
-        # [R13 ArmC] analyze 모델 env 파라미터화. 기본값 = 기존 하드코딩 문자열 그대로.
-        #   - 명시 인자 우선 → env(ANALYZE_MODEL) → 기본 "gemini-2.5-pro".
-        #   - env 미설정·인자 미전달 시 해석값은 기존과 byte-identical("gemini-2.5-pro").
+        # [R13 ArmC 채택] analyze 모델 env 파라미터화. 기본값 = gemini-3.5-flash/global.
+        #   - 명시 인자 우선 → env(ANALYZE_MODEL) → 기본 "gemini-3.5-flash".
+        #   - 2.5-pro/asia-northeast1로 되돌리려면 env override(ANALYZE_MODEL·
+        #     GOOGLE_CLOUD_LOCATION)로 가능 (메커니즘 보존).
         if model is not None:
             self._model = model
             model_source = "arg"
         else:
             env_model = os.environ.get("ANALYZE_MODEL")
-            self._model = env_model or "gemini-2.5-pro"
+            self._model = env_model or "gemini-3.5-flash"
             model_source = "env" if env_model else "default"
         print(f"[analyze] model={self._model} ({model_source})")
         self._system_prompt = system_prompt
