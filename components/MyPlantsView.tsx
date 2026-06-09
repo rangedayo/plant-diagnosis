@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../lib/auth";
 import { listPlants, type PlantSummary } from "../lib/db";
-import { statusBadge } from "../lib/status";
+import { statusBadge, statusLabel } from "../lib/status";
 import AuthControl from "./AuthControl";
 import BottomTabBar, { type TabKey } from "./BottomTabBar";
 
@@ -119,7 +119,7 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
                         <span className="meta-row">
                           {p.lastDiagnosis.status ? (
                             <span className="badge" style={{ background: badge!.bg, color: badge!.fg }}>
-                              {p.lastDiagnosis.status}
+                              {statusLabel(p.lastDiagnosis.status).coarse || p.lastDiagnosis.status}
                             </span>
                           ) : null}
                         </span>

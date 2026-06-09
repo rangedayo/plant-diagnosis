@@ -1,5 +1,6 @@
+import { useRouter } from "next/router";
 import { DiagnosisResponse } from "../types/diagnosis";
-import { statusBadge } from "../lib/status";
+import { statusBadge, statusLabel } from "../lib/status";
 
 type ResultViewProps = {
   result: DiagnosisResponse;
@@ -14,10 +15,15 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare, onSa
   const isHistory = mode === "history";
   const { structured_result: sr, analysis, care_guide } = result;
 
+  const router = useRouter();
+  const debug = router.query.debug === "1"; // ?debug=1 → 디버그 세부 라벨
+
   const plantName = analysis?.plant_name_korean ?? analysis?.plant_name ?? "식물명 미식별";
   const status = sr.status || "";
-  const statusText = status || "진단 완료";
-  const badge = statusBadge(status);
+  // 기본 = 사용자 거친 라벨(3단), ?debug=1 = 세부 라벨 + 원본 status. 빈값 → "진단 완료".
+  const { coarse, detail } = statusLabel(status);
+  const statusText = (debug ? detail : coarse) || "진단 완료";
+  const badge = statusBadge(status); // 색은 원본 status 기준 유지(라벨만 분기, §40)
 
   const summary = sr.summary?.trim() ?? "";
   const cause = sr.cause?.trim() ?? "";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listDiagnoses, type DiagnosisRecord, type PlantSummary } from "../lib/db";
-import { statusBadge } from "../lib/status";
+import { statusBadge, statusLabel } from "../lib/status";
 import AuthControl from "./AuthControl";
 import CompareModal from "./CompareModal";
 
@@ -88,7 +88,7 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
                     <span className="top">
                       {r.status ? (
                         <span className="badge" style={{ background: badge.bg, color: badge.fg }}>
-                          {r.status}
+                          {statusLabel(r.status).coarse || r.status}
                         </span>
                       ) : null}
                       <span className="date">{formatDate(r.createdAt)}</span>

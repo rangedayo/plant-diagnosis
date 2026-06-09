@@ -4,7 +4,7 @@ import {
   type DiagnosisSnapshot,
 } from "../lib/api";
 import { type DiagnosisRecord } from "../lib/db";
-import { statusBadge } from "../lib/status";
+import { statusBadge, statusLabel } from "../lib/status";
 
 type Props = {
   previous: DiagnosisRecord; // 직전(더 오래된) 진단
@@ -85,7 +85,7 @@ export default function CompareModal({ previous, current, onClose }: Props) {
             <span className="meta-date">{formatDate(previous.createdAt)}</span>
             {previous.status ? (
               <span className="badge" style={{ background: prevBadge.bg, color: prevBadge.fg }}>
-                {previous.status}
+                {statusLabel(previous.status).coarse || previous.status}
               </span>
             ) : null}
           </div>
@@ -95,7 +95,7 @@ export default function CompareModal({ previous, current, onClose }: Props) {
             <span className="meta-date">{formatDate(current.createdAt)}</span>
             {current.status ? (
               <span className="badge" style={{ background: currBadge.bg, color: currBadge.fg }}>
-                {current.status}
+                {statusLabel(current.status).coarse || current.status}
               </span>
             ) : null}
           </div>
