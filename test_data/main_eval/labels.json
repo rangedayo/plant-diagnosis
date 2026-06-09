@@ -108,12 +108,12 @@
     "image_path": "test_data/main_eval/images/self_haengun_001.jpg",
     "ground_truth": {
       "plant_name_korean": "행운목",
-      "is_healthy": true,
+      "is_healthy": false,
       "symptoms": [
         "leaf_edge_dry"
       ],
       "diagnosis": "행운목 아래쪽 잎 클로즈업. 잎 자체는 건강하나 끝부분에 미세한 마름이 보임.",
-      "true_status": "건강"
+      "true_status": "건조"
     },
     "source": {
       "site": "self",
@@ -364,10 +364,12 @@
     "image_path": "test_data/main_eval/images/inat_epipremnum_aureum_001.jpg",
     "ground_truth": {
       "plant_name_korean": "스킨답서스",
-      "is_healthy": true,
-      "symptoms": [],
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_browning"
+      ],
       "diagnosis": "야외 자생지에서 나무를 타고 자란 성숙형 스킨답서스('Marble Queen' 또는 'Golden Pothos'). 잎이 일반 실내 화분보다 매우 크고 노란색·연두색 무늬가 진함. 잎 색·탄력 양호, 황변·반점·구멍 없음. 새 잎이 건강하게 자라며 전체적으로 건강.",
-      "true_status": "건강"
+      "true_status": "병해 의심"
     },
     "source": {
       "site": "inaturalist",
@@ -580,10 +582,12 @@
     "image_path": "test_data/main_eval/images/inat_spathiphyllum_001.jpg",
     "ground_truth": {
       "plant_name_korean": "스파티필름",
-      "is_healthy": true,
-      "symptoms": [],
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_edge_dry"
+      ],
       "diagnosis": "스파티필름 잎 한 장 클로즈업. 진녹색에 광택이 강하고 평행맥이 또렷한 정상 형태. 색·광택·잎 표면 모두 건강한 상태.",
-      "true_status": "건강"
+      "true_status": "과습"
     },
     "source": {
       "site": "inaturalist",
@@ -619,10 +623,13 @@
     "image_path": "test_data/main_eval/images/inat_spathiphyllum_003.jpg",
     "ground_truth": {
       "plant_name_korean": "스파티필름",
-      "is_healthy": true,
-      "symptoms": [],
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_edge_dry",
+        "leaf_spots"
+      ],
       "diagnosis": "스파티필름 군락. 진녹색의 광택 좋은 잎이 풍성하고, 흰 불염포(spathe) 3송이가 활짝 핀 상태로 식물이 성숙·건강한 신호. 일부 잎의 작은 점은 자연 범위로 병징은 아님.",
-      "true_status": "건강"
+      "true_status": "과습"
     },
     "source": {
       "site": "inaturalist",

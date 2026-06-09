@@ -1,0 +1,2881 @@
+{
+  "measured_at": "2026-06-09T21:20:54.592825+09:00",
+  "total": 39,
+  "plant_name": {
+    "correct": 32,
+    "wrong": 2,
+    "unmappable": 5,
+    "accuracy": 0.9411764705882353
+  },
+  "is_healthy": {
+    "positive_class": "unhealthy",
+    "tp": 13,
+    "tn": 12,
+    "fp": 10,
+    "fn": 0,
+    "precision": 0.5652173913043478,
+    "recall": 1.0,
+    "accuracy": 0.7142857142857143
+  },
+  "is_healthy_post_guard": {
+    "positive_class": "unhealthy",
+    "tp": 13,
+    "tn": 12,
+    "fp": 10,
+    "fn": 0,
+    "precision": 0.5652173913043478,
+    "recall": 1.0,
+    "accuracy": 0.7142857142857143
+  },
+  "is_healthy_pre_guard": {
+    "positive_class": "unhealthy",
+    "tp": 13,
+    "tn": 10,
+    "fp": 12,
+    "fn": 0,
+    "precision": 0.52,
+    "recall": 1.0,
+    "accuracy": 0.6571428571428571
+  },
+  "guard_caught_fp": 2,
+  "status_confusion_matrix": {
+    "rows": [
+      "건강",
+      "과습",
+      "건조",
+      "병해 의심",
+      "영양 부족",
+      "ambiguous"
+    ],
+    "cols": [
+      "건강",
+      "과습",
+      "건조",
+      "병해 의심",
+      "영양 부족"
+    ],
+    "counts": [
+      [
+        12,
+        0,
+        7,
+        3,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        6,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        2,
+        1
+      ]
+    ],
+    "unmeasured_rows": [
+      "영양 부족"
+    ],
+    "excluded_rows": [
+      "ambiguous"
+    ],
+    "sample_sizes": {
+      "건강": 22,
+      "과습": 2,
+      "건조": 7,
+      "병해 의심": 3,
+      "영양 부족": 0,
+      "ambiguous": 4
+    }
+  },
+  "status_distribution": {
+    "건조": 16,
+    "병해 의심": 9,
+    "건강": 13,
+    "영양 부족": 1
+  },
+  "status_by_is_healthy": {
+    "건조": {
+      "gt_healthy": 7,
+      "gt_unhealthy": 9
+    },
+    "병해 의심": {
+      "gt_healthy": 4,
+      "gt_unhealthy": 5
+    },
+    "건강": {
+      "gt_healthy": 12,
+      "gt_unhealthy": 1
+    },
+    "영양 부족": {
+      "gt_healthy": 0,
+      "gt_unhealthy": 1
+    }
+  },
+  "json_parse_success_rate": 1.0,
+  "json_parse_failed_ids": [],
+  "latency_sec": {
+    "mean": 18.026,
+    "min": 13.465,
+    "max": 29.109
+  },
+  "fp_analysis": {
+    "fp_count": 11,
+    "fp_status_distribution": {
+      "건조": 7,
+      "병해 의심": 4
+    },
+    "fp_observed_symptoms_buckets": {
+      "empty": 0,
+      "non_empty": 11
+    },
+    "fp_top3_problem_type_majority": {
+      "abiotic-water": 3,
+      "tie": 7,
+      "general": 1
+    },
+    "fp_observed_symptoms_samples": [
+      {
+        "image_id": "self_dracaena_001",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "잎끝 갈변 및 마름",
+          "일부 잎 가장자리 국소적 갈색 반점",
+          "잎 기부(줄기 부착 부위) 갈색 변색"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "frame",
+          "abiotic-water"
+        ]
+      },
+      {
+        "image_id": "self_dracaena_002",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎끝 갈변 및 바삭하게 마름",
+          "잎 가장자리 국소적 갈색 괴사"
+        ],
+        "top_3_problem_types": [
+          "",
+          "abiotic-water",
+          "general"
+        ]
+      },
+      {
+        "image_id": "self_dracaena_003",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 잎끝 및 가장자리의 갈변과 바삭하게 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "abiotic-water",
+          ""
+        ]
+      },
+      {
+        "image_id": "self_dracaena_004",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "여러 잎의 잎끝 갈변 및 바삭하게 마름",
+          "일부 잎 가장자리의 불규칙한 갈색 괴사 반점"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "abiotic-water",
+          "frame"
+        ]
+      },
+      {
+        "image_id": "self_dracaena_006",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "여러 잎의 잎끝 갈변 및 바삭하게 마름",
+          "일부 잎 가장자리 국소적 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "",
+          "abiotic"
+        ]
+      },
+      {
+        "image_id": "inat_aglaonema_001",
+        "gt_plant": "아글라오네마",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎끝 미세한 갈변",
+          "우측 상단 일부 잎 표면의 국소적인 황색 반점"
+        ],
+        "top_3_problem_types": [
+          "",
+          "frame",
+          "nutrient"
+        ]
+      },
+      {
+        "image_id": "inat_aglaonema_002",
+        "gt_plant": "아글라오네마",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 외곽 잎 가장자리 갈변 및 마름"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "abiotic-water",
+          "general"
+        ]
+      },
+      {
+        "image_id": "inat_aglaonema_003",
+        "gt_plant": "아글라오네마",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 아래잎 황화 및 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic-water",
+          ""
+        ]
+      },
+      {
+        "image_id": "inat_chlorophytum_comosum_001",
+        "gt_plant": "접란",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 잎끝 국소적 갈변 및 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic",
+          "abiotic-water"
+        ]
+      },
+      {
+        "image_id": "inat_chlorophytum_comosum_003",
+        "gt_plant": "접란",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎끝 갈변 및 마름"
+        ],
+        "top_3_problem_types": [
+          "env",
+          "abiotic-water",
+          "abiotic"
+        ]
+      },
+      {
+        "image_id": "inat_monstera_deliciosa_001",
+        "gt_plant": "몬스테라",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "여러 잎 전반적인 황화",
+          "잎 가장자리 갈변 및 마름",
+          "잎 중앙부 불규칙한 갈색 반점"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "general",
+          ""
+        ]
+      }
+    ]
+  },
+  "tp_analysis": {
+    "tp_count": 13,
+    "fn_count": 0,
+    "tp_status_distribution": {
+      "건조": 9,
+      "병해 의심": 4
+    },
+    "tp_top3_majority": {
+      "tie": 3,
+      "abiotic-water": 8,
+      "general": 1,
+      "disease": 1
+    },
+    "fn_top3_majority": {},
+    "tp_samples": [
+      {
+        "image_id": "self_haengun_001",
+        "gt_plant": "행운목",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "잎끝 갈변 및 바삭하게 마름",
+          "잎 가장자리 국소적 갈변",
+          "일부 잎 표면 국소적 황색 반점"
+        ],
+        "top_3_problem_types": [
+          "frame",
+          "abiotic-water",
+          "disease"
+        ],
+        "top_3_majority": "tie"
+      },
+      {
+        "image_id": "self_haengun_002",
+        "gt_plant": "행운목",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 잎끝 갈변 및 바삭하게 마름",
+          "잎 표면 국소적 황색 반점"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "",
+          ""
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "self_haengun_003",
+        "gt_plant": "행운목",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "아래잎 전체 황화 및 바삭하게 마름",
+          "새순 기부 조직 갈변 및 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "",
+          "abiotic-water"
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "self_haengun_005",
+        "gt_plant": "행운목",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "잎끝 잘린 단면의 갈변 및 마름",
+          "잎 표면의 국소적인 황화 반점"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "disease",
+          "general"
+        ],
+        "top_3_majority": "general"
+      },
+      {
+        "image_id": "self_haengun_006",
+        "gt_plant": "행운목",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 잎끝 갈변 및 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "abiotic-water",
+          "abiotic-water"
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "self_haengun_008",
+        "gt_plant": "행운목",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 잎끝 국소적 갈변 및 바삭하게 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic",
+          "abiotic-water"
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "inat_epipremnum_aureum_001",
+        "gt_plant": "스킨답서스",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "일부 잎 가장자리 국소적 갈변·괴사",
+          "일부 아래잎 가장자리 바삭하게 마름·갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic-water",
+          "general"
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "inat_spathiphyllum_001",
+        "gt_plant": "스파티필름",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "여러 잎 가장자리 갈변 및 바삭하게 마름",
+          "단일 잎끝 국소적 황화"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic-water",
+          ""
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "inat_spathiphyllum_002",
+        "gt_plant": "스파티필름",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "아래쪽 오래된 잎과 줄기의 갈색 고사",
+          "일부 잎의 전체적인 갈변 및 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "",
+          "abiotic-water"
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "inat_spathiphyllum_003",
+        "gt_plant": "스파티필름",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎 가장자리 갈변 및 마름",
+          "일부 잎 표면의 국소적 갈색 반점"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "disease",
+          "frame"
+        ],
+        "top_3_majority": "tie"
+      },
+      {
+        "image_id": "inat_epipremnum_aureum_004",
+        "gt_plant": "스킨답서스",
+        "pred_status": "건조",
+        "observed_symptoms": [
+          "여러 잎 가장자리의 국소적 갈변 및 바삭하게 마름"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic-water",
+          "abiotic-water"
+        ],
+        "top_3_majority": "abiotic-water"
+      },
+      {
+        "image_id": "inat_epipremnum_aureum_005",
+        "gt_plant": "스킨답서스",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "여러 잎 표면의 불규칙한 갈색·검은색 반점",
+          "잎 가장자리 국소적 갈변 및 괴사"
+        ],
+        "top_3_problem_types": [
+          "general",
+          "disease",
+          "disease"
+        ],
+        "top_3_majority": "disease"
+      },
+      {
+        "image_id": "inat_epipremnum_aureum_008",
+        "gt_plant": "스킨답서스",
+        "pred_status": "병해 의심",
+        "observed_symptoms": [
+          "일부 잎 가장자리 갈변 및 바삭하게 마름",
+          "일부 잎 전반적인 황화"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "nutrient",
+          "general"
+        ],
+        "top_3_majority": "tie"
+      }
+    ],
+    "fn_samples": []
+  },
+  "species_normal_diagnosis": {
+    "covered_gt_species": [
+      "드라세나",
+      "산세베리아",
+      "스파티필룸",
+      "행운목"
+    ],
+    "covered_gt_images": 18,
+    "covered_gt_healthy_images": 9,
+    "card_injected_images": 0,
+    "covered_fp": 5,
+    "covered_fp_with_card_present": 0,
+    "covered_fp_without_card": 5,
+    "covered_fn": 0,
+    "by_species": {
+      "드라세나": {
+        "images": 5,
+        "card_injected": 0,
+        "healthy": 5,
+        "fp": 5,
+        "sick": 0,
+        "tp": 0,
+        "fn": 0,
+        "inject_mismatch": 0
+      },
+      "행운목": {
+        "images": 7,
+        "card_injected": 0,
+        "healthy": 1,
+        "fp": 0,
+        "sick": 6,
+        "tp": 6,
+        "fn": 0,
+        "inject_mismatch": 0
+      },
+      "산세베리아": {
+        "images": 3,
+        "card_injected": 0,
+        "healthy": 3,
+        "fp": 0,
+        "sick": 0,
+        "tp": 0,
+        "fn": 0,
+        "inject_mismatch": 0
+      },
+      "스파티필룸": {
+        "images": 3,
+        "card_injected": 0,
+        "healthy": 0,
+        "fp": 0,
+        "sick": 3,
+        "tp": 3,
+        "fn": 0,
+        "inject_mismatch": 0
+      }
+    }
+  },
+  "status_guard_diagnosis": {
+    "fired_count": 2,
+    "by_reason": {
+      "all_cosmetic_nondisease_top1": 2
+    },
+    "guard_correct_fp": 2,
+    "guard_induced_fn": 0,
+    "fired_samples": [
+      {
+        "image_id": "inat_chlorophytum_comosum_002",
+        "gt_plant": "접란",
+        "gt_is_healthy": true,
+        "guard_reason": "all_cosmetic_nondisease_top1",
+        "pre_status": "건조",
+        "post_status": "건강",
+        "cause_regenerated": true,
+        "pre_cause": "수분 부족 또는 과도한 건조일 수 있습니다.",
+        "post_cause": "일부 잎끝의 국소적 갈변은 디아넬라 카에룰레아에서 흔히 나타나는 자연스러운 현상일 수 있습니다. 적절한 빛과 물 관리를 유지해 주세요.",
+        "observed_symptoms": [
+          "일부 잎끝 국소적 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic",
+          "abiotic-water",
+          ""
+        ]
+      },
+      {
+        "image_id": "inat_ficus_elastica_003",
+        "gt_plant": "고무나무",
+        "gt_is_healthy": true,
+        "guard_reason": "all_cosmetic_nondisease_top1",
+        "pre_status": "건조",
+        "post_status": "건강",
+        "cause_regenerated": true,
+        "pre_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+        "post_cause": "일부 잎 가장자리의 국소적 갈변은 인도고무나무에서 흔히 나타나는 자연스러운 현상일 수 있습니다. 적절한 빛과 물 관리를 유지해 주세요.",
+        "observed_symptoms": [
+          "일부 잎 가장자리 국소적 갈변"
+        ],
+        "top_3_problem_types": [
+          "abiotic-water",
+          "abiotic-water",
+          ""
+        ]
+      }
+    ],
+    "induced_fn_samples": []
+  },
+  "care_guide_diagnosis": {
+    "scored_images": 39,
+    "care_attached": 34,
+    "coverage": 0.8717948717948718,
+    "link_correct": 34,
+    "link_wrong": 0,
+    "link_accuracy": 1.0,
+    "by_species": {
+      "드라세나": {
+        "images": 5,
+        "attached": 4,
+        "link_correct": 4,
+        "link_wrong": 0
+      },
+      "행운목": {
+        "images": 7,
+        "attached": 6,
+        "link_correct": 6,
+        "link_wrong": 0
+      },
+      "스파티필룸": {
+        "images": 5,
+        "attached": 5,
+        "link_correct": 5,
+        "link_wrong": 0
+      },
+      "아글라오네마": {
+        "images": 1,
+        "attached": 1,
+        "link_correct": 1,
+        "link_wrong": 0
+      },
+      "접란": {
+        "images": 3,
+        "attached": 1,
+        "link_correct": 1,
+        "link_wrong": 0
+      },
+      "스킨답서스": {
+        "images": 9,
+        "attached": 8,
+        "link_correct": 8,
+        "link_wrong": 0
+      },
+      "고무나무": {
+        "images": 3,
+        "attached": 3,
+        "link_correct": 3,
+        "link_wrong": 0
+      },
+      "몬스테라": {
+        "images": 3,
+        "attached": 3,
+        "link_correct": 3,
+        "link_wrong": 0
+      },
+      "산세베리아": {
+        "images": 3,
+        "attached": 3,
+        "link_correct": 3,
+        "link_wrong": 0
+      }
+    },
+    "mislink_samples": [],
+    "uncovered_samples": [
+      {
+        "image_id": "self_dracaena_003",
+        "gt_plant": "드라세나 송 오브 인디아",
+        "pred_plant_scientific": "Cordyline fruticosa",
+        "expected_care_key": "드라세나"
+      },
+      {
+        "image_id": "self_haengun_004",
+        "gt_plant": "행운목",
+        "pred_plant_scientific": "Beaucarnea recurvata",
+        "expected_care_key": "행운목"
+      },
+      {
+        "image_id": "inat_chlorophytum_comosum_001",
+        "gt_plant": "접란",
+        "pred_plant_scientific": "Dianella tasmanica",
+        "expected_care_key": "접란"
+      },
+      {
+        "image_id": "inat_chlorophytum_comosum_002",
+        "gt_plant": "접란",
+        "pred_plant_scientific": "Dianella caerulea",
+        "expected_care_key": "접란"
+      },
+      {
+        "image_id": "inat_epipremnum_aureum_005",
+        "gt_plant": "스킨답서스",
+        "pred_plant_scientific": "Philodendron erubescens",
+        "expected_care_key": "스킨답서스"
+      }
+    ]
+  },
+  "per_case": [
+    {
+      "image_id": "self_dracaena_001",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena reflexa",
+      "pred_plant_ko": "드라세나 송 오브 인디아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 29.109,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "드라세나",
+      "expected_care_key": "드라세나",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "잎끝 갈변 및 마름",
+        "일부 잎 가장자리 국소적 갈색 반점",
+        "잎 기부(줄기 부착 부위) 갈색 변색"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8685,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.86,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "dry_supplement_004",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Wilting and lower-leaf yellowing from drought",
+          "sim": 0.8599,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 과도한 건조가 원인일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 과도한 건조가 원인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_dracaena_002",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena reflexa",
+      "pred_plant_ko": "드라세나 송 오브 인디아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 22.761,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "드라세나",
+      "expected_care_key": "드라세나",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎끝 갈변 및 바삭하게 마름",
+        "잎 가장자리 국소적 갈색 괴사"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8641,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8635,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mu_trinklein_009",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Excess fertilizer salts applied to the growing…",
+          "sim": 0.8505,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "수분 부족 또는 과습이 원인일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 과습이 원인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_dracaena_003",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Cordyline fruticosa",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 21.524,
+      "json_ok": true,
+      "care_attached": false,
+      "care_species_key": null,
+      "expected_care_key": "드라세나",
+      "care_link_correct": null,
+      "observed_symptoms": [
+        "일부 잎끝 및 가장자리의 갈변과 바삭하게 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8697,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8656,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8581,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 과도한 건조일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 과도한 건조일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_dracaena_004",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena reflexa",
+      "pred_plant_ko": "드라세나 송 오브 인디아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 20.202,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "드라세나",
+      "expected_care_key": "드라세나",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "여러 잎의 잎끝 갈변 및 바삭하게 마름",
+        "일부 잎 가장자리의 불규칙한 갈색 괴사 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8706,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8681,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.864,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 환경적 요인일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 환경적 요인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_dracaena_006",
+      "gt_plant": "드라세나 송 오브 인디아",
+      "pred_plant_scientific": "Dracaena reflexa",
+      "pred_plant_ko": "드라세나 송 오브 인디아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 18.595,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "드라세나",
+      "expected_care_key": "드라세나",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "여러 잎의 잎끝 갈변 및 바삭하게 마름",
+        "일부 잎 가장자리 국소적 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8664,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.865,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8471,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_001",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 16.836,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "행운목",
+      "expected_care_key": "행운목",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "잎끝 갈변 및 바삭하게 마름",
+        "잎 가장자리 국소적 갈변",
+        "일부 잎 표면 국소적 황색 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8687,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8671,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8657,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 환경적 요인으로 인한 증상일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 환경적 요인으로 인한 증상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_002",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.042,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "행운목",
+      "expected_care_key": "행운목",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎끝 갈변 및 바삭하게 마름",
+        "잎 표면 국소적 황색 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8375,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8356,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.835,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족으로 인한 잎끝 갈변이 발생했을 수 있습니다.",
+      "guard_pre_cause": "수분 부족으로 인한 잎끝 갈변이 발생했을 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_003",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 15.05,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "행운목",
+      "expected_care_key": "행운목",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "아래잎 전체 황화 및 바삭하게 마름",
+        "새순 기부 조직 갈변 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_004",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Wilting and lower-leaf yellowing from drought",
+          "sim": 0.8699,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8626,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8626,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족으로 인한 스트레스일 수 있습니다.",
+      "guard_pre_cause": "수분 부족으로 인한 스트레스일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_004",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Beaucarnea recurvata",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 19.236,
+      "json_ok": true,
+      "care_attached": false,
+      "care_species_key": null,
+      "expected_care_key": "행운목",
+      "care_link_correct": null,
+      "observed_symptoms": [
+        "단일 잎 끝부분 절단 및 단면 갈변 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_indoor_003",
+          "problem_type": "env",
+          "source": "mobot_indoor",
+          "title": "Sunburn",
+          "sim": 0.8037,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_007",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "In the case of damage caused by…",
+          "sim": 0.802,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.7942,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "수분 부족 또는 환경적 요인일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 환경적 요인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_005",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 17.344,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "행운목",
+      "expected_care_key": "행운목",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "잎끝 잘린 단면의 갈변 및 마름",
+        "잎 표면의 국소적인 황화 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_007",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "In the case of damage caused by…",
+          "sim": 0.8277,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "psu_ucanr_007",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Anthracnose Collectrotrichum",
+          "sim": 0.8227,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8213,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "과도한 비료 사용 또는 수분 부족일 수 있습니다.",
+      "guard_pre_cause": "과도한 비료 사용 또는 수분 부족일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_006",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 15.894,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "행운목",
+      "expected_care_key": "행운목",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎끝 갈변 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8811,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8743,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8556,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 낮은 습도로 인한 잎끝 갈변 가능성이 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 낮은 습도로 인한 잎끝 갈변 가능성이 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "self_haengun_008",
+      "gt_plant": "행운목",
+      "pred_plant_scientific": "Dracaena fragrans",
+      "pred_plant_ko": "행운목",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.275,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "행운목",
+      "expected_care_key": "행운목",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎끝 국소적 갈변 및 바삭하게 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8832,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.861,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "dry_supplement_004",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Wilting and lower-leaf yellowing from drought",
+          "sim": 0.8598,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족으로 인한 잎끝 갈변이 발생했을 수 있습니다.",
+      "guard_pre_cause": "수분 부족으로 인한 잎끝 갈변이 발생했을 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_aglaonema_001",
+      "gt_plant": "아글라오네마",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 16.999,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스파티필룸",
+      "expected_care_key": "스파티필룸",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎끝 미세한 갈변",
+        "우측 상단 일부 잎 표면의 국소적인 황색 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8575,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8536,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mobot_indoor_021",
+          "problem_type": "nutrient",
+          "source": "mobot_indoor",
+          "title": "Nitrogen deficiency",
+          "sim": 0.8523,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "환경적 요인이나 영양 부족이 원인일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인이나 영양 부족이 원인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_aglaonema_002",
+      "gt_plant": "아글라오네마",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": false,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 15.131,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스파티필룸",
+      "expected_care_key": "스파티필룸",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 외곽 잎 가장자리 갈변 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_007",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "In the case of damage caused by…",
+          "sim": 0.8662,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8623,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8521,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_aglaonema_003",
+      "gt_plant": "아글라오네마",
+      "pred_plant_scientific": "Aglaonema commutatum",
+      "pred_plant_ko": "아글라오네마",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 16.079,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "아글라오네마",
+      "expected_care_key": "아글라오네마",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 아래잎 황화 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8706,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_004",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Wilting and lower-leaf yellowing from drought",
+          "sim": 0.8525,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8505,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 낮은 습도일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 낮은 습도일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_chlorophytum_comosum_001",
+      "gt_plant": "접란",
+      "pred_plant_scientific": "Dianella tasmanica",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 17.379,
+      "json_ok": true,
+      "care_attached": false,
+      "care_species_key": null,
+      "expected_care_key": "접란",
+      "care_link_correct": null,
+      "observed_symptoms": [
+        "일부 잎끝 국소적 갈변 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8753,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8669,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8655,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 물주기 간격이 길어져서 발생했을 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 물주기 간격이 길어져서 발생했을 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_chlorophytum_comosum_002",
+      "gt_plant": "접란",
+      "pred_plant_scientific": "Dianella caerulea",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 23.622,
+      "json_ok": true,
+      "care_attached": false,
+      "care_species_key": null,
+      "expected_care_key": "접란",
+      "care_link_correct": null,
+      "observed_symptoms": [
+        "일부 잎끝 국소적 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8269,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8223,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8011,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": true,
+      "guard_reason": "all_cosmetic_nondisease_top1",
+      "guard_pre_status": "건조",
+      "pred_cause": "일부 잎끝의 국소적 갈변은 디아넬라 카에룰레아에서 흔히 나타나는 자연스러운 현상일 수 있습니다. 적절한 빛과 물 관리를 유지해 주세요.",
+      "guard_pre_cause": "수분 부족 또는 과도한 건조일 수 있습니다.",
+      "guard_cause_regenerated": true
+    },
+    {
+      "image_id": "inat_chlorophytum_comosum_003",
+      "gt_plant": "접란",
+      "pred_plant_scientific": "Chlorophytum comosum",
+      "pred_plant_ko": "접란",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 23.741,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "접란",
+      "expected_care_key": "접란",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎끝 갈변 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_indoor_003",
+          "problem_type": "env",
+          "source": "mobot_indoor",
+          "title": "Sunburn",
+          "sim": 0.8244,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8225,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "psu_ucanr_016",
+          "problem_type": "abiotic",
+          "source": "psu_ucanr",
+          "title": "Brown leaf tips • Chemical",
+          "sim": 0.8224,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "수분 부족 또는 과도한 햇빛 노출일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 과도한 햇빛 노출일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_001",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "병해 의심",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.209,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎 가장자리 국소적 갈변·괴사",
+        "일부 아래잎 가장자리 바삭하게 마름·갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8759,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8632,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8605,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_002",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 15.047,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_herb_011",
+          "problem_type": "pest",
+          "source": "mobot_herb",
+          "title": "Scale insects",
+          "sim": 0.7694,
+          "rag_source": "mobot_herb"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.768,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mobot_indoor_010",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Scale",
+          "sim": 0.768,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_003",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 16.115,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_herb_011",
+          "problem_type": "pest",
+          "source": "mobot_herb",
+          "title": "Scale insects",
+          "sim": 0.7694,
+          "rag_source": "mobot_herb"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.768,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mobot_indoor_010",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Scale",
+          "sim": 0.768,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_ficus_elastica_001",
+      "gt_plant": "고무나무",
+      "pred_plant_scientific": "Ficus elastica",
+      "pred_plant_ko": "고무나무",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 14.901,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "고무나무",
+      "expected_care_key": "고무나무",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_003",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Soft scales",
+          "sim": 0.8093,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7776,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.7702,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_ficus_elastica_002",
+      "gt_plant": "고무나무",
+      "pred_plant_scientific": "Ficus elastica",
+      "pred_plant_ko": "고무나무",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 13.465,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "고무나무",
+      "expected_care_key": "고무나무",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_003",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Soft scales",
+          "sim": 0.8093,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7776,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.7702,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_ficus_elastica_003",
+      "gt_plant": "고무나무",
+      "pred_plant_scientific": "Ficus elastica",
+      "pred_plant_ko": "고무나무",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 26.174,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "고무나무",
+      "expected_care_key": "고무나무",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎 가장자리 국소적 갈변"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8474,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8439,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8353,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": true,
+      "guard_reason": "all_cosmetic_nondisease_top1",
+      "guard_pre_status": "건조",
+      "pred_cause": "일부 잎 가장자리의 국소적 갈변은 인도고무나무에서 흔히 나타나는 자연스러운 현상일 수 있습니다. 적절한 빛과 물 관리를 유지해 주세요.",
+      "guard_pre_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_cause_regenerated": true
+    },
+    {
+      "image_id": "inat_monstera_deliciosa_001",
+      "gt_plant": "몬스테라",
+      "pred_plant_scientific": "Monstera deliciosa",
+      "pred_plant_ko": "몬스테라",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "ambiguous",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": false,
+      "latency_sec": 22.868,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "몬스테라",
+      "expected_care_key": "몬스테라",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "여러 잎 전반적인 황화",
+        "잎 가장자리 갈변 및 마름",
+        "잎 중앙부 불규칙한 갈색 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8639,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8581,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.858,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "수분 부족 또는 낮은 습도로 인한 스트레스일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 낮은 습도로 인한 스트레스일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_monstera_deliciosa_002",
+      "gt_plant": "몬스테라",
+      "pred_plant_scientific": "Monstera deliciosa",
+      "pred_plant_ko": "몬스테라",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 16.582,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "몬스테라",
+      "expected_care_key": "몬스테라",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.774,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.7725,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7715,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_monstera_deliciosa_003",
+      "gt_plant": "몬스테라",
+      "pred_plant_scientific": "Monstera deliciosa",
+      "pred_plant_ko": "몬스테라",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 14.12,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "몬스테라",
+      "expected_care_key": "몬스테라",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.774,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.7725,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7715,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인 또는 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인 또는 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_sansevieria_trifasciata_001",
+      "gt_plant": "산세베리아",
+      "pred_plant_scientific": "Dracaena trifasciata",
+      "pred_plant_ko": "산세베리아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 17.277,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "산세베리아",
+      "expected_care_key": "산세베리아",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.807,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_011",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "Another common abiotic cause of leaf edge…",
+          "sim": 0.7971,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.786,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_sansevieria_trifasciata_002",
+      "gt_plant": "산세베리아",
+      "pred_plant_scientific": "Sansevieria trifasciata",
+      "pred_plant_ko": "산세베리아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 16.568,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "산세베리아",
+      "expected_care_key": "산세베리아",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.8021,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_003",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Soft scales",
+          "sim": 0.7964,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7952,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인이나 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_sansevieria_trifasciata_003",
+      "gt_plant": "산세베리아",
+      "pred_plant_scientific": "Sansevieria trifasciata",
+      "pred_plant_ko": "산세베리아",
+      "plant_match": true,
+      "gt_is_healthy": true,
+      "gt_true_status": "건강",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": true,
+      "latency_sec": 14.251,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "산세베리아",
+      "expected_care_key": "산세베리아",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_012",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Powdery mildew",
+          "sim": 0.8021,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_003",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Soft scales",
+          "sim": 0.7964,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_indoor_006",
+          "problem_type": "pest",
+          "source": "psu_indoor",
+          "title": "Spider mites",
+          "sim": 0.7952,
+          "rag_source": "psu_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인 또는 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인 또는 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_spathiphyllum_001",
+      "gt_plant": "스파티필름",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "과습",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.65,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스파티필룸",
+      "expected_care_key": "스파티필룸",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "여러 잎 가장자리 갈변 및 바삭하게 마름",
+        "단일 잎끝 국소적 황화"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8724,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8682,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8567,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 물 부족일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_spathiphyllum_002",
+      "gt_plant": "스파티필름",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "비건강-원인미상",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 14.443,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스파티필룸",
+      "expected_care_key": "스파티필룸",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "아래쪽 오래된 잎과 줄기의 갈색 고사",
+        "일부 잎의 전체적인 갈변 및 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_004",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Wilting and lower-leaf yellowing from drought",
+          "sim": 0.8797,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8633,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8624,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족으로 인한 스트레스가 발생했을 수 있습니다.",
+      "guard_pre_cause": "수분 부족으로 인한 스트레스가 발생했을 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_spathiphyllum_003",
+      "gt_plant": "스파티필름",
+      "pred_plant_scientific": "Spathiphyllum wallisii",
+      "pred_plant_ko": "스파티필름",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "과습",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 15.153,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스파티필룸",
+      "expected_care_key": "스파티필룸",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎 가장자리 갈변 및 마름",
+        "일부 잎 표면의 국소적 갈색 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8735,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8626,
+          "rag_source": "psu_ucanr"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8603,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "수분 부족 또는 환경적 요인으로 인한 스트레스일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 환경적 요인으로 인한 스트레스일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_004",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "건조",
+      "pred_status": "건조",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 17.261,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "여러 잎 가장자리의 국소적 갈변 및 바삭하게 마름"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8662,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_003",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Leaf scorch from water stress and low humidity",
+          "sim": 0.8629,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "dry_supplement_005",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Low-humidity desiccation of indoor plants",
+          "sim": 0.8505,
+          "rag_source": "dry_supplement"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건조",
+      "pred_cause": "수분 부족 또는 낮은 습도일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 낮은 습도일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_005",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Philodendron erubescens",
+      "pred_plant_ko": null,
+      "plant_match": null,
+      "gt_is_healthy": false,
+      "gt_true_status": "병해 의심",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 17.199,
+      "json_ok": true,
+      "care_attached": false,
+      "care_species_key": null,
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": null,
+      "observed_symptoms": [
+        "여러 잎 표면의 불규칙한 갈색·검은색 반점",
+        "잎 가장자리 국소적 갈변 및 괴사"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8722,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.8693,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "psu_ucanr_008",
+          "problem_type": "disease",
+          "source": "psu_ucanr",
+          "title": "Leaf spots Fungi",
+          "sim": 0.8645,
+          "rag_source": "psu_ucanr"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "곰팡이 감염 또는 환경적 요인으로 인한 증상일 수 있습니다.",
+      "guard_pre_cause": "곰팡이 감염 또는 환경적 요인으로 인한 증상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_006",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "ambiguous",
+      "pred_status": "건강",
+      "pred_is_healthy": true,
+      "healthy_match": false,
+      "latency_sec": 15.304,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [],
+      "top_3_rag": [
+        {
+          "card_id": "mobot_herb_011",
+          "problem_type": "pest",
+          "source": "mobot_herb",
+          "title": "Scale insects",
+          "sim": 0.7694,
+          "rag_source": "mobot_herb"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.768,
+          "rag_source": "HOUSEPLANT"
+        },
+        {
+          "card_id": "mobot_indoor_010",
+          "problem_type": "pest",
+          "source": "mobot_indoor",
+          "title": "Scale",
+          "sim": 0.768,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "건강",
+      "pred_cause": "환경적 요인 또는 자연스러운 현상일 수 있습니다.",
+      "guard_pre_cause": "환경적 요인 또는 자연스러운 현상일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_007",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "ambiguous",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 17.072,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "단일 잎 가장자리 국소적 갈변 및 황화 테두리",
+        "여러 잎 불규칙한 갈색 미세 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "psu_indoor_011",
+          "problem_type": "disease",
+          "source": "psu_indoor",
+          "title": "Leaf spot fungus",
+          "sim": 0.8528,
+          "rag_source": "psu_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8496,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "",
+          "problem_type": "",
+          "source": "HOUSEPLANT",
+          "title": "",
+          "sim": 0.8461,
+          "rag_source": "HOUSEPLANT"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "병해로 인한 잎의 변색 및 손상이 발생했을 가능성이 있습니다.",
+      "guard_pre_cause": "병해로 인한 잎의 변색 및 손상이 발생했을 가능성이 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_008",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "병해 의심",
+      "pred_status": "병해 의심",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.238,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 잎 가장자리 갈변 및 바삭하게 마름",
+        "일부 잎 전반적인 황화"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "dry_supplement_002",
+          "problem_type": "abiotic-water",
+          "source": "dry_supplement",
+          "title": "Brown crispy leaf tips and edges from underwatering",
+          "sim": 0.8663,
+          "rag_source": "dry_supplement"
+        },
+        {
+          "card_id": "mobot_indoor_021",
+          "problem_type": "nutrient",
+          "source": "mobot_indoor",
+          "title": "Nitrogen deficiency",
+          "sim": 0.8592,
+          "rag_source": "mobot_indoor"
+        },
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8553,
+          "rag_source": "mu_trinklein"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "병해 의심",
+      "pred_cause": "수분 부족 또는 과습일 수 있습니다.",
+      "guard_pre_cause": "수분 부족 또는 과습일 수 있습니다.",
+      "guard_cause_regenerated": false
+    },
+    {
+      "image_id": "inat_epipremnum_aureum_009",
+      "gt_plant": "스킨답서스",
+      "pred_plant_scientific": "Epipremnum aureum",
+      "pred_plant_ko": "스킨답서스",
+      "plant_match": true,
+      "gt_is_healthy": false,
+      "gt_true_status": "ambiguous",
+      "pred_status": "영양 부족",
+      "pred_is_healthy": false,
+      "healthy_match": true,
+      "latency_sec": 18.286,
+      "json_ok": true,
+      "care_attached": true,
+      "care_species_key": "스킨답서스",
+      "expected_care_key": "스킨답서스",
+      "care_link_correct": true,
+      "observed_symptoms": [
+        "일부 오래된 잎 전반적인 황화 및 갈변 고사",
+        "단일 잎 중앙부 불규칙한 갈색 반점"
+      ],
+      "top_3_rag": [
+        {
+          "card_id": "mu_trinklein_006",
+          "problem_type": "general",
+          "source": "mu_trinklein",
+          "title": "The pattern of leaf damage also can…",
+          "sim": 0.8612,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mu_trinklein_002",
+          "problem_type": "frame",
+          "source": "mu_trinklein",
+          "title": "Occasionally, leaves of seemingly healthy houseplants begin…",
+          "sim": 0.8585,
+          "rag_source": "mu_trinklein"
+        },
+        {
+          "card_id": "mobot_indoor_021",
+          "problem_type": "nutrient",
+          "source": "mobot_indoor",
+          "title": "Nitrogen deficiency",
+          "sim": 0.8563,
+          "rag_source": "mobot_indoor"
+        }
+      ],
+      "species_normal_species": "",
+      "species_normal_card_count": 0,
+      "guard_fired": false,
+      "guard_reason": null,
+      "guard_pre_status": "영양 부족",
+      "pred_cause": "영양 부족 또는 환경적 요인일 수 있습니다.",
+      "guard_pre_cause": "영양 부족 또는 환경적 요인일 수 있습니다.",
+      "guard_cause_regenerated": false
+    }
+  ],
+  "rescored_from": "eval\\after_acc_armC_3p5flash.json",
+  "rescore_note": "no model calls; gt re-merged from labels.json; pred_* unchanged",
+  "rescore_remerged_cases": 4
+}
