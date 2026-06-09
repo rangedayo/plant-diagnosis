@@ -24,8 +24,17 @@ SYMPTOM_VOCAB: list[str] = [
     "leaf_pale",        # 잎 색 옅음
 ]
 
+# 3단 심각도 tier (건강/경미/비건강). is_healthy 이진 위에 얹는 차원으로,
+# R15에서 도입. 건강·경미 → is_healthy=True, 비건강 → is_healthy=False.
+TIER_VOCAB: list[str] = ["건강", "경미", "비건강"]
+
 # 5-status 정답 라벨용 enum (app/model_utils.py ALLOWED_STRUCT_STATUS와 동일 5종)
 STATUS_VOCAB: list[str] = ["건강", "과습", "건조", "병해 의심", "영양 부족"]
+
+# 경미 tier 전용 true_status. STATUS_VOCAB(5종) 밖이라 run_eval 5-status 혼동표에서
+# 자동 skip되고(build_status_confusion_matrix), 이진에선 is_healthy=True → 건강 취급.
+# STATUS_VOCAB 5종 계약(= ALLOWED_STRUCT_STATUS)을 깨지 않기 위해 분리 상수로 둔다.
+STATUS_MILD: str = "경미"
 
 # 사람이 잎 사진만으로 5종 판정이 곤란한 케이스 → 평가에서 제외
 STATUS_AMBIGUOUS: str = "ambiguous"
@@ -67,7 +76,7 @@ def validate_label(label: dict) -> None:
         raise ValueError(f"필수 필드 누락: {label}")
 
     gt = label["ground_truth"]
-    required = {"plant_name_korean", "is_healthy", "symptoms", "diagnosis", "true_status"}
+    required = {"plant_name_korean", "is_healthy", "symptoms", "diagnosis", "true_status", "tier"}
     missing = required - gt.keys()
     if missing:
         raise ValueError(f"{label['image_id']}: ground_truth 누락 필드 {missing}")
@@ -79,27 +88,44 @@ def validate_label(label: dict) -> None:
         if s not in SYMPTOM_VOCAB:
             raise ValueError(f"{label['image_id']}: 알 수 없는 증상 {s}")
 
+    # tier enum 검증
+    tier = gt["tier"]
+    if tier not in TIER_VOCAB:
+        raise ValueError(f"{label['image_id']}: 알 수 없는 tier {tier!r} (허용: {TIER_VOCAB})")
+
     # true_status enum 검증 (TODO 등 미기입 값은 여기서 ValueError → "사람이 채울 자리" 게이트)
     true_status = gt["true_status"]
     if true_status not in STATUS_VOCAB and true_status not in (
+        STATUS_MILD,
         STATUS_AMBIGUOUS,
         STATUS_UNKNOWN_CAUSE,
     ):
-        allowed = STATUS_VOCAB + [STATUS_AMBIGUOUS, STATUS_UNKNOWN_CAUSE]
+        allowed = STATUS_VOCAB + [STATUS_MILD, STATUS_AMBIGUOUS, STATUS_UNKNOWN_CAUSE]
         raise ValueError(
             f"{label['image_id']}: 알 수 없는 true_status {true_status!r} (허용: {allowed})"
         )
 
-    # is_healthy ↔ true_status 정합성 (ambiguous는 면제. 비건강-원인미상은
-    # "건강이 아님"이므로 일반 비건강 규칙을 그대로 적용 → is_healthy=False 강제됨).
-    if true_status != STATUS_AMBIGUOUS:
-        if true_status == "건강" and not gt["is_healthy"]:
+    # tier ↔ is_healthy 정합성: 비건강만 is_healthy=False, 건강·경미는 True.
+    if tier == "비건강" and gt["is_healthy"]:
+        raise ValueError(f"{label['image_id']}: tier='비건강'인데 is_healthy=True (정합성 위반)")
+    if tier in ("건강", "경미") and not gt["is_healthy"]:
+        raise ValueError(f"{label['image_id']}: tier={tier!r}인데 is_healthy=False (정합성 위반)")
+
+    # tier ↔ true_status 정합성: 건강→"건강", 경미→경미, 비건강→원인(5종 중 건강 제외)·원인미상.
+    if tier == "건강" and true_status != "건강":
+        raise ValueError(
+            f"{label['image_id']}: tier='건강'인데 true_status={true_status!r} (정합성 위반)"
+        )
+    if tier == "경미" and true_status != STATUS_MILD:
+        raise ValueError(
+            f"{label['image_id']}: tier='경미'인데 true_status={true_status!r} (정합성 위반)"
+        )
+    if tier == "비건강":
+        unhealthy_causes = [s for s in STATUS_VOCAB if s != "건강"] + [STATUS_UNKNOWN_CAUSE]
+        if true_status not in unhealthy_causes:
             raise ValueError(
-                f"{label['image_id']}: true_status='건강'인데 is_healthy=False (정합성 위반)"
-            )
-        if true_status != "건강" and gt["is_healthy"]:
-            raise ValueError(
-                f"{label['image_id']}: true_status={true_status!r}인데 is_healthy=True (정합성 위반)"
+                f"{label['image_id']}: tier='비건강'인데 true_status={true_status!r} "
+                f"(허용 원인: {unhealthy_causes})"
             )
 
 
