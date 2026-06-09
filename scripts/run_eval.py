@@ -126,8 +126,13 @@ def _scientific_to_korean(plant_name_scientific: str | None) -> str | None:
 
 
 def _status_to_is_healthy(status: str | None) -> bool:
-    """status "건강" → True, 나머지 → False."""
-    return str(status or "").strip() == HEALTHY_STATUS
+    """status "건강"·"경미" → True, 나머지 → False. [R17]
+
+    경미는 GT 컨벤션(is_healthy=True)과 정합 — is_healthy 이진에선 건강 쪽으로 친다.
+    (3단 tier 매핑은 _status_to_tier가 경미→경미로 별도 처리하므로 무관.)
+    """
+    s = str(status or "").strip()
+    return s == HEALTHY_STATUS or s == STATUS_MILD
 
 
 def _status_to_tier(status: str | None) -> str | None:

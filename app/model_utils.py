@@ -101,7 +101,7 @@ async def generate_english_keywords(keywords_ko: list[str]) -> list[str]:
 REQUIRED_WEAK_EVIDENCE_PHRASE = "정확도가 낮을 수 있습니다"
 
 ALLOWED_STRUCT_STATUS = frozenset(
-    {"건강", "과습", "건조", "병해 의심", "영양 부족"}
+    {"건강", "경미", "과습", "건조", "병해 의심", "영양 부족"}
 )
 
 
