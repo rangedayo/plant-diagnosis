@@ -100,7 +100,7 @@ class GeminiProvider:
         api_key: str | None = None,
         project: str | None = None,
         location: str | None = None,
-        model: str = "gemini-2.5-pro",
+        model: str | None = None,
         temperature: float | None = model_utils.LLM_TEMPERATURE,
     ) -> None:
         # 인증 모드 자동 분기 (옵션 A, [1-2.5]):
@@ -123,7 +123,17 @@ class GeminiProvider:
                 )
             self._client = genai.Client(api_key=resolved_key)
             self._auth_mode = "ai_studio"
-        self._model = model
+        # [R13 ArmC] analyze 모델 env 파라미터화. 기본값 = 기존 하드코딩 문자열 그대로.
+        #   - 명시 인자 우선 → env(ANALYZE_MODEL) → 기본 "gemini-2.5-pro".
+        #   - env 미설정·인자 미전달 시 해석값은 기존과 byte-identical("gemini-2.5-pro").
+        if model is not None:
+            self._model = model
+            model_source = "arg"
+        else:
+            env_model = os.environ.get("ANALYZE_MODEL")
+            self._model = env_model or "gemini-2.5-pro"
+            model_source = "env" if env_model else "default"
+        print(f"[analyze] model={self._model} ({model_source})")
         self._system_prompt = system_prompt
         self._temperature = temperature
 
