@@ -25,7 +25,7 @@ _SCRIPTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(_ROOT))
 sys.path.insert(0, str(_SCRIPTS))
 
-from run_eval import _build_result, _load_labels, LABELS_PATH  # noqa: E402
+from run_eval import _build_result, _load_labels, _status_to_tier, LABELS_PATH  # noqa: E402
 
 
 def rescore(input_path: Path, output_path: Path) -> dict:
@@ -48,6 +48,9 @@ def rescore(input_path: Path, output_path: Path) -> dict:
             remerged += 1
         c["gt_is_healthy"] = new_h
         c["gt_true_status"] = new_ts
+        # [R16] 3단 tier 재병합: gt_tier는 labels.json에서, pred_tier는 보존된 pred_status에서.
+        c["gt_tier"] = g.get("tier")
+        c["pred_tier"] = _status_to_tier(c.get("pred_status"))
         if c.get("pred_is_healthy") is not None:
             c["healthy_match"] = c["pred_is_healthy"] == new_h
 
@@ -80,6 +83,14 @@ def main() -> None:
     print(
         f"is_healthy(post-guard): tp={ih['tp']} tn={ih['tn']} fp={ih['fp']} "
         f"fn={ih['fn']} acc={ih['accuracy']:.4f}"
+    )
+    td = result["tier_diagnosis"]
+    oc = td["over_call"]
+    print(
+        f"tier(3단): exact={td['exact_match']}/{td['scored']} "
+        f"cardinal_miss={td['cardinal_miss']} soft_miss={td['soft_miss']} "
+        f"minor_undercall={td['minor_undercall']} "
+        f"over_call={oc['total']}(→경미{oc['to_mild']}/→비건강{oc['to_unhealthy']})"
     )
     print(f"저장: {outp}")
 

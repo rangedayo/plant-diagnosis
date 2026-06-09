@@ -46,7 +46,10 @@ from app.vision.gemini import GeminiProvider  # noqa: E402
 from test_data.labeling_vocab import (  # noqa: E402
     PLANT_NAME_KO_MAP,
     STATUS_AMBIGUOUS,
+    STATUS_MILD,
+    STATUS_UNKNOWN_CAUSE,
     STATUS_VOCAB,
+    TIER_VOCAB,
 )
 
 # [B-prime→status guard] gt_plant → 종 키 매핑. B' 종 주입 revert 후 graph가
@@ -125,6 +128,30 @@ def _scientific_to_korean(plant_name_scientific: str | None) -> str | None:
 def _status_to_is_healthy(status: str | None) -> bool:
     """status "건강" → True, 나머지 → False."""
     return str(status or "").strip() == HEALTHY_STATUS
+
+
+def _status_to_tier(status: str | None) -> str | None:
+    """모델 status(5종+미래 경미) → 3단 tier. [R16]
+
+    - None(skip/error) → None (tier 채점에서 제외, pred 없음).
+    - "건강" → 건강, "경미" → 경미(현 모델 미출력, 미래 대비).
+    - 과습·건조·병해 의심·영양 부족·비건강-원인미상 → 비건강.
+    - 그 외 미지원 status → 비건강(안전 측=과대 처리) + stderr 로그.
+    """
+    if status is None:
+        return None
+    s = str(status).strip()
+    if s == HEALTHY_STATUS:  # "건강"
+        return "건강"
+    if s == STATUS_MILD:  # "경미"
+        return "경미"
+    if s in STATUS_VOCAB or s == STATUS_UNKNOWN_CAUSE:
+        return "비건강"
+    print(
+        f"[run_eval] _status_to_tier: 미지원 status {s!r} → 비건강(안전 측 매핑)",
+        file=sys.stderr,
+    )
+    return "비건강"
 
 
 def _struct_json_ok(structured_result: Any) -> bool:
@@ -548,6 +575,63 @@ def build_status_confusion_matrix(per_case: list[dict[str, Any]]) -> dict[str, A
     }
 
 
+# ───────────────────────────── [R16] 3단 tier 채점 ─────────────────────────────
+# 모델 5종 status → 3단 tier(건강<경미<비건강) 매핑 후 3×3 혼동표 + 비대칭 게이트 지표.
+# 기존 이진/5-status 지표와 독립(add-only). scored = pred_tier 있고 gt_tier∈TIER_VOCAB.
+# skip/error(pred_status None → pred_tier None)·gt_tier 미지원은 채점 제외하되 skipped로
+# 카운트(5-status 혼동표의 "미측정 행" 명시와 같은 투명성 취지).
+
+def build_tier_diagnosis(per_case: list[dict[str, Any]]) -> dict[str, Any]:
+    """3단 tier 채점 (read-only 집계, 진단 로직 무관). [R16]
+
+    심각도 순서 건강(0) < 경미(1) < 비건강(2). 행=gt_tier, 열=pred_tier.
+    비대칭 게이트:
+      - cardinal_miss   = gt비건강 & pred건강 (🔴 하드 게이트, 목표 0. 옛 FN의 3단판).
+      - soft_miss       = gt비건강 & pred경미 (추적; 현 모델 경미 미출력이라 0 정상).
+      - minor_undercall = gt경미 & pred건강 (허용, 저위험).
+      - over_call       = pred가 gt보다 심각.
+                          to_mild=건강→경미, to_unhealthy=건강→비건강 + 경미→비건강.
+    """
+    tiers = list(TIER_VOCAB)  # ["건강","경미","비건강"]
+    idx = {t: i for i, t in enumerate(tiers)}
+
+    def _is_scored(c: dict[str, Any]) -> bool:
+        return c.get("pred_tier") in idx and c.get("gt_tier") in idx
+
+    scored = [c for c in per_case if _is_scored(c)]
+    skipped = [c for c in per_case if not _is_scored(c)]
+    counts = [[0 for _ in tiers] for _ in tiers]
+    for c in scored:
+        counts[idx[c["gt_tier"]]][idx[c["pred_tier"]]] += 1
+
+    n = len(scored)
+    exact = sum(counts[i][i] for i in range(len(tiers)))
+    cardinal_miss = counts[idx["비건강"]][idx["건강"]]
+    soft_miss = counts[idx["비건강"]][idx["경미"]]
+    minor_undercall = counts[idx["경미"]][idx["건강"]]
+    over_to_mild = counts[idx["건강"]][idx["경미"]]
+    over_to_unhealthy = (
+        counts[idx["건강"]][idx["비건강"]] + counts[idx["경미"]][idx["비건강"]]
+    )
+    return {
+        "tiers": tiers,
+        "counts": counts,  # 행=gt_tier, 열=pred_tier
+        "scored": n,
+        "skipped": len(skipped),  # pred_tier None(skip/error) 또는 gt_tier 미지원
+        "skipped_ids": [c.get("image_id") for c in skipped],
+        "exact_match": exact,
+        "exact_match_rate": _safe_div(exact, n),
+        "cardinal_miss": cardinal_miss,  # 🔴 하드 게이트(목표 0)
+        "soft_miss": soft_miss,
+        "minor_undercall": minor_undercall,
+        "over_call": {
+            "to_mild": over_to_mild,
+            "to_unhealthy": over_to_unhealthy,
+            "total": over_to_mild + over_to_unhealthy,
+        },
+    }
+
+
 async def _measure_labels(
     graph, db_path: str, labels: list[dict[str, Any]], tag: str
 ) -> list[dict[str, Any]]:
@@ -564,6 +648,7 @@ async def _measure_labels(
         gt_plant = gt.get("plant_name_korean")
         gt_is_healthy = bool(gt.get("is_healthy"))
         gt_true_status = gt.get("true_status")  # [ACC-R4] 5-status 혼동표용
+        gt_tier = gt.get("tier")  # [R16] 3단 tier 채점용
         rel = row.get("image_path", "")
         img_path = _ROOT / rel
 
@@ -578,7 +663,9 @@ async def _measure_labels(
                     "plant_match": None,
                     "gt_is_healthy": gt_is_healthy,
                     "gt_true_status": gt_true_status,
+                    "gt_tier": gt_tier,
                     "pred_status": None,
+                    "pred_tier": None,
                     "pred_is_healthy": None,
                     "healthy_match": None,
                     "latency_sec": None,
@@ -606,7 +693,9 @@ async def _measure_labels(
                     "plant_match": None,
                     "gt_is_healthy": gt_is_healthy,
                     "gt_true_status": gt_true_status,
+                    "gt_tier": gt_tier,
                     "pred_status": None,
+                    "pred_tier": None,
                     "pred_is_healthy": None,
                     "healthy_match": None,
                     "latency_sec": None,
@@ -656,7 +745,9 @@ async def _measure_labels(
                 "plant_match": plant_match,
                 "gt_is_healthy": gt_is_healthy,
                 "gt_true_status": gt_true_status,  # [ACC-R4] 5-status 정답
+                "gt_tier": gt_tier,  # [R16] 3단 tier 정답
                 "pred_status": pred_status,
+                "pred_tier": _status_to_tier(pred_status),  # [R16] status→tier 매핑
                 "pred_is_healthy": pred_is_healthy,
                 "healthy_match": healthy_match,
                 "latency_sec": round(latency, 3),
@@ -851,6 +942,8 @@ def _build_result(total: int, per_case: list[dict[str, Any]]) -> dict[str, Any]:
         "guard_caught_fp": guard_caught_fp,
         # [ACC-R4] 5-status 혼동표 (ambiguous 행 제외표시, 표본 0 행 미측정표시).
         "status_confusion_matrix": build_status_confusion_matrix(per_case),
+        # [R16] 3단 tier 채점 (3×3 혼동표 + 비대칭 게이트 지표).
+        "tier_diagnosis": build_tier_diagnosis(per_case),
         "status_distribution": status_dist,
         "status_by_is_healthy": status_by_health,
         "json_parse_success_rate": json_rate,
@@ -910,8 +1003,33 @@ def _print_status_confusion_matrix(scm: dict[str, Any]) -> None:
         print(f"  {r:<12}{cells}{tag}")
 
 
+def _print_tier_diagnosis(td: dict[str, Any]) -> None:
+    """[R16] 3단 tier 혼동표(3×3) + 비대칭 게이트 지표 콘솔 출력."""
+    tiers = td["tiers"]
+    counts = td["counts"]
+    print("\n[3단 tier 혼동표] (행=정답 gt_tier, 열=예측 pred_tier)")
+    print(f"  scored={td['scored']}  skipped={td['skipped']} {td['skipped_ids'] or ''}")
+    header = "  " + " " * 10 + "".join(f"{t:>10}" for t in tiers)
+    print(header)
+    for i, r in enumerate(tiers):
+        cells = "".join(f"{counts[i][j]:>10}" for j in range(len(tiers)))
+        print(f"  {r:<10}{cells}")
+    oc = td["over_call"]
+    print(
+        f"  exact_match={td['exact_match']}/{td['scored']} "
+        f"({_pct(td['exact_match_rate'])})"
+    )
+    print(f"  🔴 cardinal_miss(gt비건강→pred건강)={td['cardinal_miss']} (하드 게이트, 목표 0)")
+    print(f"  soft_miss(gt비건강→pred경미)={td['soft_miss']}  "
+          f"minor_undercall(gt경미→pred건강)={td['minor_undercall']}")
+    print(
+        f"  over_call total={oc['total']} "
+        f"(→경미={oc['to_mild']}, →비건강={oc['to_unhealthy']})"
+    )
+
+
 def _report_console(result: dict[str, Any]) -> None:
-    """메인 측정 result 콘솔 요약 (기존 출력 + 5-status 혼동표)."""
+    """메인 측정 result 콘솔 요약 (기존 출력 + 5-status 혼동표 + 3단 tier)."""
     total = result["total"]
     pn = result["plant_name"]
     correct, wrong, unmappable = pn["correct"], pn["wrong"], pn["unmappable"]
@@ -944,6 +1062,7 @@ def _report_console(result: dict[str, Any]) -> None:
         f"(가드가 잡은 FP={guard_caught_fp})"
     )
     _print_status_confusion_matrix(result["status_confusion_matrix"])
+    _print_tier_diagnosis(result["tier_diagnosis"])
     print("\n[status 분포]")
     for st, cnt in sorted(status_dist.items(), key=lambda x: -x[1]):
         h = status_by_health.get(st, {})
