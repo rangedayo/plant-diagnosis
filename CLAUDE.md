@@ -34,9 +34,11 @@
 
 ## 2. 현재 비교 앵커 (활성 기준점)
 
-- **현 활성 앵커**: `eval/after_acc_armC_3p5flash.json` (R13 Arm C, analyze=**gemini-3.5-flash/global**)
-  - acc **60.0%**, 분모 **35**, FP **14** · FN **0**, recall **1.0**
-  - 직전 2.5-pro 앵커 대비 FP 13→14(+1, 1케이스)·recall 유지 → 모델 교체는 FP 중립(채택 근거=속도).
+- **현 활성 앵커**: `eval/after_acc_armC_3p5flash_relabeled.json` (R13 Arm C, analyze=**gemini-3.5-flash/global**, **GT 정정 후**)
+  - acc **71.4%** (25/35), 분모 **35**, FP **10** · TP **13** · TN **12** · FN **0**, recall **1.0**, precision 0.565
+  - GT 재검(FP14 방향a) → 4건 건강→비건강+status 정정(haengun_001 건조·epipremnum_001 병해 의심·spathiphyllum_001/003 과습) → FP 14→10. 무과금 재채점(`rescore_from_output.py`).
+  - 잔여 10 FP = 진짜 over-call 영역(전부 유지(건강) 케이스). FP의 진짜 레버는 "미용 vs 병리" 임계값(generate/guard).
+- **참고(강등)**: `eval/after_acc_armC_3p5flash.json` = 정정 전 raw 측정 (acc 60.0%·FP14·FN0). 보존(aux_plantvillage 포함). **비교 금지**(라벨 정정 전).
 - **참고(강등)**: `eval/after_acc_r12d1_relabeled.json` = 2.5-pro 기준 옛 앵커 (acc 62.86%·FP13·FN0). 보존·**비교 금지**(arm 다름).
 - **참고 — 옛 baseline.json은 비교 앵커 아님**: 라벨 정정 전 기준. 보존만.
 - 새 라운드는 항상 이 활성 앵커 대비 게이트 설계.
@@ -319,5 +321,5 @@ CLAUDE.md는 **살아있는 문서**. 다음 시점에 업데이트:
 
 ---
 
-*마지막 업데이트: 2026-06-09 (R13 Arm C — analyze gemini-3.5-flash/global 채택, 앵커 교체)*
+*마지막 업데이트: 2026-06-09 — R13 Arm C GT 정정(4건) + 재채점. FP 14→10, acc 60.0→71.4%, recall 1.0 유지. 잔여 10 FP = 진짜 over-call 영역.*
 *다음 업데이트 트리거: 다음 트랙(미용 vs 병리 임계값 = generate/guard) 결과 보고 시*
