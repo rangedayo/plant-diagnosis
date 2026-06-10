@@ -86,7 +86,7 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
     };
   }, [previewUrl]);
 
-  // [홈 D] 로그인 사용자의 cross-plant 최근 진단(최신순 5개). 미로그인=빈 목록(empty state 유지).
+  // [홈 D] 로그인 사용자의 cross-plant 최근 진단(최신순 2개). 미로그인=빈 목록(empty state 유지).
   // 홈 보조 위젯이라 실패 시 조용히 빈 목록(에러 배너 없음 — 더미는 절대 금지, 데이터 있을 때만 표시).
   const { user } = useAuth();
   const uid = user?.uid ?? null;
@@ -99,7 +99,7 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
     }
     let cancelled = false;
     setRecentLoading(true);
-    listRecentDiagnoses(uid, 5)
+    listRecentDiagnoses(uid, 2)
       .then((items) => {
         if (!cancelled) setRecent(items);
       })
@@ -255,6 +255,12 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           <i className="ti ti-clock" aria-hidden="true" />
           최근 진단 기록
         </div>
+        {recent.length > 0 ? (
+          <button className="sec-more" type="button" onClick={() => onTabChange("myPlants")}>
+            전체 보기
+            <i className="ti ti-chevron-right" aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
       {uid && recentLoading ? (
         <p className="rec-loading">최근 기록을 불러오는 중…</p>
@@ -266,7 +272,8 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
             return (
               <li key={`${item.plant.id}/${r.id}`}>
                 <button className="rec-card" type="button" onClick={() => onPickRecent(item)}>
-                  <span className="rec-thumb">
+                  {/* 왼쪽: 카드 높이만큼 세로로 꽉 찬 큰 사진 */}
+                  <span className="rec-photo">
                     {r.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={r.imageUrl} alt="" />
@@ -274,16 +281,16 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
                       <i className="ti ti-photo" aria-hidden="true" />
                     )}
                   </span>
-                  <span className="rec-info">
-                    <span className="rec-name-row">
-                      <span className="rec-name">{item.plant.name}</span>
-                      <span className="rec-when">{formatWhen(r.createdAt)}</span>
-                    </span>
+                  {/* 오른쪽: 식물명 → status 배지 → 날짜 → 요약 1줄, 우하단 화살표 */}
+                  <span className="rec-body">
+                    <span className="rec-name">{item.plant.name}</span>
                     {r.status ? (
                       <span className="rec-badge" style={{ background: badge.bg, color: badge.fg }}>
                         {statusLabel(r.status).coarse || r.status}
                       </span>
                     ) : null}
+                    <span className="rec-when">{formatWhen(r.createdAt)}</span>
+                    {r.summary ? <span className="rec-summary">{r.summary}</span> : null}
                   </span>
                   <i className="ti ti-chevron-right rec-arrow" aria-hidden="true" />
                 </button>
@@ -668,7 +675,24 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           line-height: 1.5;
         }
 
-        /* [홈 D] 최근 진단 기록 리스트 (내 식물 카드 톤 재사용) */
+        /* 섹션 헤더 "전체 보기" 링크 */
+        .sec-more {
+          display: inline-flex;
+          align-items: center;
+          gap: 2px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--green-medium);
+          letter-spacing: -0.01em;
+        }
+        .sec-more i {
+          font-size: 16px;
+        }
+
+        /* [홈 D 후속] 최근 진단 기록 — 큰 사진 카드(풀폭, 세로 2 스택) */
         .rec-loading {
           margin: 0 16px;
           padding: 22px 4px;
@@ -682,25 +706,26 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           padding: 0;
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
         }
         .rec-card {
+          position: relative;
           width: 100%;
           display: flex;
-          align-items: center;
-          gap: 13px;
+          gap: 14px;
           padding: 12px;
-          border-radius: 16px;
+          border-radius: var(--radius-card);
           border: none;
           background: var(--bg-card);
-          box-shadow: 0 2px 12px rgba(42, 84, 40, 0.08);
+          box-shadow: var(--shadow-card);
           cursor: pointer;
           text-align: left;
+          min-height: 116px;
         }
-        .rec-thumb {
-          width: 56px;
-          height: 56px;
-          border-radius: 13px;
+        .rec-photo {
+          width: 100px;
+          align-self: stretch; /* 카드 높이만큼 세로로 꽉 */
+          border-radius: 16px;
           background: var(--bg-icon-circle);
           flex-shrink: 0;
           overflow: hidden;
@@ -708,42 +733,31 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           align-items: center;
           justify-content: center;
         }
-        .rec-thumb img {
+        .rec-photo img {
           width: 100%;
           height: 100%;
           object-fit: cover;
         }
-        .rec-thumb i {
-          font-size: 24px;
+        .rec-photo i {
+          font-size: 30px;
           color: var(--green-medium);
         }
-        .rec-info {
+        .rec-body {
           flex: 1;
           min-width: 0;
           display: flex;
           flex-direction: column;
-          gap: 6px;
-        }
-        .rec-name-row {
-          display: flex;
-          align-items: baseline;
-          justify-content: space-between;
-          gap: 8px;
+          gap: 5px;
+          padding: 2px 24px 2px 0; /* 우하단 화살표 자리 확보 */
         }
         .rec-name {
-          font-size: 15px;
-          font-weight: 700;
+          font-size: 16px;
+          font-weight: 800;
           color: var(--text-primary);
           letter-spacing: -0.01em;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-        }
-        .rec-when {
-          font-size: 12px;
-          color: var(--text-muted);
-          font-weight: 500;
-          flex-shrink: 0;
         }
         .rec-badge {
           align-self: flex-start;
@@ -754,10 +768,26 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           padding: 4px 12px;
           border-radius: var(--radius-badge);
         }
+        .rec-when {
+          font-size: 12px;
+          color: var(--text-muted);
+          font-weight: 500;
+        }
+        .rec-summary {
+          font-size: 12.5px;
+          color: var(--text-secondary);
+          line-height: 1.45;
+          font-weight: 500;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
         .rec-arrow {
+          position: absolute;
+          right: 14px;
+          bottom: 12px;
           font-size: 20px;
           color: #b0c4b2;
-          flex-shrink: 0;
         }
 
         @keyframes fadeIn {
