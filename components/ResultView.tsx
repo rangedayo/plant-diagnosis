@@ -25,7 +25,6 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare, onSa
   const statusText = (debug ? detail : coarse) || "진단 완료";
   const badge = statusBadge(status); // 색은 원본 status 기준 유지(라벨만 분기, §40)
 
-  const summary = sr.summary?.trim() ?? "";
   const cause = sr.cause?.trim() ?? "";
   const actionPlan = Array.isArray(sr.action_plan) ? sr.action_plan : [];
 
@@ -81,7 +80,6 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare, onSa
               </span>
             </div>
           </div>
-          {summary ? <p className="dr-summary">{summary}</p> : null}
         </div>
       </div>
 
@@ -321,13 +319,6 @@ export default function ResultView({ result, imageUrl, onReset, onViewCare, onSa
           font-size: 14px;
           color: var(--text-primary);
           font-weight: 600;
-        }
-        .dr-summary {
-          margin-top: 8px;
-          font-size: 14px;
-          color: #3a4a3c;
-          line-height: 1.65;
-          font-weight: 500;
         }
 
         /* 원인 */
