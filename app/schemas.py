@@ -64,6 +64,25 @@ class CareGuide(BaseModel):
     note: Optional[str] = Field(default=None, description="종 매핑 비고")
 
 
+class RefineContext(BaseModel):
+    """[챗봇 2차 보정] 1차 generate가 쓴 RAG 컨텍스트 — 2차 generate-only 재실행 재료.
+
+    generate-only 재실행에 필요한 비-analyze 입력(RAG 문서·타입 분포·플래그)을 1차 응답에
+    실어 2차 요청(RefineRequest)으로 echo-back한다. Gemini·임베딩 재호출 회피용.
+    `/compare`의 DiagnosisSnapshot echo-back과 동형 패턴(클라이언트가 서버 산출 컨텍스트 보유).
+    """
+
+    rag_docs: list[str] = Field(
+        default_factory=list, description="generate에 주입된 RAG 카드 본문(태그 포함)"
+    )
+    top_3_problem_type_weighted: dict[str, Any] = Field(
+        default_factory=dict, description="top_3 sim 가중 다수결(majority/distribution/top_problem_type)"
+    )
+    rag_failed: bool = Field(default=False, description="RAG 시스템 실패 플래그")
+    rag_no_docs: bool = Field(default=False, description="검색 통과 문서 0건 플래그")
+    rag_weak_evidence: bool = Field(default=False, description="약한 유사도 플래그")
+
+
 class DiagnosisResponse(BaseModel):
     """LangGraph 진단 완료 응답"""
 
@@ -76,6 +95,10 @@ class DiagnosisResponse(BaseModel):
     care_guide: Optional[CareGuide] = Field(
         default=None,
         description="[기능 (b)] 종명 키 케어 가이드 (진단 무관, status 무관 첨부; 미커버 시 None)",
+    )
+    refine_context: Optional[RefineContext] = Field(
+        default=None,
+        description="[챗봇 2차 보정] 2차 generate-only 재실행용 RAG 컨텍스트 echo-back 재료",
     )
 
 
@@ -115,3 +138,25 @@ class CompareResponse(BaseModel):
     """[시계열 3단계] 정성 비교 서술 응답(단일 필드)."""
 
     comparison: str = Field(description="한국어 자연어 정성 비교 서술")
+
+
+class FollowupAnswer(BaseModel):
+    """[챗봇 2차 보정] 객관식 문답 1쌍 (질문 + 선택 답변)."""
+
+    question: str = Field(default="", description="객관식 질문 텍스트")
+    answer: str = Field(default="", description="사용자가 고른 답변 텍스트")
+
+
+class RefineRequest(BaseModel):
+    """[챗봇 2차 보정] /diagnose/refine 요청 — 1차 재료 echo-back + 객관식 답변.
+
+    Gemini(analyze)·임베딩(retrieve) 재호출 없이 generate+guard만 재실행한다:
+    analysis(1차 analyze 6필드)와 refine_context(1차 RAG 컨텍스트)를 그대로 되돌려받고,
+    answers를 참고 맥락으로 합류. observed_symptoms는 1차 값 불변 → cardinal_miss=0 보존.
+    """
+
+    analysis: AnalysisResult = Field(description="1차 analyze 6필드(증상 포함, 불변 전달)")
+    refine_context: RefineContext = Field(description="1차 RAG 컨텍스트(echo-back)")
+    answers: list[FollowupAnswer] = Field(
+        default_factory=list, description="객관식 문답 결과"
+    )

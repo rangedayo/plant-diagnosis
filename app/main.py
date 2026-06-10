@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 from PIL import Image, UnidentifiedImageError
 
 from app import model_utils, prompts
-from app.graph import get_compiled_graph, init_graph
+from app.graph import get_compiled_graph, init_graph, run_generate
 from app.vision.gemini import GeminiProvider
 from app.schemas import (
     AnalysisResult,
@@ -29,6 +29,8 @@ from app.schemas import (
     CompareResponse,
     DiagnosisResponse,
     HealthResponse,
+    RefineContext,
+    RefineRequest,
 )
 
 load_dotenv()
@@ -208,11 +210,76 @@ async def diagnose(
     cg = out.get("care_guide")
     care_guide = cg if isinstance(cg, dict) and cg else None
 
+    # [챗봇 2차 보정] 2차 generate-only 재실행에 필요한 RAG 컨텍스트를 echo-back용으로 노출.
+    # analyze 6필드는 이미 analysis로 노출되므로 비-analyze 재료만 담는다.
+    refine_context = RefineContext(
+        rag_docs=list(out.get("rag_docs") or []),
+        top_3_problem_type_weighted=dict(out.get("top_3_problem_type_weighted") or {}),
+        rag_failed=bool(out.get("rag_failed")),
+        rag_no_docs=bool(out.get("rag_no_docs")),
+        rag_weak_evidence=bool(out.get("rag_weak_evidence")),
+    )
+
     return DiagnosisResponse(
         message="diagnosis complete",
         analysis=analysis,
         structured_result=sr,
         care_guide=care_guide,
+        refine_context=refine_context,
+    )
+
+
+@app.post("/diagnose/refine", response_model=DiagnosisResponse)
+async def diagnose_refine(req: RefineRequest) -> DiagnosisResponse:
+    """[챗봇 2차 보정] 1차 analyze·RAG 결과를 재사용해 generate+guard만 재실행.
+
+    Gemini(analyze)·임베딩(retrieve) 재호출 없음 — analysis·refine_context를 echo-back으로
+    받아 객관식 답변을 참고 맥락으로 합류한다. observed_symptoms는 1차 값 불변으로 전달되어
+    1차와 동일 status guard를 통과 → cardinal_miss=0 구조 보존. 무인증(/diagnose 동일 정책,
+    권한은 Firestore 규칙 담당). gpt-4o-mini 1콜(+guard 교정 시 cause 재생성 1콜)만 발생.
+    """
+    if not model_utils.get_openai_api_key():
+        raise HTTPException(
+            status_code=503,
+            detail="OPENAI_API_KEY 미설정 — .env를 확인하세요.",
+        )
+
+    analysis = req.analysis
+    ctx = req.refine_context
+    try:
+        out = await run_generate(
+            visual_description=analysis.visual_description or "",
+            plant_name=analysis.plant_name,
+            plant_name_korean=analysis.plant_name_korean,
+            plant_confidence=analysis.plant_confidence,
+            alt_candidates=list(analysis.alt_candidates or []),
+            observed_symptoms=list(analysis.observed_symptoms or []),
+            top_3_problem_type_weighted=dict(ctx.top_3_problem_type_weighted or {}),
+            rag_docs=list(ctx.rag_docs or []),
+            rag_failed=bool(ctx.rag_failed),
+            rag_no_docs=bool(ctx.rag_no_docs),
+            rag_weak_evidence=bool(ctx.rag_weak_evidence),
+            followup_answers=[
+                {"question": a.question, "answer": a.answer} for a in req.answers
+            ],
+        )
+    except Exception as e:
+        logger.exception("2차 보정 진단(run_generate) 실패")
+        raise HTTPException(status_code=502, detail=str(e)) from e
+
+    sr = out.get("structured_result")
+    if not isinstance(sr, dict) or not sr:
+        sr = model_utils.default_structured_fallback()
+
+    cg = out.get("care_guide")
+    care_guide = cg if isinstance(cg, dict) and cg else None
+
+    return DiagnosisResponse(
+        message="refine complete",
+        analysis=analysis,  # 1차 analyze 6필드 그대로 echo (불변)
+        structured_result=sr,
+        care_guide=care_guide,
+        refine_context=ctx,  # 동일 RAG 컨텍스트 재echo (추가 보정 연쇄 대비)
     )
 
 
