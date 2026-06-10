@@ -1,4 +1,7 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useAuth } from "../lib/auth";
+import { listRecentDiagnoses, type RecentDiagnosis } from "../lib/db";
+import { statusBadge, statusLabel } from "../lib/status";
 import AuthControl from "./AuthControl";
 import BottomTabBar, { type TabKey } from "./BottomTabBar";
 
@@ -6,7 +9,18 @@ type Props = {
   onStartDiagnosis: (file: File) => void; // "진단 시작" 클릭 시에만 상위에서 진단 흐름 트리거
   error?: string;
   onTabChange: (tab: TabKey) => void; // 하단 탭바 전환 (상위 상태머신에서 처리)
+  onPickRecent: (item: RecentDiagnosis) => void; // [홈 D] 최근 기록 탭 → 해당 진단 상세(history 모드)
 };
+
+// 진단 시점 표기: 최근은 상대시간, 오래되면 날짜.
+function formatWhen(d: Date | null): string {
+  if (!d) return "";
+  const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+  if (days <= 0) return "오늘";
+  if (days === 1) return "어제";
+  if (days < 7) return `${days}일 전`;
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
 
 // 진단 카드 중앙 식물 일러스트 (plantia_home.html 1:1 이식, 장식용)
 function PlantHero() {
@@ -60,7 +74,7 @@ function PlantHero() {
   );
 }
 
-export default function HomeView({ onStartDiagnosis, error, onTabChange }: Props) {
+export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickRecent }: Props) {
   const cameraRef = useRef<HTMLInputElement | null>(null);
   const albumRef = useRef<HTMLInputElement | null>(null);
   // [홈 C] 선택했지만 아직 진단하지 않은 사진. null=미선택(일러스트+가이드), 존재=미리보기+진단 시작.
@@ -71,6 +85,34 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange }: Props
       if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
+
+  // [홈 D] 로그인 사용자의 cross-plant 최근 진단(최신순 5개). 미로그인=빈 목록(empty state 유지).
+  // 홈 보조 위젯이라 실패 시 조용히 빈 목록(에러 배너 없음 — 더미는 절대 금지, 데이터 있을 때만 표시).
+  const { user } = useAuth();
+  const uid = user?.uid ?? null;
+  const [recent, setRecent] = useState<RecentDiagnosis[]>([]);
+  const [recentLoading, setRecentLoading] = useState(false);
+  useEffect(() => {
+    if (!uid) {
+      setRecent([]);
+      return;
+    }
+    let cancelled = false;
+    setRecentLoading(true);
+    listRecentDiagnoses(uid, 5)
+      .then((items) => {
+        if (!cancelled) setRecent(items);
+      })
+      .catch(() => {
+        if (!cancelled) setRecent([]);
+      })
+      .finally(() => {
+        if (!cancelled) setRecentLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [uid]);
 
   // 카메라/앨범 input 공유 onChange — 이미지면 pending으로 보관(즉시 진단 X, "진단 시작"에서 호출).
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -207,20 +249,57 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange }: Props
         {error ? <p className="diag-error">{error}</p> : null}
       </div>
 
-      {/* 최근 진단 기록 — 데이터 소스 없음 → empty state (더미 제거) */}
+      {/* 최근 진단 기록 — [홈 D] 로그인+데이터 있을 때만 리스트, 그 외 empty state(더미 금지) */}
       <div className="sec-row">
         <div className="sec-left">
           <i className="ti ti-clock" aria-hidden="true" />
           최근 진단 기록
         </div>
       </div>
-      <div className="rec-empty">
-        <div className="rec-empty-ic">
-          <i className="ti ti-history" aria-hidden="true" />
+      {uid && recentLoading ? (
+        <p className="rec-loading">최근 기록을 불러오는 중…</p>
+      ) : recent.length > 0 ? (
+        <ul className="rec-list">
+          {recent.map((item) => {
+            const r = item.diagnosis;
+            const badge = statusBadge(r.status);
+            return (
+              <li key={`${item.plant.id}/${r.id}`}>
+                <button className="rec-card" type="button" onClick={() => onPickRecent(item)}>
+                  <span className="rec-thumb">
+                    {r.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={r.imageUrl} alt="" />
+                    ) : (
+                      <i className="ti ti-photo" aria-hidden="true" />
+                    )}
+                  </span>
+                  <span className="rec-info">
+                    <span className="rec-name-row">
+                      <span className="rec-name">{item.plant.name}</span>
+                      <span className="rec-when">{formatWhen(r.createdAt)}</span>
+                    </span>
+                    {r.status ? (
+                      <span className="rec-badge" style={{ background: badge.bg, color: badge.fg }}>
+                        {statusLabel(r.status).coarse || r.status}
+                      </span>
+                    ) : null}
+                  </span>
+                  <i className="ti ti-chevron-right rec-arrow" aria-hidden="true" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="rec-empty">
+          <div className="rec-empty-ic">
+            <i className="ti ti-history" aria-hidden="true" />
+          </div>
+          <p className="rec-empty-title">아직 진단 기록이 없어요</p>
+          <p className="rec-empty-sub">첫 진단을 시작해 식물 상태를 기록해보세요.</p>
         </div>
-        <p className="rec-empty-title">아직 진단 기록이 없어요</p>
-        <p className="rec-empty-sub">첫 진단을 시작해 식물 상태를 기록해보세요.</p>
-      </div>
+      )}
 
       {/* 탭바 — 공용 컴포넌트(home 활성). diagnose/settings disabled, myPlants는 상위에서 전환 */}
       <BottomTabBar activeTab="home" onTabChange={onTabChange} />
@@ -587,6 +666,98 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange }: Props
           color: var(--text-muted);
           font-weight: 500;
           line-height: 1.5;
+        }
+
+        /* [홈 D] 최근 진단 기록 리스트 (내 식물 카드 톤 재사용) */
+        .rec-loading {
+          margin: 0 16px;
+          padding: 22px 4px;
+          font-size: 13.5px;
+          color: var(--text-secondary);
+          text-align: center;
+        }
+        .rec-list {
+          list-style: none;
+          margin: 0 16px;
+          padding: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .rec-card {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 13px;
+          padding: 12px;
+          border-radius: 16px;
+          border: none;
+          background: var(--bg-card);
+          box-shadow: 0 2px 12px rgba(42, 84, 40, 0.08);
+          cursor: pointer;
+          text-align: left;
+        }
+        .rec-thumb {
+          width: 56px;
+          height: 56px;
+          border-radius: 13px;
+          background: var(--bg-icon-circle);
+          flex-shrink: 0;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .rec-thumb img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .rec-thumb i {
+          font-size: 24px;
+          color: var(--green-medium);
+        }
+        .rec-info {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .rec-name-row {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          gap: 8px;
+        }
+        .rec-name {
+          font-size: 15px;
+          font-weight: 700;
+          color: var(--text-primary);
+          letter-spacing: -0.01em;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .rec-when {
+          font-size: 12px;
+          color: var(--text-muted);
+          font-weight: 500;
+          flex-shrink: 0;
+        }
+        .rec-badge {
+          align-self: flex-start;
+          display: inline-flex;
+          align-items: center;
+          font-size: 11.5px;
+          font-weight: 700;
+          padding: 4px 12px;
+          border-radius: var(--radius-badge);
+        }
+        .rec-arrow {
+          font-size: 20px;
+          color: #b0c4b2;
+          flex-shrink: 0;
         }
 
         @keyframes fadeIn {

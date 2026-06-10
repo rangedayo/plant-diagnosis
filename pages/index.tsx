@@ -14,7 +14,7 @@ import { type TabKey } from "../components/BottomTabBar";
 import { diagnosePlant, refineDiagnosis } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { diagnosisRecordToResponse } from "../lib/historyAdapter";
-import { type DiagnosisRecord, type PlantSummary } from "../lib/db";
+import { type DiagnosisRecord, type PlantSummary, type RecentDiagnosis } from "../lib/db";
 import { FOLLOWUP_QUESTIONS } from "../lib/followupQuestions";
 import { DiagnosisResponse, type FollowupAnswer } from "../types/diagnosis";
 
@@ -135,6 +135,14 @@ export default function HomePage() {
     setScreen("result");
   };
 
+  // [홈 D] 홈 최근 기록 탭 → result(history 모드). cross-plant라 소유 식물(selectedPlant)도 함께 set
+  // (history ResultView가 식물명을 selectedPlant에서 읽음). 뒤로가기는 해당 식물 타임라인.
+  const handlePickRecent = (item: RecentDiagnosis) => {
+    setSelectedPlant(item.plant);
+    setHistoryDiagnosis(item.diagnosis);
+    setScreen("result");
+  };
+
   // 저장 버튼: 미로그인 시 로그인 게이트 → 성공하면 모달 오픈. 로그인돼 있으면 곧장 모달.
   const handleSaveClick = async () => {
     setSavedMsg("");
@@ -167,7 +175,12 @@ export default function HomePage() {
 
       {screen === "home" ? (
         <main>
-          <HomeView onStartDiagnosis={runDiagnosis} error={error} onTabChange={handleTabChange} />
+          <HomeView
+            onStartDiagnosis={runDiagnosis}
+            error={error}
+            onTabChange={handleTabChange}
+            onPickRecent={handlePickRecent}
+          />
         </main>
       ) : screen === "myPlants" ? (
         <main>

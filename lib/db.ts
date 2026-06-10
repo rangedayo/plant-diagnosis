@@ -23,6 +23,23 @@ function toDate(value: unknown): Date | null {
   return value instanceof Timestamp ? value.toDate() : null;
 }
 
+// diagnoses 문서 1건 → DiagnosisRecord (방어적 기본값). listDiagnoses·listRecentDiagnoses 공용.
+function toDiagnosisRecord(id: string, data: Record<string, unknown>): DiagnosisRecord {
+  return {
+    id,
+    createdAt: toDate(data.createdAt),
+    imageUrl: typeof data.imageUrl === "string" ? data.imageUrl : "",
+    status: typeof data.status === "string" ? data.status : "",
+    isHealthy: data.isHealthy === true,
+    summary: typeof data.summary === "string" ? data.summary : "",
+    currentState: typeof data.currentState === "string" ? data.currentState : "",
+    cause: typeof data.cause === "string" ? data.cause : "",
+    actionPlan: Array.isArray(data.actionPlan) ? (data.actionPlan as string[]) : [],
+    careGuide: (data.careGuide ?? null) as CareGuide | null,
+    observedSymptoms: Array.isArray(data.observedSymptoms) ? (data.observedSymptoms as string[]) : [],
+  };
+}
+
 // 식물 목록 카드용 — 마지막 진단 메타.
 export type LastDiagnosisMeta = {
   status: string;
@@ -107,22 +124,44 @@ export async function listPlants(uid: string): Promise<PlantSummary[]> {
 export async function listDiagnoses(uid: string, plantId: string): Promise<DiagnosisRecord[]> {
   const dxCol = collection(db, "users", uid, "plants", plantId, "diagnoses");
   const snap = await getDocs(query(dxCol, orderBy("createdAt", "desc")));
-  return snap.docs.map((d) => {
+  return snap.docs.map((d) => toDiagnosisRecord(d.id, d.data()));
+}
+
+// 홈 "최근 진단 기록"용 — cross-plant 최신순 N개. 중첩 구조(diagnoses가 plant 하위)라
+// collectionGroup 대신 fan-out: 식물별 최신 N건씩 모아 병합·정렬·상위 N개(스키마/보안규칙 무변경).
+// 식물 수가 적은 현 단계에 적합(N+1은 listPlants와 동일 트레이드오프).
+export type RecentDiagnosis = {
+  plant: PlantSummary; // 소유 식물 요약(네비에서 selectedPlant로 사용)
+  diagnosis: DiagnosisRecord; // 진단 1건(history 모드 표시·진입용)
+};
+
+export async function listRecentDiagnoses(uid: string, max = 5): Promise<RecentDiagnosis[]> {
+  const plantsCol = collection(db, "users", uid, "plants");
+  const plantsSnap = await getDocs(query(plantsCol, orderBy("createdAt", "desc")));
+
+  const plants: PlantSummary[] = plantsSnap.docs.map((d) => {
     const data = d.data();
     return {
       id: d.id,
-      createdAt: toDate(data.createdAt),
-      imageUrl: typeof data.imageUrl === "string" ? data.imageUrl : "",
-      status: typeof data.status === "string" ? data.status : "",
-      isHealthy: data.isHealthy === true,
-      summary: typeof data.summary === "string" ? data.summary : "",
-      currentState: typeof data.currentState === "string" ? data.currentState : "",
-      cause: typeof data.cause === "string" ? data.cause : "",
-      actionPlan: Array.isArray(data.actionPlan) ? (data.actionPlan as string[]) : [],
-      careGuide: (data.careGuide ?? null) as CareGuide | null,
-      observedSymptoms: Array.isArray(data.observedSymptoms) ? (data.observedSymptoms as string[]) : [],
+      name: typeof data.name === "string" ? data.name : "(이름 없음)",
+      speciesKey: typeof data.speciesKey === "string" ? data.speciesKey : null,
+      coverImageUrl: typeof data.coverImageUrl === "string" ? data.coverImageUrl : null,
+      lastDiagnosis: null, // 최근 카드엔 불필요(개별 진단을 직접 들고 다님)
     };
   });
+
+  const perPlant = await Promise.all(
+    plants.map(async (p): Promise<RecentDiagnosis[]> => {
+      const dxCol = collection(db, "users", uid, "plants", p.id, "diagnoses");
+      const dxSnap = await getDocs(query(dxCol, orderBy("createdAt", "desc"), limit(max)));
+      return dxSnap.docs.map((d) => ({ plant: p, diagnosis: toDiagnosisRecord(d.id, d.data()) }));
+    }),
+  );
+
+  return perPlant
+    .flat()
+    .sort((a, b) => (b.diagnosis.createdAt?.getTime() ?? 0) - (a.diagnosis.createdAt?.getTime() ?? 0))
+    .slice(0, max);
 }
 
 // 새 식물 엔티티 생성 → plantId 반환.
