@@ -1,4 +1,4 @@
-import { DiagnosisResponse } from "../types/diagnosis";
+import { DiagnosisResponse, RefineRequest } from "../types/diagnosis";
 
 export async function diagnosePlant(file: File): Promise<DiagnosisResponse> {
   const formData = new FormData();
@@ -7,6 +7,31 @@ export async function diagnosePlant(file: File): Promise<DiagnosisResponse> {
   const response = await fetch("/diagnose", {
     method: "POST",
     body: formData,
+  });
+
+  if (!response.ok) {
+    let errorMessage = `요청 실패 (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as { detail?: string };
+      if (errorBody?.detail) {
+        errorMessage = errorBody.detail;
+      }
+    } catch {
+      // ignore json parse failures and keep fallback message
+    }
+    throw new Error(errorMessage);
+  }
+
+  return (await response.json()) as DiagnosisResponse;
+}
+
+// [챗봇 2차 보정] 1차 analysis·refine_context를 변형 없이 echo-back + 객관식 답변을 실어
+// /diagnose/refine 호출 → 2차 DiagnosisResponse. diagnosePlant와 동일 에러 처리 패턴.
+export async function refineDiagnosis(req: RefineRequest): Promise<DiagnosisResponse> {
+  const response = await fetch("/diagnose/refine", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
   });
 
   if (!response.ok) {

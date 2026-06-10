@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         source: "/compare",
         destination: `${backendUrl}/compare`,
       },
+      {
+        // [챗봇 2차 보정] generate-only 재실행 — /diagnose와 동일 프록시 패턴.
+        source: "/diagnose/refine",
+        destination: `${backendUrl}/diagnose/refine`,
+      },
     ];
   },
   // Firebase Auth signInWithPopup이 팝업 창 상태(window.close/closed)를 확인할 때
