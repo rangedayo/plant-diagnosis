@@ -1,10 +1,12 @@
 import Head from "next/head";
 import { useEffect, useMemo, useState } from "react";
 import CareGuideView from "../components/CareGuideView";
-import FollowupQuestions from "../components/FollowupQuestions";
+import FollowupView from "../components/FollowupView";
 import HomeView from "../components/HomeView";
 import LoadingView from "../components/LoadingView";
 import MyPlantsView from "../components/MyPlantsView";
+import RefineBanner from "../components/RefineBanner";
+import RefineEntryCard from "../components/RefineEntryCard";
 import ResultView from "../components/ResultView";
 import SaveDiagnosisModal from "../components/SaveDiagnosisModal";
 import TimelineView from "../components/TimelineView";
@@ -16,7 +18,7 @@ import { type DiagnosisRecord, type PlantSummary } from "../lib/db";
 import { FOLLOWUP_QUESTIONS } from "../lib/followupQuestions";
 import { DiagnosisResponse, type FollowupAnswer } from "../types/diagnosis";
 
-type Screen = "home" | "loading" | "result" | "care" | "myPlants" | "timeline";
+type Screen = "home" | "loading" | "result" | "followup" | "care" | "myPlants" | "timeline";
 
 export default function HomePage() {
   const { user, signInWithGoogle } = useAuth();
@@ -27,6 +29,8 @@ export default function HomePage() {
   const [refinedResult, setRefinedResult] = useState<DiagnosisResponse | null>(null);
   const [refining, setRefining] = useState(false);
   const [refineError, setRefineError] = useState<string>("");
+  // [단계3] 2차 결과 화면에서 1차 진단을 다시 보는 토글. true=1차 표시, false=2차 표시.
+  const [showPrimary, setShowPrimary] = useState(false);
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
   const [showSave, setShowSave] = useState(false);
@@ -51,6 +55,7 @@ export default function HomePage() {
     setError("");
     setRefinedResult(null); // 새 진단 시작 → 이전 2차 보정 결과·에러 초기화
     setRefineError("");
+    setShowPrimary(false); // 토글 상태도 기본(2차)로 리셋
     setProgress(4);
     setScreen("loading");
 
@@ -80,6 +85,7 @@ export default function HomePage() {
     setRefinedResult(null); // 2차 보정 결과·진행 상태도 초기화
     setRefining(false);
     setRefineError("");
+    setShowPrimary(false);
     setFile(null);
     setProgress(0);
     setError("");
@@ -101,9 +107,11 @@ export default function HomePage() {
         answers,
       });
       setRefinedResult(data);
+      setShowPrimary(false); // 보정 직후엔 2차 결과를 보여줌
+      setScreen("result"); // [단계3] 질문 화면 → 2차 결과로 복귀
     } catch (err) {
       const message = err instanceof Error ? err.message : "보정에 실패했습니다.";
-      setRefineError(message);
+      setRefineError(message); // 실패 시 질문 화면 유지(FollowupView가 에러 표시)
     } finally {
       setRefining(false);
     }
@@ -145,6 +153,10 @@ export default function HomePage() {
     setSavedMsg("기록에 저장했어요.");
     window.setTimeout(() => setSavedMsg(""), 3000);
   };
+
+  // [단계3] fresh 화면에 실제 표시할 결과 = 2차(refinedResult) 있고 1차 토글이 꺼져 있으면 2차, 그 외 1차.
+  // result가 null이면 null. ResultView/care가 공유.
+  const displayResult = refinedResult && !showPrimary ? refinedResult : result;
 
   return (
     <>
@@ -190,33 +202,53 @@ export default function HomePage() {
               />
             ) : result ? (
               <>
-                {/* 표시 결과 = 2차 있으면 2차, 없으면 1차(설계 §3.6). ResultView 렌더 로직 무변경 */}
+                {/* [단계3] 2차 보정 완료 시 결과 상단에 변화 안내 배너 + 1차/2차 토글 */}
+                {refinedResult ? (
+                  <RefineBanner
+                    primaryStatus={result.structured_result.status || ""}
+                    refinedStatus={refinedResult.structured_result.status || ""}
+                    showPrimary={showPrimary}
+                    onToggle={() => setShowPrimary((v) => !v)}
+                  />
+                ) : null}
+                {/* 표시 결과 = displayResult(2차 ↔ 토글 시 1차). ResultView 렌더 로직 무변경 */}
                 <ResultView
-                  result={refinedResult ?? result}
+                  result={displayResult ?? result}
                   imageUrl={previewUrl}
                   mode="fresh"
                   onReset={handleReset}
-                  onViewCare={(refinedResult ?? result).care_guide ? () => setScreen("care") : undefined}
+                  onViewCare={(displayResult ?? result).care_guide ? () => setScreen("care") : undefined}
                   onSave={() => void handleSaveClick()}
                 />
-                {/* 객관식 질문 — fresh + 1차 echo 재료 존재 시에만(history는 별도 분기라 미노출) */}
-                {result.analysis && result.refine_context ? (
-                  <FollowupQuestions
-                    questions={FOLLOWUP_QUESTIONS}
-                    onSubmit={(answers) => void handleRefine(answers)}
-                    submitting={refining}
-                    refined={!!refinedResult}
-                    error={refineError}
+                {/* [단계3] 진입 카드 — fresh + 1차 echo 재료 존재 + 아직 보정 전(2차 없음)일 때만.
+                    탭 → 질문 전용 화면. history는 별도 분기라 미노출. */}
+                {!refinedResult && result.analysis && result.refine_context ? (
+                  <RefineEntryCard
+                    onClick={() => {
+                      setRefineError("");
+                      setScreen("followup");
+                    }}
                   />
                 ) : null}
               </>
             ) : null
           ) : null}
 
-          {/* care: history면 historyDiagnosis.careGuide, fresh면 result.care_guide */}
+          {/* [단계3] 질문 전용 화면 — fresh + 1차 echo 재료 존재 시만(history 미노출). 뒤로 → 1차 결과 */}
+          {screen === "followup" && result && result.analysis && result.refine_context ? (
+            <FollowupView
+              questions={FOLLOWUP_QUESTIONS}
+              onSubmit={(answers) => void handleRefine(answers)}
+              submitting={refining}
+              error={refineError}
+              onBack={() => setScreen("result")}
+            />
+          ) : null}
+
+          {/* care: history면 historyDiagnosis.careGuide, fresh면 displayResult.care_guide(토글 반영) */}
           {screen === "care"
             ? (() => {
-                const cg = historyDiagnosis ? historyDiagnosis.careGuide : (refinedResult ?? result)?.care_guide;
+                const cg = historyDiagnosis ? historyDiagnosis.careGuide : displayResult?.care_guide;
                 if (!cg) return null;
                 return <CareGuideView careGuide={cg} onBack={() => setScreen("result")} />;
               })()
