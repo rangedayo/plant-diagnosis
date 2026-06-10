@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useEffect, useMemo, useState } from "react";
 import CareGuideView from "../components/CareGuideView";
+import FollowupQuestions from "../components/FollowupQuestions";
 import HomeView from "../components/HomeView";
 import LoadingView from "../components/LoadingView";
 import MyPlantsView from "../components/MyPlantsView";
@@ -8,11 +9,12 @@ import ResultView from "../components/ResultView";
 import SaveDiagnosisModal from "../components/SaveDiagnosisModal";
 import TimelineView from "../components/TimelineView";
 import { type TabKey } from "../components/BottomTabBar";
-import { diagnosePlant } from "../lib/api";
+import { diagnosePlant, refineDiagnosis } from "../lib/api";
 import { useAuth } from "../lib/auth";
 import { diagnosisRecordToResponse } from "../lib/historyAdapter";
 import { type DiagnosisRecord, type PlantSummary } from "../lib/db";
-import { DiagnosisResponse } from "../types/diagnosis";
+import { FOLLOWUP_QUESTIONS } from "../lib/followupQuestions";
+import { DiagnosisResponse, type FollowupAnswer } from "../types/diagnosis";
 
 type Screen = "home" | "loading" | "result" | "care" | "myPlants" | "timeline";
 
@@ -21,6 +23,10 @@ export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
   const [screen, setScreen] = useState<Screen>("home");
   const [result, setResult] = useState<DiagnosisResponse | null>(null);
+  // [챗봇 2차 보정] 1차 result는 echo 원본(불변 보존), 2차 결과는 별도 state로 격리.
+  const [refinedResult, setRefinedResult] = useState<DiagnosisResponse | null>(null);
+  const [refining, setRefining] = useState(false);
+  const [refineError, setRefineError] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
   const [showSave, setShowSave] = useState(false);
@@ -43,6 +49,8 @@ export default function HomePage() {
   const runDiagnosis = async (selectedFile: File) => {
     setFile(selectedFile); // previewUrl(result 화면 사진) 생성용
     setError("");
+    setRefinedResult(null); // 새 진단 시작 → 이전 2차 보정 결과·에러 초기화
+    setRefineError("");
     setProgress(4);
     setScreen("loading");
 
@@ -69,11 +77,36 @@ export default function HomePage() {
   const handleReset = () => {
     setScreen("home");
     setResult(null);
+    setRefinedResult(null); // 2차 보정 결과·진행 상태도 초기화
+    setRefining(false);
+    setRefineError("");
     setFile(null);
     setProgress(0);
     setError("");
     setShowSave(false);
     setHistoryDiagnosis(null); // fresh 복귀 시 history 격리 상태도 정리
+  };
+
+  // [챗봇 2차 보정] 1차 result(echo 원본)의 analysis·refine_context를 변형 없이 그대로
+  // RefineRequest로 실어 /diagnose/refine 호출 → refinedResult 갱신. 실패 시 1차 결과 유지.
+  const handleRefine = async (answers: FollowupAnswer[]) => {
+    const src = result; // pristine 1차(echo-back 무결성 — 프론트가 증상·RAG 미가공)
+    if (!src?.analysis || !src.refine_context) return;
+    setRefining(true);
+    setRefineError("");
+    try {
+      const data = await refineDiagnosis({
+        analysis: src.analysis,
+        refine_context: src.refine_context,
+        answers,
+      });
+      setRefinedResult(data);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "보정에 실패했습니다.";
+      setRefineError(message);
+    } finally {
+      setRefining(false);
+    }
   };
 
   // 하단 탭바 전환 (diagnose/settings는 disabled — 호출 안 옴).
@@ -156,21 +189,34 @@ export default function HomePage() {
                 onViewCare={historyDiagnosis.careGuide ? () => setScreen("care") : undefined}
               />
             ) : result ? (
-              <ResultView
-                result={result}
-                imageUrl={previewUrl}
-                mode="fresh"
-                onReset={handleReset}
-                onViewCare={result.care_guide ? () => setScreen("care") : undefined}
-                onSave={() => void handleSaveClick()}
-              />
+              <>
+                {/* 표시 결과 = 2차 있으면 2차, 없으면 1차(설계 §3.6). ResultView 렌더 로직 무변경 */}
+                <ResultView
+                  result={refinedResult ?? result}
+                  imageUrl={previewUrl}
+                  mode="fresh"
+                  onReset={handleReset}
+                  onViewCare={(refinedResult ?? result).care_guide ? () => setScreen("care") : undefined}
+                  onSave={() => void handleSaveClick()}
+                />
+                {/* 객관식 질문 — fresh + 1차 echo 재료 존재 시에만(history는 별도 분기라 미노출) */}
+                {result.analysis && result.refine_context ? (
+                  <FollowupQuestions
+                    questions={FOLLOWUP_QUESTIONS}
+                    onSubmit={(answers) => void handleRefine(answers)}
+                    submitting={refining}
+                    refined={!!refinedResult}
+                    error={refineError}
+                  />
+                ) : null}
+              </>
             ) : null
           ) : null}
 
           {/* care: history면 historyDiagnosis.careGuide, fresh면 result.care_guide */}
           {screen === "care"
             ? (() => {
-                const cg = historyDiagnosis ? historyDiagnosis.careGuide : result?.care_guide;
+                const cg = historyDiagnosis ? historyDiagnosis.careGuide : (refinedResult ?? result)?.care_guide;
                 if (!cg) return null;
                 return <CareGuideView careGuide={cg} onBack={() => setScreen("result")} />;
               })()
