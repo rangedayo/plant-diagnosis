@@ -56,6 +56,7 @@
   - `exact_match` **26/39 (66.7%)**(R16 27→26, 노이즈 범위) · 🔴`cardinal_miss`(gt비건강→pred건강) **0**(하드 게이트 사수) · `soft_miss`(gt비건강→pred경미) **4** · `minor_undercall`(gt경미→pred건강) **1** · `over_call` total **8**(→경미 3 / →비건강 **5**).
   - **이진(참고·강등)**: TP 12 · TN 18 · FP **5** · FN **4** · recall **0.75** · acc **76.9%**(30/39). R16 대비 **FP 10→5(절반↓)**, FN 0→4(=경미가 is_healthy=True로 묶이며 비건강 GT 중 pred경미 4건이 이진상 FN으로 전환). 이진 FN/recall은 R17부터 **보조·역사 지표로 강등**(하드 게이트는 cardinal_miss).
   - **결론**: 모델이 경미를 사람과 유사하게 출력(soft_miss 4건 중 **3건이 과거 사용자 재라벨 경계 케이스**). FP 절반↓을 진전으로, soft_miss 4는 **수용 한계**로 기록. **모델 추론 품질 실험 종료 → 제품 단계 전환**.
+- **제품 단계 게이트 앵커**: `eval/after_acc_explanation_layout.json` — 톤(323a03f)·필드역할(204fe35)·레이아웃 재구성(033c1ff 외) 후 게이트 측정. cardinal_miss 0 유지, exact 25/39(−1 노이즈), 이진 FP 5→2, json parse 100% — 설명 텍스트·배치 변경의 분류 회귀 없음 확인. (R17 `after_acc_r17_generate_mild.json`은 여전히 정량 평가 종료 앵커.)
 - **이진 참고 앵커(R15 이전, 직접 비교 불가)**: `eval/after_acc_armC_3p5flash_relabeled.json` (R13 Arm C, analyze=**gemini-3.5-flash/global**, **GT 정정 후**)
   - acc **71.4%** (25/35), 분모 **35**, FP **10** · TP **13** · TN **12** · FN **0**, recall **1.0**, precision 0.565
   - GT 재검(FP14 방향a) → 4건 건강→비건강+status 정정(haengun_001 건조·epipremnum_001 병해 의심·spathiphyllum_001/003 과습) → FP 14→10. 무과금 재채점(`rescore_from_output.py`).
@@ -362,5 +363,5 @@ CLAUDE.md는 **살아있는 문서**. 다음 시점에 업데이트:
 
 ---
 
-*마지막 업데이트: 2026-06-10 — R17: generate 경미 출력 = **정량 평가 종료점**. prompts 경미 status·판정 규칙(가드 무변경). 측정 `after_acc_r17_generate_mild.json`: 3×3 건강[11,3,2]/경미[1,3,3]/비건강[0,4,12]·exact 26/39·cardinal_miss 0·soft_miss 4·over_call→비건강 5·이진(참고) FP 10→5·FN 0→4·recall 0.75. **3단 렌즈 채택**: recall 게이트 = cardinal_miss 0, 이진 FN/recall 보조·역사 강등, soft_miss 추적(하드 게이트 아님). 모델 추론 품질 실험 종료 → 제품 단계 전환.*
-*다음 업데이트 트리거: 제품 단계 작업 착수 시.*
+*마지막 업데이트: 2026-06-10 — 제품 단계 1차 완료: UI status 3단 표시 분기(lib/status.ts + 4뷰) → 정성 평가(6차원 루브릭) → 후속 수정(톤·필드역할·레이아웃 재구성, ~f70ae5c 푸시 완료). 게이트 통과(위 §2 제품 단계 게이트 앵커). 사용자 라벨 = 건강 / 양호 (가벼운 주의) / 주의 관찰.*
+*다음 업데이트 트리거: 챗봇(객관식 문답 → 2차 진단) 설계 착수 시.*
