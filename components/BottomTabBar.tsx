@@ -1,6 +1,7 @@
 // 하단 탭바 공용 컴포넌트 (HomeView에서 추출, 시각 스타일·SVG·아이콘 1:1 유지).
-// home·myPlants만 활성(클릭 시 onTabChange), diagnose·settings는 기존대로 disabled(무반응).
-export type TabKey = "home" | "diagnose" | "myPlants" | "settings";
+// home·myPlants만 활성(클릭 시 onTabChange), settings는 기존대로 disabled(무반응).
+// 진단 탭은 홈 카드와 중복이라 제거(3탭) — flex:1 균등 분할 자동.
+export type TabKey = "home" | "myPlants" | "settings";
 
 type Props = {
   activeTab: TabKey;
@@ -19,24 +20,20 @@ export default function BottomTabBar({ activeTab, onTabChange }: Props) {
         onClick={() => onTabChange("home")}
         aria-current={isHome ? "page" : undefined}
       >
+        {/* 채움 제거 → "내 식물"(line 아이콘)처럼 진녹 stroke만. 문도 outline rect로 통일 */}
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M12 3 L21 11 L19 11 L19 20.5 L5 20.5 L5 11 L3 11 Z"
-            fill="#D4EBC8"
+            fill="none"
             stroke="#587A4E"
             strokeWidth="1.6"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
-          <rect x="9" y="14" width="6" height="6.5" rx="1.2" fill="#587A4E" />
+          <rect x="9.2" y="14" width="5.6" height="6.5" rx="1.2" fill="none" stroke="#587A4E" strokeWidth="1.4" />
         </svg>
         <span>홈</span>
       </button>
-
-      <div className="tab-item disabled" aria-disabled="true">
-        <i className="ti ti-scan" aria-hidden="true" />
-        <span>진단</span>
-      </div>
 
       <button
         type="button"
