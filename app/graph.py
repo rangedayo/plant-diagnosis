@@ -153,6 +153,9 @@ class DiagnosisState(TypedDict, total=False):
     status_guard: dict[str, Any]
     # [기능 (b)] 종명 키 케어 가이드 (진단과 무관, 항상 첨부 시도; 미커버 시 None)
     care_guide: dict[str, Any] | None
+    # [챗봇 2차 보정] 객관식 답변 — 1차엔 없음(None), 2차 /diagnose/refine에서만 채워짐.
+    # generate에 참고 맥락으로만 합류(context_summary), observed_symptoms 불변(게이트 보존).
+    followup_answers: list[dict[str, str]] | None
 
 
 def _vector_db_path() -> Path:
@@ -437,6 +440,125 @@ def _tag_doc_with_problem_type(doc: str, meta: dict[str, Any] | None) -> str:
     if doc.startswith(f"[{pt}]"):
         return doc  # 중복 방지
     return f"[{pt}] {doc}"
+
+
+async def run_generate(
+    *,
+    visual_description: str,
+    plant_name: str | None,
+    plant_name_korean: str | None,
+    plant_confidence: str | None,
+    alt_candidates: list[str],
+    observed_symptoms: list[str],
+    top_3_problem_type_weighted: dict[str, Any] | None,
+    rag_docs: list[str],
+    rag_failed: bool,
+    rag_no_docs: bool,
+    rag_weak_evidence: bool,
+    followup_answers: list[dict[str, str]] | None = None,
+) -> dict:
+    """generate 본문 공유 callable — 1차 그래프 노드와 2차 보정(/diagnose/refine) 공용.
+
+    1차/2차 동일 경로: context_summary 조립 → generate(gpt-4o-mini) → status guard →
+    (교정 시) cause 재생성 → care_guide lookup. **1차 동작 불변**이 핵심: followup_answers가
+    None/빈 값이면 기존 generate_node와 바이트 동일하게 작동한다.
+
+    [2차 게이트 보존] observed_symptoms는 1차 값을 그대로 받아 guard 키로 사용 — 답변은
+    context_summary [사용자 추가 입력] 블록으로만 합류하고 증상 배열엔 일절 미접촉.
+    """
+    if DEBUG:
+        print("[DEBUG] final rag_context doc_count:", len(rag_docs or []))
+    # [1-7] analyze 6필드 직접 사용 (decision #1 옵션 A). Plant.id 팩트 섹션 폐기.
+    visual_description = visual_description or ""
+    alt = alt_candidates or []
+    symptoms = observed_symptoms or []
+    alt_str = ", ".join(alt) if alt else "없음"
+    symptoms_str = ", ".join(symptoms) if symptoms else "관찰된 이상 없음"
+    # [B-4b] RAG problem_type 가중 다수결 분포를 generate에 노출 (결정 1C)
+    top_3_pt = top_3_problem_type_weighted or {}
+    majority = str(top_3_pt.get("majority") or "tie")
+    dist = top_3_pt.get("distribution") or {}
+    top_pt = str(top_3_pt.get("top_problem_type") or "")
+    dist_str = (
+        ", ".join(
+            f"{k} {v:.2f}"
+            for k, v in sorted(dist.items(), key=lambda x: -x[1])
+        )
+        or "없음"
+    )
+    context_summary = (
+        f"묘사:\n{visual_description}\n\n"
+        f"[관찰 정보]\n"
+        f"- 식물명(학명 1위): {plant_name}\n"
+        f"- 식물명(통명): {plant_name_korean}\n"
+        f"- 식별 신뢰도: {plant_confidence}\n"
+        f"- 대안 후보: {alt_str}\n"
+        f"- 관찰된 증상: {symptoms_str}\n\n"
+        f"[검색된 자료의 타입 분포 (top_3 sim 가중)]\n"
+        f"- 우세 타입: {majority}\n"
+        f"- 1위 카드 타입: {top_pt}\n"
+        f"- 분포: {dist_str}\n"
+    )
+    # [2차 보정] 객관식 답변 가산 — 답변이 있을 때만 [사용자 추가 입력] 블록 추가.
+    # generate는 이를 참고 맥락으로만 사용(프롬프트 판정 규칙 무변경). 1차는 None → 미추가.
+    answers = [
+        a
+        for a in (followup_answers or [])
+        if str((a or {}).get("answer") or "").strip()
+    ]
+    if answers:
+        answer_lines = "\n".join(
+            f"- {str(a.get('question') or '').strip()}: {str(a.get('answer') or '').strip()}"
+            for a in answers
+        )
+        context_summary += f"\n[사용자 추가 입력]\n{answer_lines}\n"
+    rag_chunks = "\n\n".join(rag_docs or [])
+    structured = await model_utils.generate_structured_diagnosis_with_gpt(
+        context_summary,
+        rag_chunks,
+        rag_failed=bool(rag_failed),
+        rag_no_docs=bool(rag_no_docs),
+        rag_weak_evidence=bool(rag_weak_evidence),
+    )
+    # [status guard] generate over-escalate 교정 — 입력 설득 3회 실패(B-4b/c/B') 후
+    # 출력 뒤에서 status enum 값만 교정. FN 0 사수(병변 단어 veto).
+    pre_status = structured.get("status") if isinstance(structured, dict) else None
+    new_status, guard_reason = apply_status_guard(pre_status, symptoms, top_pt)
+    guard_fired = guard_reason is not None
+    pre_cause = structured.get("cause") if isinstance(structured, dict) else None
+    cause_regenerated = False
+    if guard_fired and isinstance(structured, dict):
+        # status 교정과 cause 텍스트 정합: generate의 "병해 의심" cause가
+        # 교정된 status="건강"과 모순되므로 cause만 건강 전제로 재생성한다.
+        # ⚠ status는 guard 확정값(new_status)으로 고정 — 재생성은 cause만 건드린다.
+        new_cause = await model_utils.regenerate_healthy_cause(
+            plant_name_korean or plant_name, symptoms
+        )
+        structured = {**structured, "status": new_status, "cause": new_cause}
+        cause_regenerated = True
+        logger.info(
+            "status_guard 발동: %r→%r 사유=%s 증상=%s top_1=%r (cause 재생성)",
+            pre_status, new_status, guard_reason, symptoms, top_pt,
+        )
+    # [기능 (b)] 케어 가이드 첨부 — 진단(structured/guard) 확정 뒤 별도 lookup.
+    # status 무관 항상 시도(건강도 지속 관리법). 진단 필드는 일절 건드리지 않는다.
+    care_guide = care_guide_mod.lookup_care_guide(plant_name_korean, plant_name)
+    if DEBUG:
+        _ck = (care_guide or {}).get("species_key") if care_guide else None
+        print("[DEBUG] care_guide species_key:", _ck)
+    return {
+        "structured_result": structured,
+        "status_guard": {
+            "fired": bool(guard_fired),
+            "reason": guard_reason,
+            "pre_status": pre_status,
+            "post_status": new_status,
+            "top_1_problem_type": top_pt,
+            "cause_regenerated": cause_regenerated,
+            "pre_cause": pre_cause,
+        },
+        "care_guide": care_guide,
+    }
 
 
 _compiled_graph = None
@@ -748,90 +870,22 @@ def build_diagnosis_graph(
         return ret
 
     async def generate_node(state: DiagnosisState) -> dict:
-        if DEBUG:
-            _rd = state.get("rag_docs") or []
-            print("[DEBUG] final rag_context doc_count:", len(_rd))
-        # [1-7] analyze 6필드 직접 사용 (decision #1 옵션 A). Plant.id 팩트 섹션 폐기.
-        visual_description = state.get("visual_description") or ""
-        plant_name = state.get("plant_name")
-        plant_name_korean = state.get("plant_name_korean")
-        plant_confidence = state.get("plant_confidence")
-        alt = state.get("alt_candidates") or []
-        symptoms = state.get("observed_symptoms") or []
-        alt_str = ", ".join(alt) if alt else "없음"
-        symptoms_str = ", ".join(symptoms) if symptoms else "관찰된 이상 없음"
-        # [B-4b] RAG problem_type 가중 다수결 분포를 generate에 노출 (결정 1C)
-        top_3_pt = state.get("top_3_problem_type_weighted") or {}
-        majority = str(top_3_pt.get("majority") or "tie")
-        dist = top_3_pt.get("distribution") or {}
-        top_pt = str(top_3_pt.get("top_problem_type") or "")
-        dist_str = (
-            ", ".join(
-                f"{k} {v:.2f}"
-                for k, v in sorted(dist.items(), key=lambda x: -x[1])
-            )
-            or "없음"
-        )
-        context_summary = (
-            f"묘사:\n{visual_description}\n\n"
-            f"[관찰 정보]\n"
-            f"- 식물명(학명 1위): {plant_name}\n"
-            f"- 식물명(통명): {plant_name_korean}\n"
-            f"- 식별 신뢰도: {plant_confidence}\n"
-            f"- 대안 후보: {alt_str}\n"
-            f"- 관찰된 증상: {symptoms_str}\n\n"
-            f"[검색된 자료의 타입 분포 (top_3 sim 가중)]\n"
-            f"- 우세 타입: {majority}\n"
-            f"- 1위 카드 타입: {top_pt}\n"
-            f"- 분포: {dist_str}\n"
-        )
-        rag_chunks = "\n\n".join(state.get("rag_docs") or [])
-        structured = await model_utils.generate_structured_diagnosis_with_gpt(
-            context_summary,
-            rag_chunks,
+        # 본문은 모듈 레벨 run_generate로 추출 — 1차 노드와 2차 보정(/diagnose/refine)이
+        # 같은 callable을 호출한다. 1차는 followup_answers 없음(None) → 기존과 동일 동작.
+        return await run_generate(
+            visual_description=state.get("visual_description") or "",
+            plant_name=state.get("plant_name"),
+            plant_name_korean=state.get("plant_name_korean"),
+            plant_confidence=state.get("plant_confidence"),
+            alt_candidates=state.get("alt_candidates") or [],
+            observed_symptoms=state.get("observed_symptoms") or [],
+            top_3_problem_type_weighted=state.get("top_3_problem_type_weighted") or {},
+            rag_docs=state.get("rag_docs") or [],
             rag_failed=bool(state.get("rag_failed")),
             rag_no_docs=bool(state.get("rag_no_docs")),
             rag_weak_evidence=bool(state.get("rag_weak_evidence")),
+            followup_answers=state.get("followup_answers"),
         )
-        # [status guard] generate over-escalate 교정 — 입력 설득 3회 실패(B-4b/c/B') 후
-        # 출력 뒤에서 status enum 값만 교정. FN 0 사수(병변 단어 veto).
-        pre_status = structured.get("status") if isinstance(structured, dict) else None
-        new_status, guard_reason = apply_status_guard(pre_status, symptoms, top_pt)
-        guard_fired = guard_reason is not None
-        pre_cause = structured.get("cause") if isinstance(structured, dict) else None
-        cause_regenerated = False
-        if guard_fired and isinstance(structured, dict):
-            # status 교정과 cause 텍스트 정합: generate의 "병해 의심" cause가
-            # 교정된 status="건강"과 모순되므로 cause만 건강 전제로 재생성한다.
-            # ⚠ status는 guard 확정값(new_status)으로 고정 — 재생성은 cause만 건드린다.
-            new_cause = await model_utils.regenerate_healthy_cause(
-                plant_name_korean or plant_name, symptoms
-            )
-            structured = {**structured, "status": new_status, "cause": new_cause}
-            cause_regenerated = True
-            logger.info(
-                "status_guard 발동: %r→%r 사유=%s 증상=%s top_1=%r (cause 재생성)",
-                pre_status, new_status, guard_reason, symptoms, top_pt,
-            )
-        # [기능 (b)] 케어 가이드 첨부 — 진단(structured/guard) 확정 뒤 별도 lookup.
-        # status 무관 항상 시도(건강도 지속 관리법). 진단 필드는 일절 건드리지 않는다.
-        care_guide = care_guide_mod.lookup_care_guide(plant_name_korean, plant_name)
-        if DEBUG:
-            _ck = (care_guide or {}).get("species_key") if care_guide else None
-            print("[DEBUG] care_guide species_key:", _ck)
-        return {
-            "structured_result": structured,
-            "status_guard": {
-                "fired": bool(guard_fired),
-                "reason": guard_reason,
-                "pre_status": pre_status,
-                "post_status": new_status,
-                "top_1_problem_type": top_pt,
-                "cause_regenerated": cause_regenerated,
-                "pre_cause": pre_cause,
-            },
-            "care_guide": care_guide,
-        }
 
     g = StateGraph(DiagnosisState)
     g.add_node("analyze", analyze_node)
