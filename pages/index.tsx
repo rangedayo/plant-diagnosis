@@ -167,7 +167,7 @@ export default function HomePage() {
 
       {screen === "home" ? (
         <main>
-          <HomeView onFileSelect={runDiagnosis} error={error} onTabChange={handleTabChange} />
+          <HomeView onStartDiagnosis={runDiagnosis} error={error} onTabChange={handleTabChange} />
         </main>
       ) : screen === "myPlants" ? (
         <main>

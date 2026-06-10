@@ -1,9 +1,9 @@
-import { ChangeEvent, useRef } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import AuthControl from "./AuthControl";
 import BottomTabBar, { type TabKey } from "./BottomTabBar";
 
 type Props = {
-  onFileSelect: (file: File) => void; // 파일 선택 시 상위에서 진단 흐름 트리거
+  onStartDiagnosis: (file: File) => void; // "진단 시작" 클릭 시에만 상위에서 진단 흐름 트리거
   error?: string;
   onTabChange: (tab: TabKey) => void; // 하단 탭바 전환 (상위 상태머신에서 처리)
 };
@@ -60,15 +60,23 @@ function PlantHero() {
   );
 }
 
-export default function HomeView({ onFileSelect, error, onTabChange }: Props) {
+export default function HomeView({ onStartDiagnosis, error, onTabChange }: Props) {
   const cameraRef = useRef<HTMLInputElement | null>(null);
   const albumRef = useRef<HTMLInputElement | null>(null);
+  // [홈 C] 선택했지만 아직 진단하지 않은 사진. null=미선택(일러스트+가이드), 존재=미리보기+진단 시작.
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const previewUrl = useMemo(() => (pendingFile ? URL.createObjectURL(pendingFile) : null), [pendingFile]);
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
 
-  // 카메라/앨범 input 공유 onChange — 이미지 검증 후 상위로 전달
+  // 카메라/앨범 input 공유 onChange — 이미지면 pending으로 보관(즉시 진단 X, "진단 시작"에서 호출).
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selected = event.target.files?.[0];
     if (selected?.type.startsWith("image/")) {
-      onFileSelect(selected);
+      setPendingFile(selected);
     }
     event.target.value = ""; // 같은 파일 재선택 허용
   };
@@ -119,6 +127,25 @@ export default function HomeView({ onFileSelect, error, onTabChange }: Props) {
           <span className="diag-em">잎이 잘 보이게</span> 촬영해주세요.
         </p>
 
+        {pendingFile ? (
+          <>
+            {/* [홈 C] 선택 사진 미리보기 — 일러스트+가이드 자리 대체(가이드 3포인트 숨김) */}
+            <div className="preview-wrap">
+              <img className="preview-img" src={previewUrl ?? ""} alt="선택한 식물 사진 미리보기" />
+            </div>
+            <div className="action-wrap">
+              <button className="start-btn" type="button" onClick={() => onStartDiagnosis(pendingFile)}>
+                <i className="ti ti-stethoscope" aria-hidden="true" />
+                진단 시작
+              </button>
+              <button className="repick-btn" type="button" onClick={() => albumRef.current?.click()}>
+                <i className="ti ti-photo" aria-hidden="true" />
+                다른 사진 선택
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
         <div className="hero-wrap">
           <div className="hero-circle" aria-hidden="true" />
           <PlantHero />
@@ -174,6 +201,8 @@ export default function HomeView({ onFileSelect, error, onTabChange }: Props) {
             <i className="ti ti-camera" aria-hidden="true" />
           </button>
         </div>
+          </>
+        )}
 
         {error ? <p className="diag-error">{error}</p> : null}
       </div>
@@ -289,6 +318,65 @@ export default function HomeView({ onFileSelect, error, onTabChange }: Props) {
         .diag-em {
           color: var(--green-check);
           font-weight: 700;
+        }
+
+        /* [홈 C] 선택 사진 미리보기 + 액션 버튼 */
+        .preview-wrap {
+          margin: 14px 0 18px;
+          border-radius: 22px;
+          overflow: hidden;
+          background: var(--bg-photo-placeholder);
+          aspect-ratio: 4 / 3;
+        }
+        .preview-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .action-wrap {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .start-btn {
+          width: 100%;
+          height: 54px;
+          border-radius: 16px;
+          border: none;
+          background: var(--green-dark);
+          color: #fff;
+          font-size: 15px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 9px;
+          cursor: pointer;
+          letter-spacing: -0.01em;
+        }
+        .start-btn i {
+          font-size: 20px;
+        }
+        .repick-btn {
+          width: 100%;
+          height: 52px;
+          border-radius: 16px;
+          border: 1.5px solid var(--green-medium);
+          background: var(--bg-card);
+          color: var(--green-dark);
+          font-size: 14px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          cursor: pointer;
+          letter-spacing: -0.01em;
+        }
+        .repick-btn i {
+          font-size: 18px;
+          color: var(--green-camera);
         }
 
         /* 식물 일러스트 + 가이드 */
