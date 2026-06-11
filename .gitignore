@@ -108,3 +108,23 @@ test_data/plantvillage_source/
 test_data/**/*.jpg
 test_data/**/*.jpeg
 test_data/**/*.png
+
+# ---------- 내부 작업 기록 · 측정 산출물 (로컬 보관, GitHub 제외) ----------
+# 라운드 작업 지시/결과 프롬프트, 컨텍스트 덤프, 설계 노트 — 공개 얼굴엔 README만.
+docs/
+# 측정 출력 JSON(앵커·_archive 포함). baseline.json은 로컬 보존(무수정).
+eval/
+# Claude Code 프로젝트 메모(내부 작업 메모리).
+CLAUDE.md
+
+# ---------- RAG 원본 PDF (raw 참고 자료 — 로컬 보관) ----------
+/FSA-6116.pdf
+/pnhouseplantproblems.pdf
+
+# ---------- 아카이브 · 라운드 진단용 일회성 스크립트 (로컬 보관) ----------
+scripts/_archive/
+scripts/diagnostics/
+
+# ---------- 드래프트 · 백업 라벨 (정본은 labels.json만 추적) ----------
+test_data/**/*_draft.json
+test_data/**/*.bak.json
