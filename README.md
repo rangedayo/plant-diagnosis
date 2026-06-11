@@ -1,174 +1,103 @@
-# Plantia — 식물 진단 AI 서비스
+# 🌱 Plantia — 식물 사진으로 진단해주는 AI 서비스
 
-> 식물 사진 한 장으로 1차 진단을 내리고, 객관식 후속 질문으로 보정한 2차 진단까지 제공하는 풀스택 AI 서비스.
-> **핵심은 모델이 아니라 측정이다 — 라운드 기반 평가로 LLM 진단 파이프라인을 통제·개선했다.**
+식물 사진을 올리면 **건강한지, 물이 너무 많은지/적은지, 병에 걸린 것 같은지**를 알려주고,
+몇 가지 질문에 답하면 진단을 더 다듬어주는 서비스입니다.
 
-Vision(Gemini) → RAG 검색 → 생성(LLM) → **status 후처리 가드**로 이어지는 진단 파이프라인을, 한 라운드에 한 변수만 격리해 측정하는 평가 중심 방식으로 만들었습니다. (FastAPI + LangGraph 백엔드 / Next.js + Firebase 프론트엔드)
+AI 엔지니어링을 공부하면서, **"그럴듯한 답을 내는 것"과 "믿을 수 있는 답을 내는 것"은 완전히 다른 문제**라는 걸 이 프로젝트에서 제일 크게 배웠습니다.
 
----
-
-## 핵심 (시그니처)
-
-**시그니처 1 — 치명적 오진 0건을 하드 게이트로 사수**
-
-- 가장 위험한 실수 = "진짜 아픈 식물(비건강)을 건강으로 오진하는 것"(`cardinal_miss`). 이걸 **0건**으로 두는 것을 절대 사수 게이트로 삼고, 모든 라운드에서 recall **1.0**을 유지했습니다.
-- 안전판은 코드에 박혀 있습니다: status 후처리 가드가 건강으로 교정하려 할 때 **병변 단어(고사·마름·황화·반점·괴사 등)가 하나라도 있으면 교정을 거부**(veto)합니다.
-
-**시그니처 2 — 입력 설득 4회 실패 → 출력 후처리로 우회 (오탐 절반↓)**
-
-- 모델의 과대진단(건강한 식물을 "아프다"고 오탐)을 줄이려고 **프롬프트로 4번 시도했고, 전부 효과 0임을 측정으로 확인**했습니다. "LLM에 추상 원칙을 주입하는 입력 설득의 한계"라고 판단.
-- 방향을 틀어 **출력 단계에서 status enum만 교정하는 후처리 가드**로 우회 → 이진 측정 기준 오탐(FP) **17.5 → 7.5로 절반 감축**(cardinal_miss 0 유지).
-
-**시그니처 3 — 이진을 3단(건강/경미/비건강)으로 확장**
-
-- "프롬프트·프레이밍으로는 더 못 푼다"는 진단 끝에, 정답 라벨에 **심각도 차원(tier)**을 추가. 미용적 변색(경미)과 병리(비건강)를 분리해 측정할 수 있게 됐고, 이진 FP를 추가로 절반(10→5) 줄였습니다.
-
-> 측정 한계(정직): 평가셋 39장 규모, analyze 비결정성 ±1~2 노이즈, 단일 run 기준 — 게이트는 항상 이 한계를 명시하고 설계했습니다.
+`FastAPI` · `LangGraph` · `Gemini` · `RAG (Chroma)` · `Next.js` · `Firebase`
 
 ---
 
-## 발견의 흐름 — 어떻게 여기까지 왔나
+## 무엇을 만들고 싶었나
 
-### 단계 1. 환각을 프롬프트로 잡으려 했지만 (실패)
+화분이 시들어가는데 이유를 모를 때가 많습니다. 물을 더 줘야 할지, 병에 걸린 건지… 그래서 **사진 한 장으로 답을 주는 것**을 만들어보고 싶었습니다.
 
-"없는 병을 지어낸다"는 환각이 오탐의 원인이라 보고, 프롬프트에 관찰 충실성 원칙을 넣고·모델을 최신형으로 바꿔봤습니다. **모두 효과 0 또는 악화**(antifab 시도: FP 13→16). 최신 Vision 모델로 바꿔도 오진은 똑같이 발생 — 입력 설득의 한계를 측정으로 확인.
+그런데 만들다 보니 진짜 어려운 건 'AI가 답을 내게 하는 것'이 아니라, **'AI가 틀린 답을 자신 있게 말하지 않게 하는 것'** 이었습니다.
 
-### 단계 2. 출력 후처리 가드로 우회 (성공)
+## 가장 신경 쓴 것 — 위험한 실수를 막기
 
-설득 대신 **generate 출력 뒤에서 status enum 값만 교정**하는 가드를 도입. 끝·가장자리에 국한된 변색(cosmetic)은 건강으로 내리되, 병변 단어가 보이면 비건강을 유지(FN 0 안전판). 오탐 17.5 → 7.5.
+진단에서 제일 위험한 실수는 **진짜 아픈 식물을 "건강해요"라고 안심시키는 것**입니다. 사람이 그 말을 믿고 식물을 방치하게 되니까요.
 
-### 단계 3. 진짜 병목은 스키마였다 → 3단 tier 도입
+그래서 이 실수(아픈데 건강이라고 하는 것)를 **한 건도 내지 않는 것**을 가장 중요한 기준으로 잡았고, 측정할 때마다 끝까지 0건을 지켰습니다.
 
-남은 오탐을 추적하니 "미용 vs 병리"를 가르는 **심각도 차원의 부재**가 본질이었습니다. 정답 라벨에 `tier`(건강/경미/비건강)를 추가하고 채점을 3단으로 확장 → "한 칸 과대(경미를 비건강으로)"와 "완전 오탐"을 분리 측정.
+## 제일 많이 배운 부분 — 프롬프트로 안 되면, 다른 방법을 찾기
 
-### 단계 4. Vision 모델 교체 — 측정으로 결정
+처음엔 AI가 "없는 병을 지어내는 것"이 문제라고 생각했습니다. 그래서 프롬프트에 "있는 그대로만 봐라" 같은 규칙을 넣고, 모델도 더 좋은 걸로 바꿔봤습니다.
 
-analyze 모델을 `Gemini 2.5 Pro` → `Gemini 3.5 Flash`로 교체. 같은 평가셋에서 **정확도 중립(FP 13→14, 1케이스)·recall 1.0 유지**를 확인하고 **속도를 근거로 채택**. "최신이라서"가 아니라 "측정해서" 결정.
+그런데 **네 번을 시도했는데, 측정해보니 전부 효과가 없었습니다.** 프롬프트(입력)를 아무리 다듬어도 안 풀리는 영역이 있다는 걸 데이터로 확인한 순간이었습니다.
 
-### 단계 5. 제품화 — 1차 진단을 서비스로
+그래서 방법을 바꿨습니다. AI가 답을 낸 **다음에**, 그 답을 검사해서 과한 진단을 코드로 교정하는 단계를 붙였습니다. 잎 끝이 살짝 변색된 정도면 건강으로 내리고, 진짜 병처럼 보이는 단어가 있으면 절대 손대지 않습니다. 그 결과 **헛걱정(건강한데 아프다고 한 경우)을 절반으로 줄였습니다** — 아픈 걸 놓치는 실수는 0건을 유지하면서요.
 
-진단 파이프라인 위에 제품 레이어를 올렸습니다: 4개 화면(홈·결과·케어가이드·내 식물), 객관식 2차 보정 챗봇, 진단 이력 타임라인, 이전 vs 이번 진단 비교. Firebase 인증·저장 연동.
+> 이 경험이 제일 기억에 남습니다. "안 되는 걸 끝까지 우기지 말고, 측정해서 인정하고 다른 길을 찾는다"는 걸 배웠습니다.
 
----
-
-## 시스템 아키텍처
+## 어떻게 동작하나요
 
 ```mermaid
 flowchart TB
-    subgraph FE["프론트엔드 — Next.js"]
-        U[사진 업로드] --> R["ResultView<br/>1차 진단"]
-        R --> FU["FollowupView<br/>객관식 3~5문항"]
-        FU --> R2["2차 보정 결과"]
-        R --> SV["저장 → 내 식물"]
-        SV --> TL["TimelineView<br/>진단 이력"]
-        TL --> CMP["CompareModal<br/>이전 vs 이번"]
+    subgraph FE["화면 (Next.js)"]
+        U[사진 업로드] --> R["1차 진단 결과"]
+        R --> FU["객관식 질문 3~5개"]
+        FU --> R2["2차 보정 진단"]
+        R --> SV["내 식물에 저장"]
+        SV --> TL["진단 기록 타임라인"]
+        TL --> CMP["이전 진단과 비교"]
     end
 
-    subgraph BE["백엔드 — FastAPI + LangGraph (4노드)"]
-        A["analyze<br/>Gemini 3.5 Flash<br/>관찰 6필드"] --> K["keyword<br/>영문 번역"]
-        K --> RET["retrieve<br/>Chroma RAG<br/>b_dataset + a_dataset"]
-        RET --> G["generate<br/>gpt-4o-mini<br/>status 진단"]
-        G --> SG["status guard<br/>over-escalate 교정<br/>병변 veto = FN 0"]
+    subgraph BE["진단 엔진 (FastAPI + LangGraph)"]
+        A["① 사진 분석<br/>Gemini"] --> K["② 키워드 정리"]
+        K --> RET["③ 자료 검색 (RAG)<br/>Chroma 벡터 DB"]
+        RET --> G["④ 진단 생성<br/>gpt-4o-mini"]
+        G --> SG["⑤ 검사·교정<br/>과한 진단 바로잡기"]
     end
 
-    subgraph DATA["저장 — Firebase"]
-        FS[(Firestore<br/>식물·진단)]
-        ST[(Storage<br/>이미지)]
+    subgraph DATA["저장 (Firebase)"]
+        FS[(Firestore)]
+        ST[(Storage)]
     end
 
     R -. "POST /diagnose" .-> A
-    FU -. "POST /diagnose/refine (generate만 재실행)" .-> G
-    CMP -. "POST /compare" .-> BE
+    FU -. "POST /diagnose/refine" .-> G
     SV --> FS
     SV --> ST
 ```
 
-설계 결정:
+흐름을 말로 풀면 이렇습니다.
 
-- **책임 분리** — analyze는 "관찰"(6필드: 종 식별·묘사·증상), generate는 "진단"(status enum)만. analyze의 인상과 RAG가 가져온 근거가 다를 수 있으므로 강제로 일치시키지 않습니다.
-- **status 가드는 출력 후처리** — 입력(프롬프트)으로 안 풀린 과대진단을 출력 단계에서 enum만 교정. JSON 구조·설명문·언어는 불변.
-- **2차 보정은 generate만 재실행** — 객관식 답변을 받아 Gemini(analyze)·임베딩 재호출 없이 generate+guard만 다시 돌립니다. `observed_symptoms`는 1차 값 불변으로 전달돼 **동일 가드를 통과 → cardinal_miss 0 구조 보존**.
+1. **사진을 본다** — Gemini가 식물 종류와 눈에 보이는 증상을 글로 정리합니다.
+2. **자료를 찾는다** — 그 증상으로 식물 자료(벡터 DB)에서 비슷한 내용을 검색합니다. (RAG)
+3. **진단을 쓴다** — 찾은 자료를 바탕으로 진단 문장을 만듭니다.
+4. **검사하고 고친다** — 위에서 말한, 과한 진단을 코드로 교정하는 단계입니다.
 
----
+그리고 그 위에 사진 업로드 화면, 추가 질문으로 보정하는 2차 진단, 내 식물 기록·비교 같은 제품 기능을 Next.js + Firebase로 붙였습니다.
 
-## 진단 파이프라인 상세
+## 어떻게 좋아졌는지 (측정)
 
-| 노드 | 모델 / 도구 | 역할 |
-|---|---|---|
-| **analyze** | Gemini 3.5 Flash (Vertex global) | 종 식별·시각 묘사·증상 관찰 6필드 추출 |
-| **keyword** | gpt-4o-mini | 한국어 증상 명사구를 영문으로 번역(영문 코퍼스 검색용) |
-| **retrieve** | Chroma + `text-embedding-ada-002` | `b_dataset_rag`(top-7) + `a_dataset_rag`(top-3), cosine ≥ 0.65 필터·가중 랭킹 |
-| **generate** | gpt-4o-mini | RAG 근거 + 관찰 정보로 구조화 진단(status) 생성 |
-| **status guard** | 규칙 기반 후처리 | over-escalate 교정 — 병변 veto·하부 위치 veto로 FN 0 사수 |
+"좋아진 것 같다"는 느낌이 아니라, 매번 **같은 평가셋(식물 사진 39장)으로 숫자를 재면서** 바꿨습니다. 한 번에 한 가지만 바꾸고, 그 변화가 진짜 효과가 있었는지 비교했습니다.
 
-- **5-status 분류**: 건강 / 과습 / 건조 / 병해 의심 / 영양 부족 (+ `비건강-원인미상`)
-- **3단 tier**: 건강 / 경미 / 비건강 — 심각도 차원
-- **비대칭 게이트**: 비건강→건강 오분류(`cardinal_miss`) = 0 하드 게이트, 비건강→경미(`soft_miss`) = 추적·최소화, 과대(건강/경미→비건강) = 최소화
-
----
-
-## 제품 기능
-
-| 기능 | 설명 |
+| 무엇을 봤나 | 결과 |
 |---|---|
-| **1차 진단** | 사진 업로드 → 진단 카드(status·원인·설명) + 종별 케어 가이드 첨부 |
-| **2차 보정(챗봇)** | 물 주기·위치·최근 변화 등 객관식 3~5문항 답변을 반영한 보정 진단 |
-| **내 식물 / 타임라인** | 진단을 식물별로 저장하고 이력을 시간순으로 열람 |
-| **진단 비교** | 같은 식물의 이전 vs 이번 진단을 정성 비교("지난주보다 갈변 진행") |
+| 아픈 식물을 건강으로 오진 (제일 위험한 실수) | **0건 유지** |
+| 헛걱정 (건강한데 아프다고 함) | **17.5 → 7.5** (절반) |
+| 검색이 맞는 자료를 찾았는지 | Hit@10 1.0 / MRR 0.9 |
 
----
+평가셋이 39장으로 작아서 한두 건은 노이즈일 수 있다는 한계도 같이 적어두고 봤습니다.
 
 ## 기술 스택
 
-- **백엔드**: FastAPI, LangGraph(4노드 파이프라인), Pydantic
-- **Vision**: Gemini 3.5 Flash (Vertex AI global / AI Studio fallback)
-- **LLM / 임베딩**: OpenAI gpt-4o-mini(생성·번역·비교) · `text-embedding-ada-002`
-- **RAG**: Chroma (`b_dataset_rag` + `a_dataset_rag`)
+- **백엔드**: FastAPI, LangGraph
+- **AI**: Gemini(사진 분석), OpenAI gpt-4o-mini(진단 문장·번역), 임베딩(자료 검색)
+- **RAG**: Chroma 벡터 DB
 - **프론트엔드**: Next.js, React, TypeScript
-- **저장 / 인증**: Firebase (Auth · Firestore · Storage)
-- **평가 / 테스트**: 자체 평가 하니스(`scripts/run_eval.py`) · pytest
+- **저장 / 로그인**: Firebase (Firestore · Storage · Auth)
+- **테스트 / 평가**: pytest, 자체 평가 스크립트(`scripts/run_eval.py`)
 
 ---
 
 <details>
-<summary>평가 방법론 — 라운드 기반 변수 격리</summary>
-
-이 프로젝트의 핵심은 **한 라운드 = 한 변수**라는 측정 규율입니다.
-
-- 라운드마다 "이번에 바꾸는 변수는 정확히 무엇인가"를 명시하고, 그 외 영역(코드·프롬프트·카드·가드·RAG)은 동결합니다.
-- 변경 후 합성 검증(import·pytest 회귀·grep) → 측정(Gemini 과금) → 게이트 판정 → 비교 앵커 갱신 순으로 진행.
-- 측정 출력은 항상 명시 경로(`RUN_EVAL_OUT`)로 저장 — 기준 파일 덮어쓰기 사고를 방지.
-- 효과 없는 변경(surface 패치·dead metadata)은 정기적 "빼기 라운드"로 제거해 본질 기여만 남깁니다.
-
-**검색 품질**도 별도 골든셋으로 측정: Hit@10 = 1.0 / MRR = 0.9.
-
-게이트 표·혼동표·사고 전례는 `CLAUDE.md`와 `docs/work_history/`에 라운드별로 누적되어 있습니다.
-
-</details>
-
-<details>
-<summary>측정 결과 (3단 tier 채점, 평가셋 39장)</summary>
-
-현 생산 모델(Gemini 3.5 Flash) 기준, generate가 "경미"를 출력하도록 한 라운드(R17):
-
-| 지표 | 값 |
-|---|---|
-| 🔴 cardinal_miss (비건강→건강) | **0** (하드 게이트 사수) |
-| exact_match (3×3) | 26/39 (66.7%) |
-| soft_miss (비건강→경미) | 4 (감점, 하드 실패 아님) |
-| 이진 환산 FP | 5 (직전 라운드 10 → 5) |
-| recall | 1.0 (cardinal 기준) |
-
-> soft_miss 4건 중 3건은 과거 사용자 재라벨에서도 경계로 분류된 케이스 — 모델이 사람과 유사하게 "경미"를 출력. FP 절반↓을 진전으로, soft_miss 4는 수용 한계로 기록.
-
-</details>
-
-<details>
-<summary>설치 · 실행</summary>
+<summary>실행 방법</summary>
 
 ### 백엔드 (FastAPI)
-
-Python 3.12.
 
 ```bash
 python -m venv .venv
@@ -177,7 +106,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-Swagger UI: `http://localhost:8000/docs`
+API 문서: `http://localhost:8000/docs`
 
 ### 프론트엔드 (Next.js)
 
@@ -190,33 +119,24 @@ npm run dev                      # http://localhost:3000
 
 | 변수 | 용도 |
 |---|---|
-| `GOOGLE_CLOUD_PROJECT` | analyze — Vertex AI 모드(권장) |
-| `GOOGLE_CLOUD_LOCATION` | Vertex region (`global`, Gemini 3.5 Flash) |
-| `GEMINI_API_KEY` | analyze — AI Studio 모드(fallback) |
-| `OPENAI_API_KEY` | generate·번역·임베딩 |
+| `GOOGLE_CLOUD_PROJECT` | 사진 분석 — Vertex AI 모드(권장) |
+| `GOOGLE_CLOUD_LOCATION` | Vertex 지역 (`global`) |
+| `GEMINI_API_KEY` | 사진 분석 — AI Studio 모드(대체) |
+| `OPENAI_API_KEY` | 진단 문장 생성·번역·임베딩 |
 
-Vertex 모드는 `gcloud auth application-default login` 1회 필요. 모델/리전 롤백은 세션 env override(`ANALYZE_MODEL`·`GOOGLE_CLOUD_LOCATION`)로 가능.
-
-### 테스트 · 평가
-
-```bash
-pytest -m "not integration"      # 회귀 (실 API 미호출)
-
-$env:RUN_EVAL_OUT="after_acc_<라운드명>.json"
-.venv\Scripts\python.exe scripts\run_eval.py --aux   # 평가셋 측정 (Gemini 과금)
-```
+키는 코드에 넣지 않고 `.env`로 불러옵니다. Vertex 모드는 `gcloud auth application-default login`을 한 번 실행하면 됩니다.
 
 </details>
 
 <details>
-<summary>API 요약</summary>
+<summary>API</summary>
 
 | 메서드 | 경로 | 설명 |
 |---|---|---|
-| `GET` | `/health` | 상태·키 설정 여부 |
-| `POST` | `/diagnose` | 이미지 업로드 → 1차 진단(analyze→keyword→retrieve→generate→guard) |
-| `POST` | `/diagnose/refine` | 객관식 답변 반영 2차 보정 (generate만 재실행, Gemini·임베딩 미호출) |
-| `POST` | `/compare` | 같은 식물의 이전 vs 이번 진단 정성 비교 |
+| `GET` | `/health` | 서버 상태 확인 |
+| `POST` | `/diagnose` | 사진 업로드 → 1차 진단 |
+| `POST` | `/diagnose/refine` | 객관식 답변 반영 2차 진단 |
+| `POST` | `/compare` | 같은 식물의 이전 vs 이번 진단 비교 |
 
 </details>
 
@@ -225,18 +145,15 @@ $env:RUN_EVAL_OUT="after_acc_<라운드명>.json"
 
 ```
 plant-diagnosis/
-├── app/                      # 백엔드 (FastAPI + LangGraph)
-│   ├── vision/               # VisionProvider Protocol + GeminiProvider
-│   ├── nodes/                # analyze_node
-│   ├── graph.py              # 4노드 파이프라인 + status guard
+├── app/              # 백엔드 (FastAPI + LangGraph)
+│   ├── vision/       # 사진 분석 (Gemini)
+│   ├── graph.py      # 진단 파이프라인 + 검사·교정 단계
 │   ├── prompts.py · model_utils.py · care_guide.py · schemas.py
-│   └── main.py               # /diagnose · /diagnose/refine · /compare
-├── pages/ · components/ · lib/  # 프론트엔드 (Next.js)
-├── scripts/run_eval.py       # 평가 하니스 (혼동표·--aux)
-├── test_data/                # 평가셋 라벨(이미지는 git 제외) · labeling_vocab
-├── eval/                     # 측정 결과·비교 앵커
-├── data/vector_db/           # Chroma (b_dataset_rag · a_dataset_rag)
-└── docs/work_history/        # 라운드별 진단·작업·결과 기록
+│   └── main.py       # API (/diagnose · /diagnose/refine · /compare)
+├── pages/ · components/ · lib/   # 프론트엔드 (Next.js)
+├── scripts/          # RAG 구축·평가 스크립트
+├── test_data/        # 평가셋 라벨 (이미지는 라이선스·용량 때문에 제외)
+└── tests/            # pytest
 ```
 
 </details>
@@ -244,9 +161,8 @@ plant-diagnosis/
 <details>
 <summary>데이터 · 라이선스</summary>
 
-- 코드: MIT.
-- RAG 코퍼스: PennState Extension(Houseplant Problems)·Missouri Botanical Garden·UC IPM·농촌진흥청 등 실내식물 도메인 자료(출처·라이선스 별도 관리).
-- 평가셋 이미지는 git에서 제외(iNaturalist CC BY 등 라이선스·용량·토큰 고려) — `labels.json`의 `image_path`로 동일 경로 배치 시 작동.
-- Gemini·OpenAI 각 서비스 약관·API 정책 준수.
+- 코드: MIT
+- RAG 자료: PennState Extension, Missouri Botanical Garden, UC IPM, 농촌진흥청 등 실내식물 자료 (출처별 라이선스 준수)
+- 평가셋 사진은 라이선스·용량 때문에 저장소에서 제외했습니다 (`labels.json`의 경로만 공유).
 
 </details>
