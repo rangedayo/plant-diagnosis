@@ -61,6 +61,7 @@ AI 엔지니어링을 공부하면서 **"그럴듯한 답을 내는 것"과 "믿
 먼저 아키텍처 전체 흐름은 이렇습니다.
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '12px'}}}%%
 flowchart TB
     U[사진 업로드] --> ENG[진단 엔진]
     ENG --> R[진단 결과<br/>1차 · 2차 보정]
@@ -79,6 +80,7 @@ flowchart TB
 이 중 핵심인 **진단 엔진** 내부를 펼치면 다음과 같습니다.
 
 ```mermaid
+%%{init: {'themeVariables': {'fontSize': '12px'}}}%%
 flowchart TB
     subgraph SKIP["비전 · RAG → 2차 땐 생략"]
         A["① 사진 분석<br/>Gemini 3.5 Flash · 증상 추출<br/>POST /diagnose"]
