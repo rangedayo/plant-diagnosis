@@ -70,6 +70,12 @@ body {
   padding: 0;
 }
 
+/* 스크롤바 거터 항상 예약 — 스크롤이 생기는 화면(홈 등)과 안 생기는 화면(로딩 등)의
+   뷰포트 폭이 달라져 margin:0 auto 중앙선이 흔들리며 우측으로 쏠려 보이던 현상 방지. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--bg-page);

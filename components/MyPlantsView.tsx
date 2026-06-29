@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../lib/auth";
-import { listPlants, type PlantSummary } from "../lib/db";
+import { deletePlant, listPlants, type PlantSummary } from "../lib/db";
 import { statusBadge, statusLabel } from "../lib/status";
 import AuthControl from "./AuthControl";
 import BottomTabBar, { type TabKey } from "./BottomTabBar";
@@ -28,6 +28,8 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
   const [plants, setPlants] = useState<PlantSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [pendingDelete, setPendingDelete] = useState<PlantSummary | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!uid) {
@@ -51,6 +53,22 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
       cancelled = true;
     };
   }, [uid]);
+
+  // 삭제 확정 — diagnoses·이미지·plant 문서 제거 후 목록에서 낙관적 제거.
+  async function handleDelete() {
+    if (!uid || !pendingDelete) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await deletePlant(uid, pendingDelete.id);
+      setPlants((prev) => prev.filter((x) => x.id !== pendingDelete.id));
+      setPendingDelete(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "삭제하지 못했습니다.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <div className="mp">
@@ -100,7 +118,7 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
             {plants.map((p) => {
               const badge = p.lastDiagnosis ? statusBadge(p.lastDiagnosis.status) : null;
               return (
-                <li key={p.id}>
+                <li className="plant-li" key={p.id}>
                   <button className="plant-card" type="button" onClick={() => onPickPlant(p)}>
                     <span className="thumb">
                       {p.coverImageUrl ? (
@@ -126,7 +144,14 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
                       ) : null}
                       {p.lastDiagnosis?.summary ? <span className="summary">{p.lastDiagnosis.summary}</span> : null}
                     </span>
-                    <i className="ti ti-chevron-right arrow" aria-hidden="true" />
+                  </button>
+                  <button
+                    className="del-btn"
+                    type="button"
+                    onClick={() => setPendingDelete(p)}
+                    aria-label={`${p.name} 삭제`}
+                  >
+                    <i className="ti ti-trash" aria-hidden="true" />
                   </button>
                 </li>
               );
@@ -136,6 +161,24 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
       </div>
 
       <BottomTabBar activeTab="myPlants" onTabChange={onTabChange} />
+
+      {/* 삭제 확인 다이얼로그 */}
+      {pendingDelete ? (
+        <div className="del-overlay" role="dialog" aria-modal="true">
+          <div className="del-modal">
+            <p className="del-title">‘{pendingDelete.name}’을(를) 삭제할까요?</p>
+            <p className="del-sub">이 식물의 진단 이력과 이미지가 모두 삭제되며 되돌릴 수 없어요.</p>
+            <div className="del-actions">
+              <button className="del-cancel" type="button" onClick={() => setPendingDelete(null)} disabled={deleting}>
+                취소
+              </button>
+              <button className="del-confirm" type="button" onClick={() => void handleDelete()} disabled={deleting}>
+                {deleting ? "삭제 중…" : "삭제"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <style jsx>{`
         .mp {
@@ -151,7 +194,7 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 20px 20px 10px;
+          padding: 20px 16px 10px;
         }
         .mp-title {
           font-size: 22px;
@@ -259,18 +302,44 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
           flex-direction: column;
           gap: 12px;
         }
+        .plant-li {
+          display: flex;
+          align-items: center;
+          border-radius: 18px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow-card);
+          overflow: hidden;
+        }
         .plant-card {
-          width: 100%;
+          flex: 1;
+          min-width: 0;
           display: flex;
           align-items: center;
           gap: 14px;
           padding: 14px;
-          border-radius: 18px;
           border: none;
-          background: var(--bg-card);
-          box-shadow: var(--shadow-card);
+          background: none;
           cursor: pointer;
           text-align: left;
+        }
+        .del-btn {
+          flex-shrink: 0;
+          align-self: stretch;
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          border: none;
+          background: none;
+          cursor: pointer;
+        }
+        .del-btn i {
+          font-size: 19px;
+          color: #b0c4b2;
+          transition: color 0.15s ease;
+        }
+        .del-btn:hover i,
+        .del-btn:focus-visible i {
+          color: #d9534f;
         }
         .thumb {
           width: 64px;
@@ -339,10 +408,67 @@ export default function MyPlantsView({ onPickPlant, onGoDiagnose, onTabChange }:
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-        .arrow {
-          font-size: 20px;
-          color: #b0c4b2;
-          flex-shrink: 0;
+
+        /* 삭제 확인 다이얼로그 */
+        .del-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(20, 35, 22, 0.42);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          z-index: 100;
+          animation: fadeIn 0.18s ease;
+        }
+        .del-modal {
+          width: 100%;
+          max-width: 320px;
+          background: var(--bg-card);
+          border-radius: 20px;
+          padding: 24px 22px 18px;
+          box-shadow: var(--shadow-card-elevated);
+        }
+        .del-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin: 0 0 8px;
+          line-height: 1.45;
+        }
+        .del-sub {
+          font-size: 13px;
+          color: var(--text-muted);
+          font-weight: 500;
+          line-height: 1.55;
+          margin: 0 0 20px;
+        }
+        .del-actions {
+          display: flex;
+          gap: 10px;
+        }
+        .del-cancel,
+        .del-confirm {
+          flex: 1;
+          height: 46px;
+          border-radius: var(--radius-button);
+          border: none;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .del-cancel {
+          background: var(--bg-icon-circle);
+          color: var(--text-secondary);
+        }
+        .del-confirm {
+          background: #d9534f;
+          color: #fff;
+        }
+        .del-cancel:disabled,
+        .del-confirm:disabled {
+          opacity: 0.6;
+          cursor: default;
         }
 
         @keyframes fadeIn {

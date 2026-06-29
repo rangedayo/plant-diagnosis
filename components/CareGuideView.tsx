@@ -8,10 +8,19 @@ type Props = {
 // ── 시안 인라인 SVG 헬퍼 (plantia_care_guide.html 1:1 이식) ───────────
 function SoilIcon() {
   return (
-    <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
-      <path d="M4 19 Q13 10 22 19" stroke="#2A5428" strokeWidth="1.7" strokeLinecap="round" fill="none" />
-      <line x1="4" y1="21" x2="22" y2="21" stroke="#2A5428" strokeWidth="1.7" strokeLinecap="round" />
-      <path d="M13 18 L13 10 M10 14 Q13 10 16 14" stroke="#2A5428" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#2A5428"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612" />
+      <path d="M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2" />
     </svg>
   );
 }
@@ -30,84 +39,92 @@ function PlacementIcon() {
 
 function SeasonHeaderDrop() {
   return (
-    <svg width="20" height="20" viewBox="0 0 22 22" fill="none" aria-hidden="true">
-      <path
-        d="M11 2 C16 8 19 13 19 16.5 C19 20 15.4 22 11 22 C6.6 22 3 20 3 16.5 C3 13 6 8 11 2Z"
-        stroke="#2A5428"
-        strokeWidth="1.7"
-        fill="none"
-      />
-      <path d="M8 17 Q11 13 14 17" stroke="#2A5428" strokeWidth="1.3" strokeLinecap="round" fill="none" />
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#2A5428"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4.072 20.3a2.999 2.999 0 0 0 3.856 0a3.002 3.002 0 0 0 .67 -3.798l-2.095 -3.227a.6 .6 0 0 0 -1.005 0l-2.098 3.227a3.003 3.003 0 0 0 .671 3.798" />
+      <path d="M16.072 20.3a2.999 2.999 0 0 0 3.856 0a3.002 3.002 0 0 0 .67 -3.798l-2.095 -3.227a.6 .6 0 0 0 -1.005 0l-2.098 3.227a3.003 3.003 0 0 0 .671 3.798" />
+      <path d="M10.072 10.3a2.999 2.999 0 0 0 3.856 0a3.002 3.002 0 0 0 .67 -3.798l-2.095 -3.227a.6 .6 0 0 0 -1.005 0l-2.098 3.227a3.003 3.003 0 0 0 .671 3.798l.001 0" />
     </svg>
   );
 }
 
-// 계절 물방울 공통 외곽
-function DropOuter() {
-  return (
-    <path
-      d="M26 3 C38 17 49 33 49 46 C49 57 38.5 63 26 63 C13.5 63 3 57 3 46 C3 33 14 17 26 3 Z"
-      fill="#EBF6E5"
-      stroke="#2A5428"
-      strokeWidth="1.8"
-    />
-  );
-}
-
+// 계절별 물주기 아이콘 (제공 SVG 1:1 이식 — viewBox 64×64, green-medium #3A6E37)
 function SpringDrop() {
   return (
-    <svg className="drop-svg" viewBox="0 0 52 64" fill="none" aria-hidden="true">
-      <DropOuter />
-      <line x1="26" y1="54" x2="26" y2="36" stroke="#2A5428" strokeWidth="1.6" strokeLinecap="round" />
-      <path d="M26 44 Q20 40 18 33 Q23 32 26 38" fill="none" stroke="#2A5428" strokeWidth="1.4" strokeLinecap="round" />
-      <path d="M26 44 Q32 40 34 33 Q29 32 26 38" fill="none" stroke="#2A5428" strokeWidth="1.4" strokeLinecap="round" />
+    <svg className="drop-svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M32 5 C 23 19 12 29 12 42 C 12 53 21 60 32 60 C 43 60 52 53 52 42 C 52 29 41 19 32 5 Z" fill="#f4f8ef" stroke="#3A6E37" strokeWidth="3.4" strokeLinejoin="round" />
+      <path d="M32 51 C 32 47 32 43 32 38" fill="none" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <path d="M32 44 C 27 45 23.5 42 24 37.5 C 29 37.5 32 40.5 32 44 Z" fill="none" stroke="#3A6E37" strokeWidth="2.7" strokeLinejoin="round" />
+      <path d="M32 40 C 37 41 40.5 38 40 33.5 C 35 33.5 32 36.5 32 40 Z" fill="none" stroke="#3A6E37" strokeWidth="2.7" strokeLinejoin="round" />
     </svg>
   );
 }
 
 function SummerDrop() {
   return (
-    <svg className="drop-svg" viewBox="0 0 52 64" fill="none" aria-hidden="true">
-      <DropOuter />
-      <circle cx="26" cy="42" r="8" stroke="#2A5428" strokeWidth="1.6" fill="none" />
-      <line x1="26" y1="26" x2="26" y2="30" stroke="#2A5428" strokeWidth="1.4" strokeLinecap="round" />
-      <line x1="26" y1="54" x2="26" y2="58" stroke="#2A5428" strokeWidth="1.4" strokeLinecap="round" />
-      <line x1="10" y1="42" x2="14" y2="42" stroke="#2A5428" strokeWidth="1.4" strokeLinecap="round" />
-      <line x1="38" y1="42" x2="42" y2="42" stroke="#2A5428" strokeWidth="1.4" strokeLinecap="round" />
-      <line x1="14.9" y1="31" x2="17.8" y2="33.8" stroke="#2A5428" strokeWidth="1.3" strokeLinecap="round" />
-      <line x1="37.1" y1="31" x2="34.2" y2="33.8" stroke="#2A5428" strokeWidth="1.3" strokeLinecap="round" />
-      <line x1="17.8" y1="50.2" x2="14.9" y2="53" stroke="#2A5428" strokeWidth="1.3" strokeLinecap="round" />
-      <line x1="34.2" y1="50.2" x2="37.1" y2="53" stroke="#2A5428" strokeWidth="1.3" strokeLinecap="round" />
+    <svg className="drop-svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M32 5 C 23 19 12 29 12 42 C 12 53 21 60 32 60 C 43 60 52 53 52 42 C 52 29 41 19 32 5 Z" fill="#f4f8ef" stroke="#3A6E37" strokeWidth="3.4" strokeLinejoin="round" />
+      <circle cx="32" cy="39" r="4.3" fill="none" stroke="#3A6E37" strokeWidth="2.7" />
+      <line x1="38.90" y1="39.00" x2="41.50" y2="39.00" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="36.88" y1="43.88" x2="38.72" y2="45.72" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="32.00" y1="45.90" x2="32.00" y2="48.50" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="27.12" y1="43.88" x2="25.28" y2="45.72" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="25.10" y1="39.00" x2="22.50" y2="39.00" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="27.12" y1="34.12" x2="25.28" y2="32.28" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="32.00" y1="32.10" x2="32.00" y2="29.50" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="36.88" y1="34.12" x2="38.72" y2="32.28" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
     </svg>
   );
 }
 
 function AutumnDrop() {
   return (
-    <svg className="drop-svg" viewBox="0 0 52 64" fill="none" aria-hidden="true">
-      <DropOuter />
-      <path d="M20 30 C17 27 15 22 18 19 C22 19 24 24 20 30Z" stroke="#2A5428" strokeWidth="1.3" fill="none" strokeLinejoin="round" />
-      <line x1="20" y1="30" x2="16" y2="36" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
-      <path d="M34 40 C31 37 29 32 32 29 C36 29 38 34 34 40Z" stroke="#2A5428" strokeWidth="1.3" fill="none" strokeLinejoin="round" />
-      <line x1="34" y1="40" x2="30" y2="46" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
-      <path d="M22 50 C19 47 17 42 20 39 C24 39 26 44 22 50Z" stroke="#2A5428" strokeWidth="1.3" fill="none" strokeLinejoin="round" />
-      <line x1="22" y1="50" x2="18" y2="56" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
+    <svg className="drop-svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M32 5 C 23 19 12 29 12 42 C 12 53 21 60 32 60 C 43 60 52 53 52 42 C 52 29 41 19 32 5 Z" fill="#f4f8ef" stroke="#3A6E37" strokeWidth="3.4" strokeLinejoin="round" />
+      <g transform="translate(27,34) rotate(-28)">
+        <path d="M0 -4.6 C 2.4 -1.4 2.4 1.4 0 4.6 C -2.4 1.4 -2.4 -1.4 0 -4.6 Z" fill="none" stroke="#3A6E37" strokeWidth="2.7" strokeLinejoin="round" />
+      </g>
+      <g transform="translate(36.5,40) rotate(22)">
+        <path d="M0 -4.6 C 2.4 -1.4 2.4 1.4 0 4.6 C -2.4 1.4 -2.4 -1.4 0 -4.6 Z" fill="none" stroke="#3A6E37" strokeWidth="2.7" strokeLinejoin="round" />
+      </g>
+      <g transform="translate(29,47) rotate(-12)">
+        <path d="M0 -4.6 C 2.4 -1.4 2.4 1.4 0 4.6 C -2.4 1.4 -2.4 -1.4 0 -4.6 Z" fill="none" stroke="#3A6E37" strokeWidth="2.7" strokeLinejoin="round" />
+      </g>
     </svg>
   );
 }
 
 function WinterDrop() {
   return (
-    <svg className="drop-svg" viewBox="0 0 52 64" fill="none" aria-hidden="true">
-      <DropOuter />
-      <line x1="26" y1="24" x2="26" y2="58" stroke="#2A5428" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="11.6" y1="32" x2="40.4" y2="50" stroke="#2A5428" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="40.4" y1="32" x2="11.6" y2="50" stroke="#2A5428" strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="26" y1="32" x2="22" y2="28" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
-      <line x1="26" y1="32" x2="30" y2="28" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
-      <line x1="26" y1="50" x2="22" y2="54" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
-      <line x1="26" y1="50" x2="30" y2="54" stroke="#2A5428" strokeWidth="1.1" strokeLinecap="round" />
-      <circle cx="26" cy="41" r="2.5" fill="#2A5428" />
+    <svg className="drop-svg" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+      <path d="M32 5 C 23 19 12 29 12 42 C 12 53 21 60 32 60 C 43 60 52 53 52 42 C 52 29 41 19 32 5 Z" fill="#f4f8ef" stroke="#3A6E37" strokeWidth="3.4" strokeLinejoin="round" />
+      <line x1="32.00" y1="40.00" x2="32.00" y2="29.00" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="32.00" y1="33.50" x2="34.06" y2="31.05" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="33.50" x2="29.94" y2="31.05" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="40.00" x2="41.53" y2="34.50" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="37.63" y1="36.75" x2="40.78" y2="37.31" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="37.63" y1="36.75" x2="38.72" y2="33.74" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="40.00" x2="41.53" y2="45.50" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="37.63" y1="43.25" x2="38.72" y2="46.26" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="37.63" y1="43.25" x2="40.78" y2="42.69" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="40.00" x2="32.00" y2="51.00" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="32.00" y1="46.50" x2="29.94" y2="48.95" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="46.50" x2="34.06" y2="48.95" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="40.00" x2="22.47" y2="45.50" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="26.37" y1="43.25" x2="23.22" y2="42.69" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="26.37" y1="43.25" x2="25.28" y2="46.26" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="32.00" y1="40.00" x2="22.47" y2="34.50" stroke="#3A6E37" strokeWidth="2.7" strokeLinecap="round" />
+      <line x1="26.37" y1="36.75" x2="25.28" y2="33.74" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
+      <line x1="26.37" y1="36.75" x2="23.22" y2="37.31" stroke="#3A6E37" strokeWidth="2.43" strokeLinecap="round" />
     </svg>
   );
 }
@@ -169,7 +186,7 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
       key: "manage",
       label: "관리 난이도",
       value: careGuide.manage_level,
-      icon: <i className="ti ti-gauge" aria-hidden="true" />,
+      icon: <i className="ti ti-gauge" style={{ color: "var(--green-dark)" }} aria-hidden="true" />,
       badge: true,
     },
   ].filter((c) => filled(c.value));
@@ -517,8 +534,8 @@ export default function CareGuideView({ careGuide, onBack }: Props) {
 
       <style jsx global>{`
         .cg .drop-svg {
-          width: 42px;
-          height: 50px;
+          width: 46px;
+          height: 46px;
           flex-shrink: 0;
         }
       `}</style>

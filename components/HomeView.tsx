@@ -327,7 +327,7 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 20px 20px 10px;
+          padding: 20px 16px 10px;
         }
         .ms-logo {
           display: flex;
@@ -361,7 +361,7 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
 
         /* 인사말 */
         .ms-greet {
-          padding: 10px 20px 16px;
+          padding: 10px 16px 16px;
         }
         .ms-greet-sub {
           font-size: 14px;
@@ -620,7 +620,7 @@ export default function HomeView({ onStartDiagnosis, error, onTabChange, onPickR
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 20px;
+          padding: 0 16px;
           margin-bottom: 12px;
         }
         .sec-left {

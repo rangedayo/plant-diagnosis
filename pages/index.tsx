@@ -340,7 +340,7 @@ export default function HomePage() {
         h1 {
           font-size: 1.9rem;
           color: #1f6f2a;
-          margin: 4px 4px 6px;
+          margin: 4px 0 6px;
           text-align: left;
         }
       `}</style>

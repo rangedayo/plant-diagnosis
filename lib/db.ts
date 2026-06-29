@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   limit,
@@ -11,7 +12,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "./firebase";
 import { CareGuide, DiagnosisResponse } from "../types/diagnosis";
 
@@ -216,4 +217,39 @@ export async function saveDiagnosis(
   });
 
   return { dxId, imageUrl };
+}
+
+// 식물 삭제: 하위 diagnoses 문서 + 각 진단 이미지(Storage) + plant 문서를 모두 제거.
+// 소유자만 가능(보안규칙 users/{uid} write). 이미지 삭제는 best-effort(객체 부재/이미 삭제 시 무시).
+// 이미지 경로 규약은 saveDiagnosis와 동일: users/{uid}/plants/{plantId}/{dxId}.jpg.
+export async function deletePlant(uid: string, plantId: string): Promise<void> {
+  const dxCol = collection(db, "users", uid, "plants", plantId, "diagnoses");
+  const dxSnap = await getDocs(dxCol);
+
+  await Promise.all(
+    dxSnap.docs.map(async (d) => {
+      const imgRef = ref(storage, `users/${uid}/plants/${plantId}/${d.id}.jpg`);
+      try {
+        await deleteObject(imgRef);
+      } catch {
+        // 이미지가 없거나 이미 삭제된 경우 무시 — 문서 삭제는 계속 진행.
+      }
+      await deleteDoc(d.ref);
+    }),
+  );
+
+  await deleteDoc(doc(db, "users", uid, "plants", plantId));
+}
+
+// 진단 1건 삭제: diagnoses 문서 + 해당 이미지(Storage). 소유자만 가능(보안규칙).
+// 이미지 삭제는 best-effort. 주의: 삭제 대상이 plant 대표 이미지(coverImageUrl)의 원본이면
+// 목록 썸네일이 깨질 수 있음(현 단계 허용 — 재진단/저장 시 갱신).
+export async function deleteDiagnosis(uid: string, plantId: string, dxId: string): Promise<void> {
+  const imgRef = ref(storage, `users/${uid}/plants/${plantId}/${dxId}.jpg`);
+  try {
+    await deleteObject(imgRef);
+  } catch {
+    // 이미지가 없거나 이미 삭제된 경우 무시 — 문서 삭제는 계속 진행.
+  }
+  await deleteDoc(doc(db, "users", uid, "plants", plantId, "diagnoses", dxId));
 }
