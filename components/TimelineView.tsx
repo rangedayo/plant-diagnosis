@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { listDiagnoses, type DiagnosisRecord, type PlantSummary } from "../lib/db";
+import { deleteDiagnosis, listDiagnoses, type DiagnosisRecord, type PlantSummary } from "../lib/db";
 import { statusBadge, statusLabel } from "../lib/status";
 import AuthControl from "./AuthControl";
 import CompareModal from "./CompareModal";
+import TrendStrip from "./TrendStrip";
 
 // 비교 대상: previous(더 오래된) vs current(선택 카드).
 type CompareTarget = {
@@ -27,6 +28,8 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [compareTarget, setCompareTarget] = useState<CompareTarget | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<DiagnosisRecord | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -46,6 +49,22 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
       cancelled = true;
     };
   }, [uid, plant.id]);
+
+  // 진단 1건 삭제 확정 — 문서·이미지 제거 후 목록에서 낙관적 제거(비교 버튼은 records 변화로 자동 재계산).
+  async function handleDelete() {
+    if (!pendingDelete) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await deleteDiagnosis(uid, plant.id, pendingDelete.id);
+      setRecords((prev) => prev.filter((x) => x.id !== pendingDelete.id));
+      setPendingDelete(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "삭제하지 못했습니다.");
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   return (
     <section className="tl">
@@ -67,7 +86,12 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
       ) : records.length === 0 ? (
         <p className="tl-msg">진단 이력이 없습니다.</p>
       ) : (
-        <ul className="dx-list">
+        <>
+          {/* 맨 위 상단 — 전체 추이 한눈에(가로 타임라인 + 간결 요약). 점 2개 이상에서만 의미 */}
+          {records.length >= 2 ? (
+            <TrendStrip records={records} onPick={onPickDiagnosis} />
+          ) : null}
+          <ul className="dx-list">
           {records.map((r, i) => {
             const badge = statusBadge(r.status);
             // records는 최신순(desc). previous = 한 칸 더 오래된 records[i+1].
@@ -75,28 +99,37 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
             const previous = i < records.length - 1 ? records[i + 1] : null;
             return (
               <li key={r.id} className="dx-item">
-                <button className="dx-card" type="button" onClick={() => onPickDiagnosis(r)}>
-                  <span className="thumb">
-                    {r.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={r.imageUrl} alt="" />
-                    ) : (
-                      <i className="ti ti-leaf" aria-hidden="true" />
-                    )}
-                  </span>
-                  <span className="info">
-                    <span className="top">
-                      {r.status ? (
-                        <span className="badge" style={{ background: badge.bg, color: badge.fg }}>
-                          {statusLabel(r.status).coarse || r.status}
-                        </span>
-                      ) : null}
-                      <span className="date">{formatDate(r.createdAt)}</span>
+                <div className="dx-row">
+                  <button className="dx-card" type="button" onClick={() => onPickDiagnosis(r)}>
+                    <span className="thumb">
+                      {r.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={r.imageUrl} alt="" />
+                      ) : (
+                        <i className="ti ti-leaf" aria-hidden="true" />
+                      )}
                     </span>
-                    {r.summary ? <span className="summary">{r.summary}</span> : null}
-                  </span>
-                  <i className="ti ti-chevron-right arrow" aria-hidden="true" />
-                </button>
+                    <span className="info">
+                      <span className="top">
+                        {r.status ? (
+                          <span className="badge" style={{ background: badge.bg, color: badge.fg }}>
+                            {statusLabel(r.status).coarse || r.status}
+                          </span>
+                        ) : null}
+                        <span className="date">{formatDate(r.createdAt)}</span>
+                      </span>
+                      {r.summary ? <span className="summary">{r.summary}</span> : null}
+                    </span>
+                  </button>
+                  <button
+                    className="dx-del"
+                    type="button"
+                    onClick={() => setPendingDelete(r)}
+                    aria-label="이 진단 기록 삭제"
+                  >
+                    <i className="ti ti-trash" aria-hidden="true" />
+                  </button>
+                </div>
                 {previous ? (
                   <button
                     className="cmp-btn"
@@ -113,7 +146,8 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
               </li>
             );
           })}
-        </ul>
+          </ul>
+        </>
       )}
 
       {compareTarget ? (
@@ -122,6 +156,26 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
           current={compareTarget.current}
           onClose={() => setCompareTarget(null)}
         />
+      ) : null}
+
+      {/* 삭제 확인 다이얼로그 */}
+      {pendingDelete ? (
+        <div className="del-overlay" role="dialog" aria-modal="true">
+          <div className="del-modal">
+            <p className="del-title">이 진단 기록을 삭제할까요?</p>
+            <p className="del-sub">
+              {formatDate(pendingDelete.createdAt)} 진단과 해당 이미지가 삭제되며 되돌릴 수 없어요.
+            </p>
+            <div className="del-actions">
+              <button className="del-cancel" type="button" onClick={() => setPendingDelete(null)} disabled={deleting}>
+                취소
+              </button>
+              <button className="del-confirm" type="button" onClick={() => void handleDelete()} disabled={deleting}>
+                {deleting ? "삭제 중…" : "삭제"}
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
 
       <style jsx>{`
@@ -198,18 +252,44 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
           flex-direction: column;
           gap: 8px;
         }
+        .dx-row {
+          display: flex;
+          align-items: center;
+          border-radius: 18px;
+          background: var(--bg-card);
+          box-shadow: var(--shadow-card);
+          overflow: hidden;
+        }
         .dx-card {
-          width: 100%;
+          flex: 1;
+          min-width: 0;
           display: flex;
           align-items: center;
           gap: 14px;
           padding: 14px;
-          border-radius: 18px;
           border: none;
-          background: var(--bg-card);
-          box-shadow: var(--shadow-card);
+          background: none;
           cursor: pointer;
           text-align: left;
+        }
+        .dx-del {
+          flex-shrink: 0;
+          align-self: stretch;
+          display: flex;
+          align-items: center;
+          padding: 0 16px;
+          border: none;
+          background: none;
+          cursor: pointer;
+        }
+        .dx-del i {
+          font-size: 19px;
+          color: #b0c4b2;
+          transition: color 0.15s ease;
+        }
+        .dx-del:hover i,
+        .dx-del:focus-visible i {
+          color: #d9534f;
         }
         .cmp-btn {
           align-self: center;
@@ -288,10 +368,66 @@ export default function TimelineView({ uid, plant, onBack, onPickDiagnosis }: Pr
           -webkit-box-orient: vertical;
           overflow: hidden;
         }
-        .arrow {
-          font-size: 20px;
-          color: #b0c4b2;
-          flex-shrink: 0;
+        /* 삭제 확인 다이얼로그 */
+        .del-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(20, 35, 22, 0.42);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          z-index: 100;
+          animation: fadeIn 0.18s ease;
+        }
+        .del-modal {
+          width: 100%;
+          max-width: 320px;
+          background: var(--bg-card);
+          border-radius: 20px;
+          padding: 24px 22px 18px;
+          box-shadow: var(--shadow-card-elevated);
+        }
+        .del-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin: 0 0 8px;
+          line-height: 1.45;
+        }
+        .del-sub {
+          font-size: 13px;
+          color: var(--text-muted);
+          font-weight: 500;
+          line-height: 1.55;
+          margin: 0 0 20px;
+        }
+        .del-actions {
+          display: flex;
+          gap: 10px;
+        }
+        .del-cancel,
+        .del-confirm {
+          flex: 1;
+          height: 46px;
+          border-radius: var(--radius-button);
+          border: none;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .del-cancel {
+          background: var(--bg-icon-circle);
+          color: var(--text-secondary);
+        }
+        .del-confirm {
+          background: #d9534f;
+          color: #fff;
+        }
+        .del-cancel:disabled,
+        .del-confirm:disabled {
+          opacity: 0.6;
+          cursor: default;
         }
 
         @keyframes fadeIn {

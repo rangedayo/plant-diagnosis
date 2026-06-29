@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
         destination: `${backendUrl}/compare`,
       },
       {
+        // [추이 요약] 진단 이력 전체 흐름 요약 — /compare와 동일 프록시 패턴.
+        source: "/trend",
+        destination: `${backendUrl}/trend`,
+      },
+      {
         // [챗봇 2차 보정] generate-only 재실행 — /diagnose와 동일 프록시 패턴.
         source: "/diagnose/refine",
         destination: `${backendUrl}/diagnose/refine`,

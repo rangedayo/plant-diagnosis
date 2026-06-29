@@ -91,3 +91,34 @@ export async function comparePlantDiagnoses(
 
   return (await response.json()) as CompareResponse;
 }
+
+// [추이 요약] 진단 이력 전체(시간순 오래된→최신)를 백엔드 /trend로 전달 → 전반 흐름 간결 요약.
+// 백엔드 TrendRequest(diagnoses)·TrendResponse(trend)와 1:1 대응. comparePlantDiagnoses와 동일 패턴.
+export type TrendResponse = {
+  trend: string;
+};
+
+export async function summarizeDiagnosisTrend(
+  diagnoses: DiagnosisSnapshot[],
+): Promise<TrendResponse> {
+  const response = await fetch("/trend", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ diagnoses }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `요청 실패 (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as { detail?: string };
+      if (errorBody?.detail) {
+        errorMessage = errorBody.detail;
+      }
+    } catch {
+      // ignore json parse failures and keep fallback message
+    }
+    throw new Error(errorMessage);
+  }
+
+  return (await response.json()) as TrendResponse;
+}
