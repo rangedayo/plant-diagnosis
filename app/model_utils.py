@@ -337,3 +337,52 @@ async def generate_diagnosis_comparison(prev: Any, curr: Any) -> str:
     if not text:
         raise RuntimeError("비교 서술 생성 실패: 빈 응답")
     return text
+
+
+def _format_trend_entry(idx: int, total: int, snap: Any) -> str:
+    """추이 요약 프롬프트용 단일 스냅샷 블록(시간순 인덱스 기준 최초/최신 태그)."""
+    if idx == 0:
+        tag = "최초"
+    elif idx == total - 1:
+        tag = "최신"
+    else:
+        tag = f"{idx + 1}회차"
+    return (
+        f"[{idx + 1}/{total} · {tag} — {snap.date or '(날짜 미상)'}]\n"
+        f"- 상태: {snap.status or '(미상)'}\n"
+        f"- 요약: {snap.summary or '(요약 없음)'}\n"
+        f"- 원인: {snap.cause or '(원인 미상)'}\n"
+        f"- 관찰된 증상: {_format_symptoms(snap.observed_symptoms)}"
+    )
+
+
+async def generate_diagnosis_trend(snaps: list[Any]) -> str:
+    """[추이 요약] 같은 식물의 진단 이력(시간순 오래된→최신)을 받아 전반 흐름 요약(한국어)을 생성.
+
+    snaps는 app.schemas.DiagnosisSnapshot 리스트. generate_diagnosis_comparison과 동일하게
+    폴백 없이 API 키 부재·호출 실패 시 예외를 그대로 올려 호출부(main.summarize_trend)가 매핑한다.
+    """
+    api_key = get_openai_api_key()
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY가 설정되지 않았습니다.")
+    if len(snaps) < 2:
+        raise RuntimeError("추이 요약에는 2건 이상의 진단이 필요합니다.")
+
+    total = len(snaps)
+    entries = "\n\n".join(_format_trend_entry(i, total, s) for i, s in enumerate(snaps))
+    user = prompts.TREND_USER_TEMPLATE.format(count=total, entries=entries)
+
+    oai = AsyncOpenAI(api_key=api_key)
+    resp = await oai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": prompts.TREND_SYSTEM},
+            {"role": "user", "content": user},
+        ],
+        max_tokens=400,
+        temperature=COMPARE_TEMPERATURE,
+    )
+    text = (resp.choices[0].message.content or "").strip()
+    if not text:
+        raise RuntimeError("추이 요약 생성 실패: 빈 응답")
+    return text

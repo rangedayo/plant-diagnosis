@@ -140,6 +140,24 @@ class CompareResponse(BaseModel):
     comparison: str = Field(description="한국어 자연어 정성 비교 서술")
 
 
+class TrendRequest(BaseModel):
+    """[추이 요약] 같은 식물의 진단 이력 전체(시간순)를 받아 전반 흐름을 요약 요청.
+
+    /compare가 직전 vs 이번 2건을 비교하는 것과 달리, 이력 N건의 큰 그림(호전/악화/등락)을
+    아주 간결하게 요약한다. diagnoses는 오래된→최신 순서로 전달한다.
+    """
+
+    diagnoses: list[DiagnosisSnapshot] = Field(
+        description="진단 이력 스냅샷(오래된→최신, 2건 이상)"
+    )
+
+
+class TrendResponse(BaseModel):
+    """[추이 요약] 전반 추이 요약 응답(단일 필드)."""
+
+    trend: str = Field(description="한국어 자연어 추이 요약 서술")
+
+
 class FollowupAnswer(BaseModel):
     """[챗봇 2차 보정] 객관식 문답 1쌍 (질문 + 선택 답변)."""
 

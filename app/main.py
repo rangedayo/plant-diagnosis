@@ -31,6 +31,8 @@ from app.schemas import (
     HealthResponse,
     RefineContext,
     RefineRequest,
+    TrendRequest,
+    TrendResponse,
 )
 
 load_dotenv()
@@ -303,6 +305,31 @@ async def compare_diagnoses(req: CompareRequest) -> CompareResponse:
         logger.exception("진단 비교 생성 실패")
         raise HTTPException(status_code=502, detail="비교 분석에 실패했습니다.") from e
     return CompareResponse(comparison=comparison)
+
+
+@app.post("/trend", response_model=TrendResponse)
+async def summarize_trend(req: TrendRequest) -> TrendResponse:
+    """[추이 요약] 같은 식물의 진단 이력 전체(시간순)를 받아 전반 흐름을 간결히 요약.
+
+    /compare(2건 정성 비교)와 동일 정책: 무인증, 텍스트 전용 LLM, 진단 파이프라인·Gemini 무관.
+    이력이 2건 미만이면 요약 의미가 없어 400으로 막는다(프론트도 2건 이상에서만 호출).
+    """
+    if len(req.diagnoses) < 2:
+        raise HTTPException(
+            status_code=400,
+            detail="추이 요약에는 진단 이력이 2건 이상 필요합니다.",
+        )
+    if not model_utils.get_openai_api_key():
+        raise HTTPException(
+            status_code=503,
+            detail="OPENAI_API_KEY 미설정 — .env를 확인하세요.",
+        )
+    try:
+        trend = await model_utils.generate_diagnosis_trend(req.diagnoses)
+    except Exception as e:
+        logger.exception("진단 추이 요약 생성 실패")
+        raise HTTPException(status_code=502, detail="추이 요약에 실패했습니다.") from e
+    return TrendResponse(trend=trend)
 
 
 def custom_openapi():
