@@ -3,7 +3,6 @@ b_dataset raw JSON 5자료(영문)를 청크화·임베딩하여 Chroma `b_datas
 
 - 입력: data/raw/b_dataset/*/*.json (psu_ucanr / psu_indoor / mu_trinklein / mobot_indoor / mobot_herb)
 - 출력: data/vector_db/ 의 Chroma `b_dataset_rag` 컬렉션 (82 청크 예상)
-- 부수: 적재·검증 통과 후 `ncpms_rag` 컬렉션 폐기 (atomic — NCPMS 도메인 미스매치 본질, v14 가설)
 
 설계 ([B-2] 작업 프롬프트 영역 결정):
 - 카드 = 청크 1:1 (영역 1 A). 청크 본문 = `title + ": " + body` (build_main_rag.flatten_document 일관성)
@@ -31,7 +30,6 @@ from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 
 COLLECTION_NAME = "b_dataset_rag"
-NCPMS_COLLECTION = "ncpms_rag"
 # 임베딩 모델: 검색(app.graph)·다른 적재 스크립트와 동일해야 cosine이 유효.
 # langchain_openai 기본값을 명시 고정(기본값 변경 사고 방지).
 EMBEDDING_MODEL = "text-embedding-ada-002"
@@ -235,7 +233,7 @@ def verify_b_dataset_query(vector_db: Path) -> None:
 
     count는 sqlite 메타만 읽으므로 HNSW 세그먼트 불완전 영속(R11 "Nothing found on
     disk")을 잡지 못한다. 신규 PersistentClient로 재오픈해 더미 임베딩 쿼리(무과금)가
-    실제 문서를 반환하는지 확인한다. 실패 시 atomic 보호(retire_ncpms 전 중단).
+    실제 문서를 반환하는지 확인한다. 실패 시 중단(atomic 보호).
     """
     print(f"[5b] 쿼리 검증 (신규 클라이언트, {COLLECTION_NAME})…")
     client = chromadb.PersistentClient(path=str(vector_db))
@@ -288,7 +286,7 @@ def verify_dry_top10_entry(vector_db: Path, openai_key: str) -> None:
     """[R12c-1 §2.5] 건조 6건 영문 쿼리 각각 top_10에 abiotic-water 카드 ≥1장 진입 검증.
 
     실측(run_eval) 전에 카드 추가/재분류가 검색에 실효 있는지 build 단계에서 강제한다.
-    실패(어느 한 case라도 미진입) 시 exit 2 → ncpms 폐기 전 중단(atomic). 임베딩 과금(소액).
+    실패(어느 한 case라도 미진입) 시 exit 2 → 적재 중단. 임베딩 과금(소액).
     """
     print(f"[5c] 건조 top_10 진입 검증 ({len(DRY_VERIFY_QUERIES)} case)…")
     embeddings = OpenAIEmbeddings(openai_api_key=openai_key, model=EMBEDDING_MODEL)
@@ -313,21 +311,11 @@ def verify_dry_top10_entry(vector_db: Path, openai_key: str) -> None:
     if failures:
         print(
             "오류: 건조 top_10 진입 검증 실패 — 다음 case에 abiotic-water 카드 미진입: "
-            f"{failures}. 카드 본문/어휘 재검토 필요(R12c-1-α). ncpms 폐기 중단.",
+            f"{failures}. 카드 본문/어휘 재검토 필요(R12c-1-α). 적재 중단.",
             file=sys.stderr,
         )
         sys.exit(2)
     print("[5c] 건조 top_10 진입 검증 통과 (6/6 case)")
-
-
-def retire_ncpms(vector_db: Path) -> None:
-    """ncpms_rag 폐기 (atomic — b_dataset_rag 적재·검증 통과 후에만 호출)."""
-    client = chromadb.PersistentClient(path=str(vector_db))
-    try:
-        client.delete_collection(NCPMS_COLLECTION)
-        print("[6] ncpms_rag 컬렉션 폐기 완료")
-    except Exception as e:
-        print(f"[6] ncpms_rag 폐기 스킵 (이미 없음 또는 에러): {e}")
 
 
 def dry_run(root: Path) -> None:
@@ -374,8 +362,7 @@ def main() -> None:
 
     if count != declared_total:
         print(
-            f"오류: 적재 count {count} != 선언 합 {declared_total}. "
-            "NCPMS 폐기 중단 (atomic 보호).",
+            f"오류: 적재 count {count} != 선언 합 {declared_total}.",
             file=sys.stderr,
         )
         sys.exit(1)
@@ -385,9 +372,6 @@ def main() -> None:
 
     # [R12c-1 §2.5] 건조 6건 top_10에 abiotic-water 진입 검증 (콘텐츠 실효 강제)
     verify_dry_top10_entry(vector_db, openai_key)
-
-    # 적재·count·쿼리·건조진입 검증 통과 후에만 NCPMS 폐기 (atomic)
-    retire_ncpms(vector_db)
 
 
 if __name__ == "__main__":

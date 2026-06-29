@@ -1,7 +1,7 @@
 {
   "name": "plant_diagnosis",
   "version": "1.0.0",
-  "description": "식물 이미지를 받아 **Plant.id**로 식별하고, **LangGraph** 파이프라인으로 설명·키워드·**NCPMS(SVC01) RAG** 검색·최종 답변을 생성하는 **FastAPI** 서버입니다. CPU 및 외부 API만 사용합니다(GPU 미사용).",
+  "description": "식물 이미지를 받아 **Gemini** Vision으로 분석하고, **LangGraph** 파이프라인으로 키워드·**RAG**(a_dataset_rag/b_dataset_rag) 검색·**gpt-4o-mini** 진단 생성·status guard를 거쳐 최종 답변을 만드는 **FastAPI** 서버입니다. CPU 및 외부 API만 사용합니다(GPU 미사용).",
   "private": true,
   "scripts": {
     "dev": "next dev",

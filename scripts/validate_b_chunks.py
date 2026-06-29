@@ -2,7 +2,7 @@
 b_dataset_rag 적재 sanity check ([B-2] §3.4) — 읽기 전용.
 
 2계층:
-  (1) 자동 게이트 — count(82/21/MISSING)·빈 청크 0·중복 청크 0·problem_type 누락 0
+  (1) 자동 게이트 — count(82/21)·빈 청크 0·중복 청크 0·problem_type 누락 0
   (2) 정성 inspect — 길이 분포 + 무작위 N=20 dump + problem_type 분포
   (3) 임베딩 nearest neighbor sanity — 한국어 5 쿼리 top-5
 
@@ -27,7 +27,6 @@ from langchain_openai import OpenAIEmbeddings
 
 B_COLLECTION = "b_dataset_rag"
 MAIN_COLLECTION = "a_dataset_rag"
-NCPMS_COLLECTION = "ncpms_rag"
 # 임베딩 모델: 검색·적재와 동일해야 nearest-neighbor sanity가 유효(기본값 명시 고정).
 EMBEDDING_MODEL = "text-embedding-ada-002"
 
@@ -79,14 +78,6 @@ def run_auto_gate(
         f"a_dataset_rag count {main_count} != {EXPECTED_MAIN} (변수 격리 위반)"
     )
     print(f"[OK] a_dataset_rag count == {EXPECTED_MAIN} (변수 격리)")
-
-    try:
-        client.get_collection(NCPMS_COLLECTION)
-        raise AssertionError("ncpms_rag 폐기 안 됨")
-    except AssertionError:
-        raise
-    except Exception:
-        print("[OK] ncpms_rag MISSING (폐기 완료)")
 
     got = b.get(include=["documents", "metadatas"])
     ids = list(got.get("ids") or [])
