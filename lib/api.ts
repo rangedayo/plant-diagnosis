@@ -1,4 +1,14 @@
 import { DiagnosisResponse, RefineRequest } from "../types/diagnosis";
+import { auth } from "./firebase";
+
+// [인증 통합] 보호 엔드포인트(/compare·/trend) 호출 시 Firebase ID 토큰을 Authorization에 첨부.
+// 비로그인(currentUser 없음)이면 헤더 없음 → 백엔드 401(이 경로는 로그인 상태에서만 호출됨).
+async function authHeader(): Promise<Record<string, string>> {
+  const user = auth.currentUser;
+  if (!user) return {};
+  const token = await user.getIdToken();
+  return { Authorization: `Bearer ${token}` };
+}
 
 export async function diagnosePlant(file: File): Promise<DiagnosisResponse> {
   const formData = new FormData();
@@ -72,7 +82,7 @@ export async function comparePlantDiagnoses(
 ): Promise<CompareResponse> {
   const response = await fetch("/compare", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await authHeader()) },
     body: JSON.stringify({ previous, current }),
   });
 
@@ -103,7 +113,7 @@ export async function summarizeDiagnosisTrend(
 ): Promise<TrendResponse> {
   const response = await fetch("/trend", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await authHeader()) },
     body: JSON.stringify({ diagnoses }),
   });
 

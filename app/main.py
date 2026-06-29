@@ -15,12 +15,13 @@ from pathlib import Path
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse
 from PIL import Image, UnidentifiedImageError
 
 from app import model_utils, prompts
+from app.auth_deps import require_user
 from app.graph import get_compiled_graph, init_graph, run_generate
 from app.vision.gemini import GeminiProvider
 from app.schemas import (
@@ -286,11 +287,13 @@ async def diagnose_refine(req: RefineRequest) -> DiagnosisResponse:
 
 
 @app.post("/compare", response_model=CompareResponse)
-async def compare_diagnoses(req: CompareRequest) -> CompareResponse:
+async def compare_diagnoses(
+    req: CompareRequest, _uid: str = Depends(require_user)
+) -> CompareResponse:
     """[시계열 3단계] 같은 식물의 직전 vs 이번 진단 정성 비교 서술 생성.
 
-    무인증(/diagnose와 동일 정책). 권한은 Firestore 규칙이 담당 — 프론트가 본인 진단의
-    정성 필드만 페이로드로 전달. 진단 파이프라인·Gemini 비전 무관(텍스트 전용 LLM 호출).
+    [인증 통합] 로그인 필수(require_user) — 저장된 이력 화면에서만 호출되므로 UX 영향 없음.
+    프론트가 본인 진단의 정성 필드만 페이로드로 전달. 진단 파이프라인·Gemini 비전 무관(텍스트 전용 LLM).
     """
     if not model_utils.get_openai_api_key():
         raise HTTPException(
@@ -308,11 +311,13 @@ async def compare_diagnoses(req: CompareRequest) -> CompareResponse:
 
 
 @app.post("/trend", response_model=TrendResponse)
-async def summarize_trend(req: TrendRequest) -> TrendResponse:
+async def summarize_trend(
+    req: TrendRequest, _uid: str = Depends(require_user)
+) -> TrendResponse:
     """[추이 요약] 같은 식물의 진단 이력 전체(시간순)를 받아 전반 흐름을 간결히 요약.
 
-    /compare(2건 정성 비교)와 동일 정책: 무인증, 텍스트 전용 LLM, 진단 파이프라인·Gemini 무관.
-    이력이 2건 미만이면 요약 의미가 없어 400으로 막는다(프론트도 2건 이상에서만 호출).
+    [인증 통합] 로그인 필수(require_user) — 저장된 이력 화면에서만 호출. /compare와 동일 정책:
+    텍스트 전용 LLM, 진단 파이프라인·Gemini 무관. 이력 2건 미만이면 400(프론트도 2건 이상에서만 호출).
     """
     if len(req.diagnoses) < 2:
         raise HTTPException(
