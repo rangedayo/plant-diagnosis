@@ -182,20 +182,33 @@ def _get_chroma_client(db_path: str) -> Any:
     return client
 
 
+def _embed_query_sync(query: str) -> tuple[list[float] | None, str | None]:
+    """쿼리를 1회 임베딩. (embedding, error) — 실패 시 (None, 메시지).
+
+    두 컬렉션(b_dataset·a_dataset)이 같은 쿼리를 쓰므로 임베딩을 1번만 만들어
+    재사용한다(쿼리당 OpenAI 임베딩 호출 2회 → 1회).
+    """
+    key = model_utils.get_openai_api_key()
+    if not key:
+        logger.warning("Chroma 검색 생략: OPENAI_API_KEY 없음")
+        return None, "OPENAI_API_KEY 미설정"
+    try:
+        emb = OpenAIEmbeddings(openai_api_key=key, model=EMBEDDING_MODEL)
+        return emb.embed_query(query), None
+    except Exception as e:
+        logger.exception("쿼리 임베딩 중 예외")
+        return None, f"쿼리 임베딩 예외: {e}"
+
+
 def _chroma_query_sync(
-    query: str,
+    query_embedding: list[float],
     db_path: str,
     top_k: int,
     collection_name: str,
 ) -> tuple[list[str], list[dict[str, Any] | None], list[float], str | None]:
-    """Chroma cosine 검색. 마지막 값은 시스템 오류 메시지(성공 시 None)."""
-    key = model_utils.get_openai_api_key()
-    if not key:
-        logger.warning("Chroma 검색 생략: OPENAI_API_KEY 없음 (%s)", collection_name)
-        return [], [], [], "OPENAI_API_KEY 미설정"
+    """미리 임베딩한 쿼리로 Chroma cosine 검색. 마지막 값은 시스템 오류(성공 시 None)."""
     try:
-        emb = OpenAIEmbeddings(openai_api_key=key, model=EMBEDDING_MODEL)
-        qe = emb.embed_query(query)
+        qe = query_embedding
         client = _get_chroma_client(db_path)
         try:
             coll = client.get_collection(collection_name)
@@ -695,11 +708,15 @@ def build_diagnosis_graph(
         ]:
             # b_dataset·main 모두 영문 코퍼스 → 영문 쿼리 우선(query_ko 폴백)
             mq = (query_en or query_ko).strip()
+            # 두 컬렉션이 같은 쿼리를 쓰므로 임베딩은 1회만(쿼리당 OpenAI 임베딩 2회 → 1회)
+            qe, emb_err = _embed_query_sync(mq)
+            if qe is None:
+                return ([], [], [], [], [], [], emb_err, emb_err)
             docs_b, metas_b, sims_b, err_b = _chroma_query_sync(
-                mq, db_path, B_DATASET_TOP_K, "b_dataset_rag"
+                qe, db_path, B_DATASET_TOP_K, "b_dataset_rag"
             )
             docs_main, metas_main, sims_main, err_main = _chroma_query_sync(
-                mq, db_path, MAIN_TOP_K, "a_dataset_rag"
+                qe, db_path, MAIN_TOP_K, "a_dataset_rag"
             )
             return (
                 docs_b,
