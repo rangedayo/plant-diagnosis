@@ -34,7 +34,7 @@ DTL_URL = "http://api.nongsaro.go.kr/service/garden/gardenDtl"
 OUT_REL = "data/care_guide.json"
 
 # 평가셋 9종 → 농사로 garden cntntsNo (종 레벨 대표).
-# 4종은 [단계 B'] species_mapping.json에서 확인됨, 5종은 [기능b] gardenList 검색으로 확보.
+# 4종은 [단계 B'] 종 매핑(→ docs/species_normalization_mapping.md)에서 확인됨, 5종은 [기능b] gardenList 검색으로 확보.
 # (species_key, display_name, cntntsNo, note)
 SPECIES: tuple[tuple[str, str, str, str], ...] = (
     ("드라세나", "드라세나", "14676", "송오브자마이카 — 드라세나속 대표"),
