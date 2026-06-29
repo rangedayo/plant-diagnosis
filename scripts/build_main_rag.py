@@ -28,7 +28,7 @@ COLLECTION_NAME = "a_dataset_rag"
 # langchain_openai 기본값을 명시 고정(기본값 변경 사고 방지).
 EMBEDDING_MODEL = "text-embedding-ada-002"
 
-PDF_UC_IPM = "pnhouseplantproblems.pdf"
+PDF_UC_IPM = "data/raw_sources/pnhouseplantproblems.pdf"
 HOUSEPLANT_TXT = "data/houseplant.txt"
 
 # PDF 기반 하우스플랜트 파싱은 비활성화(data/houseplant.txt 사용)

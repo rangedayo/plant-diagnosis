@@ -30,7 +30,7 @@ MAIN_COLLECTION = "a_dataset_rag"
 # 임베딩 모델: 검색·적재와 동일해야 nearest-neighbor sanity가 유효(기본값 명시 고정).
 EMBEDDING_MODEL = "text-embedding-ada-002"
 
-EXPECTED_B = 82
+EXPECTED_B = 88  # B-1 82 + R12c-1 dry_supplement 6
 EXPECTED_MAIN = 21
 MIN_CHUNK_CHARS = 10
 
