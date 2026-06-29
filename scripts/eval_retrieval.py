@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -35,6 +36,7 @@ from app.graph import (  # noqa: E402
     B_DATASET_TOP_K,
     MAIN_TOP_K,
     _chroma_query_sync,
+    _embed_query_sync,
     _merge_rag_triples,
     _tag_triples_rag_source,
     _triples_from_chroma,
@@ -42,7 +44,10 @@ from app.graph import (  # noqa: E402
 )
 
 GOLDEN_PATH = _ROOT / "eval" / "golden_set.json"
-OUTPUT_PATH = _ROOT / "eval" / "after_phase_b3_retrieval.json"
+# 출력 파일명: EVAL_RETRIEVAL_OUT로 오버라이드(run_eval RUN_EVAL_OUT 패턴) — 기존 앵커 덮어쓰기 방지.
+OUTPUT_PATH = _ROOT / "eval" / os.environ.get(
+    "EVAL_RETRIEVAL_OUT", "after_phase_b3_retrieval.json"
+)
 TOP_N = 10
 
 
@@ -55,12 +60,20 @@ def _load_golden() -> list[dict[str, Any]]:
 
 
 def _retrieve_top_n(query: str, db_path: str) -> list[dict[str, Any]]:
-    """graph.retrieve_node와 동일한 검색·merge 로직으로 상위 TOP_N 반환."""
+    """graph.retrieve_node와 동일한 검색·merge 로직으로 상위 TOP_N 반환.
+
+    retrieve_node와 동일하게 쿼리를 1회 임베딩(_embed_query_sync) 후 두 컬렉션에
+    벡터를 재사용한다. (_chroma_query_sync는 문자열이 아니라 임베딩 벡터를 받는다.)
+    """
+    qe, emb_err = _embed_query_sync(query)
+    if qe is None:
+        print(f"[WARN] 쿼리 임베딩 실패: {emb_err}", file=sys.stderr)
+        return []
     docs_b, metas_b, sims_b, err_b = _chroma_query_sync(
-        query, db_path, B_DATASET_TOP_K, "b_dataset_rag"
+        qe, db_path, B_DATASET_TOP_K, "b_dataset_rag"
     )
     docs_main, metas_main, sims_main, err_main = _chroma_query_sync(
-        query, db_path, MAIN_TOP_K, "a_dataset_rag"
+        qe, db_path, MAIN_TOP_K, "a_dataset_rag"
     )
     if err_b:
         print(f"[WARN] b_dataset_rag 검색 오류: {err_b}", file=sys.stderr)
