@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from itertools import zip_longest
 from pathlib import Path
 from typing import Any, TypedDict
@@ -162,6 +163,25 @@ def _vector_db_path() -> Path:
     return Path(__file__).resolve().parent.parent / "data" / "vector_db"
 
 
+# Chroma PersistentClient 싱글톤 (db_path별 1개) — 쿼리마다 신규 생성 방지(재발방지 #2).
+# chromadb는 같은 path에 다중 PersistentClient 생성을 권장하지 않으며, 반복 생성은
+# 트랜지언트 HNSW 읽기 실패 정황과 연결됐었다(ACC-fix2). 검색은 읽기 전용이라 안전.
+_chroma_clients: dict[str, Any] = {}
+_chroma_client_lock = threading.Lock()
+
+
+def _get_chroma_client(db_path: str) -> Any:
+    """db_path별 PersistentClient를 캐시해 재사용(double-checked locking, 스레드 안전)."""
+    client = _chroma_clients.get(db_path)
+    if client is None:
+        with _chroma_client_lock:
+            client = _chroma_clients.get(db_path)
+            if client is None:
+                client = chromadb.PersistentClient(path=db_path)
+                _chroma_clients[db_path] = client
+    return client
+
+
 def _chroma_query_sync(
     query: str,
     db_path: str,
@@ -176,7 +196,7 @@ def _chroma_query_sync(
     try:
         emb = OpenAIEmbeddings(openai_api_key=key, model=EMBEDDING_MODEL)
         qe = emb.embed_query(query)
-        client = chromadb.PersistentClient(path=db_path)
+        client = _get_chroma_client(db_path)
         try:
             coll = client.get_collection(collection_name)
         except Exception as e:
