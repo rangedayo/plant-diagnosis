@@ -552,6 +552,7 @@ async def run_generate(
         rag_failed=bool(rag_failed),
         rag_no_docs=bool(rag_no_docs),
         rag_weak_evidence=bool(rag_weak_evidence),
+        has_followup_answers=bool(answers),
     )
     # [status guard] generate over-escalate 교정 — 입력 설득 3회 실패(B-4b/c/B') 후
     # 출력 뒤에서 status enum 값만 교정. FN 0 사수(병변 단어 veto).

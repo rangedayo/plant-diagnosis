@@ -183,8 +183,13 @@ async def generate_structured_diagnosis_with_gpt(
     rag_failed: bool = False,
     rag_no_docs: bool = False,
     rag_weak_evidence: bool = False,
+    has_followup_answers: bool = False,
 ) -> dict[str, Any]:
-    """generate 단계: JSON 구조만. 실패 시 fallback dict."""
+    """generate 단계: JSON 구조만. 실패 시 fallback dict.
+
+    has_followup_answers=True(2차 보정, context_summary에 [사용자 추가 입력] 블록 존재)이면
+    USER 프롬프트에 답변 반영 지시를 합류한다. False(1차)면 슬롯이 빈 문자열 → 렌더 결과 종전 동일.
+    """
     if rag_failed:
         # [1-10a] decision #3: RAG 시스템 실패 시 LLM 호출을 폐기하고 정적 안내로 즉시 반환.
         return default_structured_fallback(rag_failed=True)
@@ -203,11 +208,18 @@ async def generate_structured_diagnosis_with_gpt(
     no_rag_block = (
         prompts.STRUCTURED_DIAGNOSIS_NO_RAG_DOCS_BLOCK if rag_no_docs else ""
     )
+    # [2차 보정] 답변이 있을 때만 반영 지시 합류. 1차는 "" → 템플릿 렌더 종전과 바이트 동일.
+    followup_instruction = (
+        "\n\n" + prompts.STRUCTURED_DIAGNOSIS_FOLLOWUP_INSTRUCTION
+        if has_followup_answers
+        else ""
+    )
     user = prompts.STRUCTURED_DIAGNOSIS_JSON_USER_TEMPLATE.format(
         context_summary=context_summary,
         no_rag_block=no_rag_block,
         rag_chunks=rag_chunks if rag_chunks.strip() else "(참고 자료 없음)",
         weak_instruction=weak_instruction,
+        followup_instruction=followup_instruction,
     )
     system = prompts.STRUCTURED_DIAGNOSIS_JSON_SYSTEM
 
