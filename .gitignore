@@ -116,6 +116,9 @@ docs/
 eval/
 # Claude Code 프로젝트 메모(내부 작업 메모리).
 CLAUDE.md
+# Claude Code 자동 운영 키트(에이전트·커맨드) + 무과금 점검 보고서 — 로컬 작업 도구, 공개 얼굴엔 제외.
+.claude/
+reports/
 
 # ---------- RAG 원본 PDF (raw 참고 자료 — 로컬 보관) ----------
 /FSA-6116.pdf
