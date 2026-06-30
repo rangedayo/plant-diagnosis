@@ -208,11 +208,10 @@ async def generate_structured_diagnosis_with_gpt(
     no_rag_block = (
         prompts.STRUCTURED_DIAGNOSIS_NO_RAG_DOCS_BLOCK if rag_no_docs else ""
     )
-    # [2차 보정] 답변이 있을 때만 반영 지시 합류. 1차는 "" → 템플릿 렌더 종전과 바이트 동일.
+    # [2차 보정] 답변이 있을 때만 반영 지시 합류(답변 블록 직후 줄에 주입 — 인접 배치로 준수율↑).
+    # 1차는 "" → 템플릿의 해당 줄이 빈 줄로 접혀 렌더 결과가 종전과 바이트 동일.
     followup_instruction = (
-        "\n\n" + prompts.STRUCTURED_DIAGNOSIS_FOLLOWUP_INSTRUCTION
-        if has_followup_answers
-        else ""
+        prompts.STRUCTURED_DIAGNOSIS_FOLLOWUP_INSTRUCTION if has_followup_answers else ""
     )
     user = prompts.STRUCTURED_DIAGNOSIS_JSON_USER_TEMPLATE.format(
         context_summary=context_summary,
