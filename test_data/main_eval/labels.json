@@ -807,5 +807,339 @@
       "license": "CC-BY 4.0",
       "collection_method": "manual_curation"
     }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_046",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_046.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "잎이 짙은 광택 녹색이고 줄기 끝마다 밝은 연두색 새순이 활발히 자라는 중. 잎 처짐·황변·반점 없이 전체적으로 매우 건강.",
+      "true_status": "건강",
+      "tier": "건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/91912762",
+      "photographer": "iagows",
+      "license": "CC0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_010",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_010.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "여러 줄기가 빽빽하게 자라며 잎이 두껍고 광택이 강함. 잎 크기·색이 균일하고 황변·반점·처짐 없어 건강한 상태.",
+      "true_status": "건강",
+      "tier": "건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/343355547",
+      "photographer": "matthias55",
+      "license": "CC0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_042",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_042.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": true,
+      "symptoms": [],
+      "diagnosis": "단일 줄기에 타원형 잎이 규칙적으로 달려 있고 색·광택 모두 양호. 반점·갈변·처짐 없이 건강하나, 줄기 하나만 도드라지게 자란 모습이라 광량에 따라 웃자람 여부는 확인 필요.",
+      "true_status": "건강",
+      "tier": "건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/96793097",
+      "photographer": "atachkin",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_019",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_019.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_browning",
+        "dry_soil"
+      ],
+      "diagnosis": "줄기 아래쪽에 갈색으로 마른 잎 한 장이 뚜렷이 보이고, 식재된 레카(하이드로볼)는 배수가 매우 빨라 건조해지기 쉬운 환경. 나머지 잎은 광택이 있으나 하단 잎의 고사로 보아 건조 스트레스 의심.",
+      "true_status": "건조",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/330728479",
+      "photographer": "arthrop0denthus1ast",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_015",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_015.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_edge_dry"
+      ],
+      "diagnosis": "다수의 잎 가장자리가 갈색으로 말리고 마른 흔적이 뚜렷함. 전체적인 잎 색은 진녹색으로 양호하나 가장자리 마름이 여러 잎에 걸쳐 반복적으로 나타나 건조 스트레스로 판단.",
+      "true_status": "건조",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/334994978",
+      "photographer": "lexgo",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_006",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_006.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_yellowing"
+      ],
+      "diagnosis": "줄기 하나에서 여러 잎이 뚜렷하게 노랗게 변해 있고, 일부는 연두~노랑으로 잎 전체가 물들어 있음. 다른 줄기는 진녹색으로 건강해 보여 부분적 과습으로 인한 황변 의심.",
+      "true_status": "과습",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/354847397",
+      "photographer": "naturalist117495",
+      "license": "CC0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_035",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_035.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_yellowing"
+      ],
+      "diagnosis": "잎 여러 장이 끝부분부터 노랗게 변색되고 있으며, 특히 오른쪽 아래쪽 화분의 잎에서 황변이 두드러짐. 잎 광택은 유지되고 있으나 국소적 황변 패턴이 과습 초기 증상과 일치.",
+      "true_status": "과습",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/102205780",
+      "photographer": "francisperez28",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_014",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_014.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_edge_dry",
+        "leaf_yellowing"
+      ],
+      "diagnosis": "잎 가장자리에 노랗고 갈색인 마름 테두리가 여러 장에 걸쳐 나타나고, 줄기 밑동 일부는 검게 물러진 흔적이 보임. 줄기 무름과 잎끝 변색이 함께 나타나 과습으로 인한 뿌리·줄기 손상 의심.",
+      "true_status": "과습",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/336132033",
+      "photographer": "mar_y_sierra_silvestre",
+      "license": "CC0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_028",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_028.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_yellowing"
+      ],
+      "diagnosis": "잎 여러 장의 아래쪽 절반이 노랗게 변색되어 있고 잎맥을 따라 퍼지는 패턴이 보임. 잎 광택 자체는 유지되나 반복적인 황변 부위가 과습 스트레스를 시사.",
+      "true_status": "과습",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/306363226",
+      "photographer": "capacoscar",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_070",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_070.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "앞쪽 잎 표면에 흰색과 연한 반점이 얼룩덜룩하게 흩어져 있음. 나머지 잎은 광택 좋은 녹색이나 일부 잎에서만 국소적으로 반점이 나타나 병해 또는 약해(藥害) 의심.",
+      "true_status": "병해 의심",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/265296750",
+      "photographer": "hugosaulino",
+      "license": "CC0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_094",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_094.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots",
+        "leaf_browning"
+      ],
+      "diagnosis": "잎 여러 장에 갈색 반점과 가장자리 괴사가 관찰되고, 오른쪽 위 잎은 전체적으로 마른 갈색으로 변해 있음. 반점과 갈변이 함께 나타나 병해 의심.",
+      "true_status": "병해 의심",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/193601695",
+      "photographer": "emily_abrego",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_113",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_113.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_spots"
+      ],
+      "diagnosis": "잎면에 적갈색 둥근 반점이 흩뿌려져 병해 의심.",
+      "true_status": "병해 의심",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/144669646",
+      "photographer": "mohammad_sohrabi",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_095",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_095.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_pale"
+      ],
+      "diagnosis": "여러 잎에서 잎맥 사이가 밝은 연두색으로 옅어지고 잎맥 자체만 진녹색으로 남는 얼룩덜룩한 무늬가 반복적으로 나타남. 마그네슘·철분 등 미량원소 결핍 시 나타나는 인터비닐 클로로시스(interveinal chlorosis) 패턴과 유사해 영양 부족 의심.",
+      "true_status": "영양 부족",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/193595479",
+      "photographer": "maria1890",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_020",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_020.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": true,
+      "symptoms": [
+        "leaf_browning",
+        "leaf_edge_dry"
+      ],
+      "diagnosis": "잎이 전체적으로 짙은 광택 녹색이고 촘촘하게 자람. 오른쪽 잎 일부 끝에 아주 미세한 갈색기가 보이나 전체 건강에 영향 없는 경미한 수준.",
+      "true_status": "경미",
+      "tier": "경미"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/328030238",
+      "photographer": "kathylic",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_054",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_054.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": true,
+      "symptoms": [
+        "leaf_pale"
+      ],
+      "diagnosis": "잎은 대체로 광택 있는 진녹색이나 아래쪽 잎 끝부분이 연한 황록색으로 살짝 옅어져 있음. 경미한 수준의 색 변화로 전체 생육에는 문제없어 보임.",
+      "true_status": "경미",
+      "tier": "경미"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/70609471",
+      "photographer": "gianni_del_bufalo",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_059",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_059.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": true,
+      "symptoms": [
+        "leaf_holes"
+      ],
+      "diagnosis": "잎 한 장에 작은 구멍/흠집 자국이 보이나 크기가 작고 개수가 제한적. 나머지 잎은 광택·색 모두 양호해 경미한 물리적 손상으로 판단.",
+      "true_status": "경미",
+      "tier": "경미"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/61453552",
+      "photographer": "ravuri",
+      "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
   }
 ]
