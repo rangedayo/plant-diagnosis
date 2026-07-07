@@ -97,6 +97,8 @@ _validate_*.py
 
 # ---------- Eval dataset images (수집 산출물; metadata/labels.json만 추적) ----------
 test_data/inaturalist_candidates/images/
+# 종별 수집 스테이징 하위 폴더(이미지+metadata.json) — 로컬 전용. 최상위 metadata.json은 추적 유지.
+test_data/inaturalist_candidates/*/
 test_data/wikimedia_candidates/images/
 test_data/plantvillage_50/images/
 test_data/self_captured/images/
@@ -131,3 +133,5 @@ scripts/diagnostics/
 # ---------- 드래프트 · 백업 라벨 (정본은 labels.json만 추적) ----------
 test_data/**/*_draft.json
 test_data/**/*.bak.json
+# 타임스탬프 백업(labels.json.bak.YYYYMMDD_HHMMSS 등) — git 이력이 대체, 미추적.
+test_data/**/*.bak.*
