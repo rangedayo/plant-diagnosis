@@ -872,8 +872,7 @@
       "plant_name_korean": "금전수",
       "is_healthy": false,
       "symptoms": [
-        "leaf_browning",
-        "dry_soil"
+        "leaf_browning"
       ],
       "diagnosis": "줄기 아래쪽에 갈색으로 마른 잎 한 장이 뚜렷이 보이고, 식재된 레카(하이드로볼)는 배수가 매우 빨라 건조해지기 쉬운 환경. 나머지 잎은 광택이 있으나 하단 잎의 고사로 보아 건조 스트레스 의심.",
       "true_status": "건조",
@@ -930,27 +929,6 @@
     }
   },
   {
-    "image_id": "inat_zamioculcas_zamiifolia_035",
-    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_035.jpg",
-    "ground_truth": {
-      "plant_name_korean": "금전수",
-      "is_healthy": false,
-      "symptoms": [
-        "leaf_yellowing"
-      ],
-      "diagnosis": "잎 여러 장이 끝부분부터 노랗게 변색되고 있으며, 특히 오른쪽 아래쪽 화분의 잎에서 황변이 두드러짐. 잎 광택은 유지되고 있으나 국소적 황변 패턴이 과습 초기 증상과 일치.",
-      "true_status": "과습",
-      "tier": "비건강"
-    },
-    "source": {
-      "site": "inaturalist",
-      "url": "https://www.inaturalist.org/observations/102205780",
-      "photographer": "francisperez28",
-      "license": "CC BY 4.0",
-      "collection_method": "manual_curation"
-    }
-  },
-  {
     "image_id": "inat_zamioculcas_zamiifolia_014",
     "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_014.jpg",
     "ground_truth": {
@@ -977,13 +955,13 @@
     "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_028.jpg",
     "ground_truth": {
       "plant_name_korean": "금전수",
-      "is_healthy": false,
+      "is_healthy": true,
       "symptoms": [
-        "leaf_yellowing"
+        "leaf_pale"
       ],
-      "diagnosis": "잎 여러 장의 아래쪽 절반이 노랗게 변색되어 있고 잎맥을 따라 퍼지는 패턴이 보임. 잎 광택 자체는 유지되나 반복적인 황변 부위가 과습 스트레스를 시사.",
-      "true_status": "과습",
-      "tier": "비건강"
+      "diagnosis": "잎 일부에 옅은 연두빛 얼룩과 국소적 색 옅어짐이 보이나 대부분의 잎은 광택 있는 진녹색으로 양호. 전체 생육에는 영향 없는 경미한 수준.",
+      "true_status": "경미",
+      "tier": "경미"
     },
     "source": {
       "site": "inaturalist",
@@ -1139,6 +1117,28 @@
       "url": "https://www.inaturalist.org/observations/61453552",
       "photographer": "ravuri",
       "license": "CC BY 4.0",
+      "collection_method": "manual_curation"
+    }
+  },
+  {
+    "image_id": "inat_zamioculcas_zamiifolia_018",
+    "image_path": "test_data/main_eval/images/inat_zamioculcas_zamiifolia_018.jpg",
+    "ground_truth": {
+      "plant_name_korean": "금전수",
+      "is_healthy": false,
+      "symptoms": [
+        "leaf_yellowing",
+        "leaf_browning"
+      ],
+      "diagnosis": "한 줄기(프론드) 전체 잎이 밝게 황화되었고, 노랗게 변한 잎의 끝과 밑동이 갈색~검게 괴사하며 말라 들어감. 다른 줄기는 녹색을 유지하나 특정 줄기 전체의 황화·괴사 진행이 과습에 의한 뿌리 손상 패턴과 일치.",
+      "true_status": "과습",
+      "tier": "비건강"
+    },
+    "source": {
+      "site": "inaturalist",
+      "url": "https://www.inaturalist.org/observations/332772946",
+      "photographer": "umamimomma",
+      "license": "CC0",
       "collection_method": "manual_curation"
     }
   }

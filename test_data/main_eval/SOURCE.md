@@ -138,16 +138,6 @@
 - 종: Zamioculcas zamiifolia
 - 라벨 status: 과습
 
-### inat_zamioculcas_zamiifolia_035.jpg
-
-- 파일: `test_data/main_eval/images/inat_zamioculcas_zamiifolia_035.jpg`
-- 출처: iNaturalist 관찰 #102205780
-- URL: https://www.inaturalist.org/observations/102205780
-- 저작권자: francisperez28
-- 라이선스: CC BY 4.0
-- 종: Zamioculcas zamiifolia
-- 라벨 status: 과습
-
 ### inat_zamioculcas_zamiifolia_014.jpg
 
 - 파일: `test_data/main_eval/images/inat_zamioculcas_zamiifolia_014.jpg`
@@ -165,6 +155,16 @@
 - URL: https://www.inaturalist.org/observations/306363226
 - 저작권자: capacoscar
 - 라이선스: CC BY 4.0
+- 종: Zamioculcas zamiifolia
+- 라벨 status: 경미
+
+### inat_zamioculcas_zamiifolia_018.jpg
+
+- 파일: `test_data/main_eval/images/inat_zamioculcas_zamiifolia_018.jpg`
+- 출처: iNaturalist 관찰 #332772946
+- URL: https://www.inaturalist.org/observations/332772946
+- 저작권자: umamimomma
+- 라이선스: CC0
 - 종: Zamioculcas zamiifolia
 - 라벨 status: 과습
 
