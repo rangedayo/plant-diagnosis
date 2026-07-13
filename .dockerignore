@@ -1,0 +1,70 @@
+# Docker 빌드 컨텍스트에서 제외할 것 (이미지 용량·빌드 시간·시크릿 유출 방지).
+# Dockerfile이 COPY하는 app/, data/vector_db/, data/care_guide.json, requirements-server.txt만
+# 사실상 필요하다. 아래 규칙은 "실수로 딸려 들어가는 것"을 막는 안전망.
+
+# ---------- 시크릿 (절대 이미지에 넣지 않는다) ----------
+.env
+.env.*
+!.env.example
+!.env.local.example
+*.pem
+*.key
+
+# ---------- 로컬 환경 · VCS ----------
+.git
+.gitignore
+.venv
+venv
+node_modules
+.next
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# ---------- 서버 런타임에 불필요한 데이터 ----------
+# data/vector_db 와 data/care_guide.json 은 남긴다(Dockerfile이 COPY).
+data/raw
+data/raw_sources
+data/source
+data/test_images
+data/test_dataset.json
+data/houseplant.txt
+data/svc05_sample_response.xml
+
+# ---------- 평가 · 테스트 · 문서 · 작업 산출물 ----------
+test_data
+tests
+eval
+docs
+reports
+scripts
+npms_api_manual
+assets
+app-icon
+.claude
+
+# ---------- 프론트엔드 (Vercel이 별도 빌드) ----------
+pages
+components
+lib
+styles
+types
+public
+package.json
+package-lock.json
+next.config.ts
+tsconfig.json
+next-env.d.ts
+*.tsbuildinfo
+
+# ---------- 기타 ----------
+*.md
+*.log
+*.bak
+*.bak.*
+firestore.rules
+storage.rules
+setup_adc.sh
+requirements.txt

@@ -1,0 +1,32 @@
+# Cloud Run 서버 런타임 전용 의존성 (Dockerfile이 이 파일만 설치).
+#
+# requirements.txt(개발 전체)에는 평가·데이터 구축용 패키지(pytest, ragas, datasets,
+# pdfplumber, pypdf, beautifulsoup4, npm)가 섞여 있는데, app/ 어디서도 import되지 않아
+# 이미지 용량·빌드 시간만 늘린다. 여기엔 app/ 가 실제로 import하는 것만 둔다.
+# requirements.txt는 무변경 — 로컬 개발·평가는 그대로 그걸 쓴다.
+#
+# 버전은 로컬 .venv 실측값으로 고정(배포 재현성). 갱신 시 두 파일을 함께 확인할 것.
+
+# 웹 서버 (app/main.py — FastAPI + 파일 업로드)
+fastapi==0.135.3
+uvicorn[standard]==0.42.0
+python-multipart==0.0.24
+pydantic==2.12.5
+python-dotenv==1.2.2
+
+# 이미지 전처리 (app/main.py, app/model_utils.py)
+pillow==12.2.0
+
+# 진단 파이프라인 (app/graph.py — LangGraph + Chroma RAG + gpt-4o-mini)
+langgraph==1.1.6
+langchain-openai==1.1.12
+openai==2.30.0
+chromadb==1.5.5
+
+# Vision analyze (app/vision/gemini.py — Vertex 경유 Gemini)
+google-genai==2.7.0
+
+# 인증 (app/auth_deps.py — Firebase ID 토큰 검증)
+firebase-admin==6.9.0
+
+httpx==0.28.1

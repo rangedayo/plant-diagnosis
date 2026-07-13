@@ -1,0 +1,67 @@
+# gcloud run deploy --source . 로 Cloud Build에 올릴 때 제외할 것.
+#
+# ⚠️ 이 파일이 없으면 gcloud는 .gitignore를 그대로 베껴 쓴다. .gitignore는 data/ 전체를
+#    무시하므로(로컬 전용 자산이라 git에 안 올림), 그대로 두면 RAG 벡터DB와 케어가이드가
+#    업로드에서 빠져 "RAG가 죽은 서버"가 배포된다. 그래서 data/를 제외하되 런타임에 필요한
+#    두 자산만 예외(!)로 되살린다. — 이 파일을 지우지 말 것.
+
+# ---------- 시크릿 ----------
+.env
+.env.*
+!.env.example
+!.env.local.example
+*.pem
+*.key
+
+# ---------- 로컬 환경 · VCS ----------
+.git
+.gitignore
+.venv
+venv
+node_modules
+.next
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# ---------- 데이터: 내용물 제외 후 런타임 자산만 예외 ----------
+# 'data/'(디렉터리 자체)가 아니라 'data/*'(내용물)를 제외해야 한다. gitignore 규칙상
+# 부모 디렉터리가 제외되면 그 안은 스캔조차 안 해서 '!'로 되살릴 수 없기 때문.
+# 검증: gcloud meta list-files-for-upload . 에 data/vector_db/* 가 뜨는지 확인.
+data/*
+!data/vector_db/
+!data/care_guide.json
+
+# ---------- 평가 · 테스트 · 문서 · 작업 산출물 ----------
+test_data
+tests
+eval
+docs
+reports
+scripts
+npms_api_manual
+assets
+app-icon
+.claude
+
+# ---------- 프론트엔드 (Vercel이 별도 빌드) ----------
+pages
+components
+lib
+styles
+types
+public
+package.json
+package-lock.json
+next.config.ts
+tsconfig.json
+next-env.d.ts
+*.tsbuildinfo
+
+# ---------- 기타 ----------
+*.log
+*.bak
+*.bak.*
+setup_adc.sh
