@@ -1,0 +1,26 @@
+{
+  "name": "Plantia — 식물 진단",
+  "short_name": "Plantia",
+  "description": "사진 한 장으로 식물의 상태를 진단하고 관리법을 안내합니다.",
+  "lang": "ko",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F4F7F2",
+  "theme_color": "#246257",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
