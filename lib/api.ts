@@ -1,7 +1,7 @@
 import { DiagnosisResponse, RefineRequest } from "../types/diagnosis";
 import { auth } from "./firebase";
 
-// [인증 통합] 보호 엔드포인트(/compare·/trend) 호출 시 Firebase ID 토큰을 Authorization에 첨부.
+// [인증 통합] 보호 엔드포인트 호출 시 Firebase ID 토큰을 Authorization에 첨부.
 // 비로그인(currentUser 없음)이면 헤더 없음 → 백엔드 401(이 경로는 로그인 상태에서만 호출됨).
 async function authHeader(): Promise<Record<string, string>> {
   const user = auth.currentUser;
@@ -10,12 +10,27 @@ async function authHeader(): Promise<Record<string, string>> {
   return { Authorization: `Bearer ${token}` };
 }
 
+const LOGIN_REQUIRED_MESSAGE = "로그인 후 진단을 이용할 수 있습니다.";
+
+// [배포 비용 가드] 진단(Gemini·OpenAI 과금)은 로그인 필수. 토큰 없이 보내도 백엔드가 401이므로,
+// 왕복 없이 같은 안내를 먼저 던져 화면 에러 배너에 그대로 표시한다.
+async function requireAuthHeader(): Promise<Record<string, string>> {
+  const header = await authHeader();
+  if (!header.Authorization) {
+    throw new Error(LOGIN_REQUIRED_MESSAGE);
+  }
+  return header;
+}
+
 export async function diagnosePlant(file: File): Promise<DiagnosisResponse> {
+  const headers = await requireAuthHeader();
+
   const formData = new FormData();
   formData.append("file", file);
 
   const response = await fetch("/diagnose", {
     method: "POST",
+    headers,
     body: formData,
   });
 
@@ -40,7 +55,7 @@ export async function diagnosePlant(file: File): Promise<DiagnosisResponse> {
 export async function refineDiagnosis(req: RefineRequest): Promise<DiagnosisResponse> {
   const response = await fetch("/diagnose/refine", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await requireAuthHeader()) },
     body: JSON.stringify(req),
   });
 

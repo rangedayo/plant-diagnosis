@@ -125,9 +125,14 @@ async def health_check() -> HealthResponse:
 
 @app.post("/diagnose", response_model=DiagnosisResponse)
 async def diagnose(
-    file: UploadFile = File(...),
+    file: UploadFile = File(...), _uid: str = Depends(require_user)
 ) -> DiagnosisResponse:
-    """이미지 업로드 후 LangGraph 실행 (analyze→keyword→retrieve→generate)."""
+    """이미지 업로드 후 LangGraph 실행 (analyze→keyword→retrieve→generate).
+
+    [배포 비용 가드] 로그인 필수(require_user) — Gemini 비전 + gpt-4o-mini 과금이 걸린
+    엔드포인트라, 공개 배포(--allow-unauthenticated로 네트워크 층은 열림)에서도 앱 층에서
+    Firebase 토큰 없는 호출을 401로 막는다. 진단 로직 자체는 무변경.
+    """
     filename = file.filename or ""
     ext = Path(filename).suffix.lower()
     if ext not in ALLOWED_UPLOAD_EXT:
@@ -233,13 +238,15 @@ async def diagnose(
 
 
 @app.post("/diagnose/refine", response_model=DiagnosisResponse)
-async def diagnose_refine(req: RefineRequest) -> DiagnosisResponse:
+async def diagnose_refine(
+    req: RefineRequest, _uid: str = Depends(require_user)
+) -> DiagnosisResponse:
     """[챗봇 2차 보정] 1차 analyze·RAG 결과를 재사용해 generate+guard만 재실행.
 
     Gemini(analyze)·임베딩(retrieve) 재호출 없음 — analysis·refine_context를 echo-back으로
     받아 객관식 답변을 참고 맥락으로 합류한다. observed_symptoms는 1차 값 불변으로 전달되어
-    1차와 동일 status guard를 통과 → cardinal_miss=0 구조 보존. 무인증(/diagnose 동일 정책,
-    권한은 Firestore 규칙 담당). gpt-4o-mini 1콜(+guard 교정 시 cause 재생성 1콜)만 발생.
+    1차와 동일 status guard를 통과 → cardinal_miss=0 구조 보존. gpt-4o-mini 1콜(+guard 교정 시
+    cause 재생성 1콜) 과금이 걸리므로 /diagnose와 동일하게 로그인 필수(require_user).
     """
     if not model_utils.get_openai_api_key():
         raise HTTPException(
